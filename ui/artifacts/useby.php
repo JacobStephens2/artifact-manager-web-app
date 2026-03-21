@@ -63,10 +63,11 @@
     <button id="display_filters" style="display: block">Show filters</button>
   </div>
 
-  <form action="<?php echo url_for('/artifacts/useby.php'); ?>" 
+  <form action="<?php echo url_for('/artifacts/useby.php'); ?>"
     method="post"
     style="display: none"
     >
+    <?php echo csrf_input(); ?>
     <div class="hideOnPrint">
 
       <label for="artifactType">Artifact type</label>

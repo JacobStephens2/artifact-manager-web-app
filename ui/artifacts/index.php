@@ -60,10 +60,11 @@
       <button id="display_filters" style="display: block">Show filters</button>
     </div>
 
-    <form action="<?php echo url_for('/artifacts/index.php'); ?>" 
+    <form action="<?php echo url_for('/artifacts/index.php'); ?>"
       method="post"
       style="display: none"
       >
+      <?php echo csrf_input(); ?>
       <label for="sweetSpotFilter">Sweet Spot (SwS)</label>
       <input type="text" id="sweetSpotFilter" name="sweetSpotFilter"
         <?php 
@@ -151,9 +152,9 @@
           <th>Kept</th>
           <th>Type</th>
           <th>Name (<?php echo $artifact_set->num_rows; ?>)</th>
-          <th>Acquisition</th>
-          <th>Recent Use</th>
-          <th>Use By</th>
+          <th>Tracking Start</th>
+          <th>Recent Interaction</th>
+          <th>Interact By</th>
           <?php
             if ($showAttributes === 'yes') {
               ?>

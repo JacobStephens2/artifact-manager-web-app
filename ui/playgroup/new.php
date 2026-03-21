@@ -38,7 +38,7 @@ if(is_post_request()) {
 
   $result = insert_playgroup($object);
   if($result === true) {
-    $_SESSION['message'] = 'The object was created successfully.';
+    $_SESSION['message'] = 'The play group was created successfully.';
     redirect_to(url_for('/playgroup/index.php'));
   } else {
     $errors = $result;
@@ -81,6 +81,7 @@ include(SHARED_PATH . '/header.php');
     <?php echo display_errors($errors); ?>
 
     <form action="<?php echo url_for('/playgroup/new.php'); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <dl>
         <dd>
         <select name="Player1">

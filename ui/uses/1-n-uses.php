@@ -40,6 +40,7 @@
     </div>
 
     <form method="POST" style="display: none">
+      <?php echo csrf_input(); ?>
       <label for="artifactType">Artifact type</label>
       <section id="artifactType" style="display: flex; flex-wrap: wrap">
         <?php require_once SHARED_PATH . '/artifact_type_checkboxes.php'; ?>
@@ -80,7 +81,7 @@
   	<table class="list" id="uses" data-page-length='100'>
       <thead>
         <tr id="headerRow">
-          <th>Use Date <?php if ($hide_duplicate_group_settings === 'no') { echo '(' . $use_set->num_rows . ')'; } ?></th>
+          <th>Interaction Date <?php if ($hide_duplicate_group_settings === 'no') { echo '(' . $use_set->num_rows . ')'; } ?></th>
           <th>Entity</th>
           <th class="group_setting">Group Setting</th>
           <th>Type</th>

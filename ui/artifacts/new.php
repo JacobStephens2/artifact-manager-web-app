@@ -37,7 +37,7 @@ if(is_post_request()) {
 
   if($result === true) {
     $new_id = mysqli_insert_id($db);
-    $_SESSION['message'] = 'The object was created successfully.';
+    $_SESSION['message'] = 'The entity was created successfully.';
     redirect_to(url_for('/artifacts/show.php?id=' . $new_id));
   } else {
     $errors = $result;
@@ -72,6 +72,7 @@ include(SHARED_PATH . '/header.php');
     <?php echo display_errors($errors); ?>
 
     <form action="<?php echo url_for('/artifacts/new'); ?>" method="POST">
+      <?php echo csrf_input(); ?>
 
       <label for="Title">Name</label>
       <input type="text" name="Title" id="Title" value="<?php echo h($artifact['Title']); ?>" /></dd>
@@ -84,7 +85,7 @@ include(SHARED_PATH . '/header.php');
         ?>
       </select>
       
-      <label for="Acq">Acquisition Date</label>
+      <label for="Acq">Tracking Start Date</label>
       <input type="date" name="Acq" id="Acq" value="<?php 
         $tz = 'America/New_York';
         $timestamp = time();
@@ -118,7 +119,7 @@ include(SHARED_PATH . '/header.php');
       <label for="MxT">Maxiumum Time</label>
       <input type="number" name="MxT" id="MxT" value="<?php echo $artifact['MxT']; ?>">
 
-      <label for="KeptCol">Kept in Collection (Checked Means Yes)</label>
+      <label for="KeptCol">Tracked? (Checked Means Yes)</label>
       <input type="hidden" name="KeptCol" value="0" />
       <input type="checkbox" name="KeptCol" value="1" checked/>
       

@@ -26,6 +26,7 @@ include(SHARED_PATH . '/header.php');
     </div>
 
     <form action="<?php echo url_for('/explore/index.php'); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <dl>
         <dt>Artifact Type</dt>
           <select name="type">

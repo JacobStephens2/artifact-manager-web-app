@@ -53,6 +53,7 @@ mysqli_free_result($object_set);
     <?php echo display_errors($errors); ?>
 
     <form action="<?php echo url_for('/staff/objects/edit.php?id=' . h(u($id))); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <dl>
         <dt>ObjectName</dt>
         <dd><input type="text" name="ObjectName" value="<?php echo h($object['ObjectName']); ?>" /></dd>

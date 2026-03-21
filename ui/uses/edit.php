@@ -40,10 +40,11 @@ include(SHARED_PATH . '/header.php');
 
     <?php echo display_errors($errors); ?>
 
-    <form 
-      action="<?php echo url_for('/uses/edit.php?id=' . h(u($id))); ?>" 
+    <form
+      action="<?php echo url_for('/uses/edit.php?id=' . h(u($id))); ?>"
       method="post"
       >
+      <?php echo csrf_input(); ?>
 
       <label for="Title">Artifact</label>
       <select id="Title" name="Title">
@@ -76,7 +77,7 @@ include(SHARED_PATH . '/header.php');
         ?>
       </select>
       
-      <label for="UseDate">Use Date</dt>
+      <label for="UseDate">Interaction Date</dt>
       <input 
         type="date" 
         id="UseDate" 
@@ -105,7 +106,7 @@ include(SHARED_PATH . '/header.php');
     href="<?php echo url_for('/uses/delete.php?id=' . h(u($response['id']))); ?>"
   >
     <button>
-      Delete Use
+      Delete Interaction
     </button>
   </a>
 

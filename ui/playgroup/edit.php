@@ -40,6 +40,7 @@ if(is_post_request()) {
     <?php echo display_errors($errors); ?>
 
     <form action="<?php echo url_for('/playgroup/edit.php?ID=' . h(u($ID))); ?>" method="post">
+      <?php echo csrf_input(); ?>
     <dl>
         <dt>User</dt>
         <dd>

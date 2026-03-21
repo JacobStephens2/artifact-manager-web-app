@@ -65,7 +65,8 @@
   </h1>
 
   <form action="new.php" method="post">
-    
+    <?php echo csrf_input(); ?>
+
     <label for="date">Date</label>
     <input type="date" name="useDate" id="date" 
       value="<?php
@@ -76,7 +77,7 @@
         echo $dt->format('Y') . '-' . $dt->format('m') . '-' . $dt->format('d'); ?>"  
     >
 
-    <label for="SearchTitles">Search Artifacts</label>
+    <label for="SearchTitles">Search Entities</label>
     <input type="search" 
       id="SearchTitles" 
       name="artifact[name]" 

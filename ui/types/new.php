@@ -51,6 +51,7 @@ if(is_post_request()) {
     ?>
 
     <form method="post">
+      <?php echo csrf_input(); ?>
       <dl>
         <dt>Type</dt>
         <dd><input type="text" name="type"/></dd>

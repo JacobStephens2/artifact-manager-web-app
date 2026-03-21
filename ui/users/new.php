@@ -50,6 +50,7 @@ if(is_post_request()) {
     <?php echo display_errors($errors); ?>
 
     <form action="<?php echo url_for('/users/new.php'); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <dl>
         <dt>First Name</dt>
         <dd><input type="text" name="FirstName" value="<?php echo h($player['FirstName']); ?>" /></dd>

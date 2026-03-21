@@ -20,6 +20,7 @@ $object_set = use_objects_by_user($interval, $limit);
     <p><a class="back-link" href="<?php echo url_for('/objects/about-useby.php'); ?>">Learn about use-by date generation</a></p>
 
     <form action="<?php echo url_for('/objects/useby.php'); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <dt>Interval from latest or to soonest play</dt>
           <input type="number" name="interval" value="<?php echo $interval ?>">
       <div id="operations">

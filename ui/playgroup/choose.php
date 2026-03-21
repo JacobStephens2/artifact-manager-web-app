@@ -24,6 +24,7 @@
     </p>
     <!-- Parameters form -->
     <form action="<?php echo url_for('/playgroup/choose.php'); ?>" method="post">
+      <?php echo csrf_input(); ?>
 
         <div style="display: flex">
           <label for="range">Show only artifacts matching count of user group</label>

@@ -53,6 +53,7 @@ mysqli_free_result($object_set);
     <?php echo display_errors($errors); ?>
 
     <form action="<?php echo url_for('/objects/edit.php?id=' . h(u($id))); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <dl>
         <dt>Object Name</dt>
         <dd><input type="text" name="ObjectName" value="<?php echo h($object['ObjectName']); ?>" /></dd>
@@ -79,7 +80,7 @@ mysqli_free_result($object_set);
         <dd><input type="date" name="Acq" value="<?php echo h($object['Acq']); ?>" /></dd>
       </dl>
       <dl>
-        <dt>Kept in Collection?</dt>
+        <dt>Tracked?</dt>
         <dd>
           <input type="hidden" name="KeptCol" value="0" />
           <input type="checkbox" name="KeptCol" value="1"<?php if($object['KeptCol'] == "1") { echo " checked"; } ?> />

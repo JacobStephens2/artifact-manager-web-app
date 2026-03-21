@@ -50,9 +50,14 @@
 
       if($insertResult === true) {
         $new_id = mysqli_insert_id($db);
-        $_SESSION['message'] = "The use of " . $_POST['artifact']['name'] . " with "
-          . count($_POST['user'])
-          . " users was recorded."
+        $user_count = count($_POST['user']);
+        if ($user_count === 1) {
+          $user_count_word = 'person';
+        } else {
+          $user_count_word = 'people';
+        }
+        $_SESSION['message'] = "The interaction with " . $_POST['artifact']['name'] 
+          . " with $user_count $user_count_word was recorded."
         ;
         redirect_to(url_for('/uses/' . $formProcessingFile));
       } else {
@@ -88,8 +93,9 @@
   </h1>
 
   <form action="<?php echo $formProcessingFile; ?>" method="post">
-    
-    <label for="SearchTitles">Search Artifacts</label>
+    <?php echo csrf_input(); ?>
+
+    <label for="SearchTitles">Search Entities</label>
     <input type="search" 
       id="SearchTitles" 
       name="artifact[name]" 
@@ -105,7 +111,7 @@
       </ul>
     </div>
 
-    <label for="users">Users List</label>
+    <label for="users">Interactors</label>
     <section id="users">
       <input 
         type="search" 
@@ -151,15 +157,25 @@
 
     <label for="Note">Setting</label>
     <?php 
-      $default_setting = singleValueQuery("SELECT default_setting
-        FROM users
-        WHERE id = '" . $_SESSION['user_id'] . "'
+      $most_recent_setting = singleValueQuery(
+        "SELECT note 
+        FROM uses
+        WHERE user_id = '" . $_SESSION['user_id'] . "'
+        ORDER BY id DESC
+        LIMIT 1
       ");
+      if ($most_recent_setting === null) {
+        $default_setting = singleValueQuery(
+          "SELECT default_setting
+          FROM users
+          WHERE id = '" . $_SESSION['user_id'] . "'
+        ");
+      }
     ?>
     <input type="text" 
       name="Note" 
       id="Note"
-      value="<?php echo $default_setting; ?>"
+      value="<?php echo $most_recent_setting; ?>"
     >
 
     <label for="NotesTwo">Notes</label>

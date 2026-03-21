@@ -85,6 +85,7 @@
   </h1>
 
   <form action="candidates.php" method="POST">
+    <?php echo csrf_input(); ?>
 
     <section style="display: flex; gap: 1.2rem">
       <div>      

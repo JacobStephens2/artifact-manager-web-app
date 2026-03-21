@@ -13,9 +13,9 @@
   	<table class="list" id="uses" data-page-length='100'>
       <thead>
         <tr id="headerRow">
-          <th>Use Date (<?php echo $use_set->num_rows; ?>)</th>
+          <th>Interaction Date (<?php echo $use_set->num_rows; ?>)</th>
           <th>Title</th>
-          <th>User</th>
+          <th>Person</th>
           <th>Type</th>
         </tr>
       </thead>

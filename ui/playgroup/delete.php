@@ -30,6 +30,7 @@ include(SHARED_PATH . '/header.php');
     <p class="item"><?php echo h($object['FirstName']) . ' ' . h($object['LastName']); ?></p>
 
     <form action="<?php echo url_for('/playgroup/delete.php?ID=' . h(u($object['ID']))); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <div ID="operations">
         <input type="submit" name="commit" value="Remove User From Group" />
       </div>

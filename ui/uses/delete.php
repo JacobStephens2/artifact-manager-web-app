@@ -20,13 +20,13 @@ if(is_post_request()) {
 
 ?>
 
-<?php $page_title = 'Delete response'; ?>
+<?php $page_title = 'Delete Interaction'; ?>
 <?php include(SHARED_PATH . '/header.php'); ?>
 
 <main>
 
   <div class="response-delete">
-    <h1>Delete Use</h1>
+    <h1><?php echo $page_title; ?></h1>
     <p>Are you sure you want to delete this use?</p>
     <p class="item">use id: <?php echo h($use['id']); ?></p>
     <p class="item">Play date: <?php echo h($use['PlayDate']); ?></p>
@@ -34,8 +34,9 @@ if(is_post_request()) {
     <p class="item">Player: <?php echo h($use['FirstName']) . ' ' . h($use['LastName']); ?></p>
 
     <form action="<?php echo url_for('/uses/delete.php?id=' . h(u($use['id']))); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <div id="operations">
-        <input type="submit" name="commit" value="Delete Use" />
+        <input type="submit" name="commit" value="Delete Interaction" />
       </div>
     </form>
   </div>

@@ -16,7 +16,7 @@ if(is_post_request()) {
   $result = insert_object_by_user($object);
   if($result === true) {
     $new_id = mysqli_insert_id($db);
-    $_SESSION['message'] = 'The object was created successfully.';
+    $_SESSION['message'] = 'The entity was created successfully.';
     redirect_to(url_for('/objects/show.php?id=' . $new_id));
   } else {
     $errors = $result;
@@ -46,6 +46,7 @@ if(is_post_request()) {
     <?php echo display_errors($errors); ?>
 
     <form action="<?php echo url_for('/objects/new.php'); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <dl>
         <dt>Object Name</dt>
         <dd><input type="text" name="ObjectName" value="<?php echo h($object['ObjectName']); ?>" /></dd>

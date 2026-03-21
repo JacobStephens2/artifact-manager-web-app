@@ -48,6 +48,7 @@ include(SHARED_PATH . '/header.php');
     ?>
 
     <form method="post">
+      <?php echo csrf_input(); ?>
       <dl>
         <dt>Type</dt>
         <dd><input type="text" name="type" value="<?php echo h($type); ?>" /></dd>

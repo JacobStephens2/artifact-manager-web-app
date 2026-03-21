@@ -55,6 +55,7 @@ if (is_post_request()) {
     <?php echo display_errors($errors); ?>
 
     <form action="<?php echo url_for('/register.php'); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <dl>
         <dt>First name</dt>
         <dd><input type="text" name="first_name" value="<?php echo h($user['first_name']); ?>" /></dd>

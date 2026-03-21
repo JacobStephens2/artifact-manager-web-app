@@ -78,6 +78,7 @@ if ($action == 'logout') {
       <?php echo display_errors($errors); ?>
 
       <form action="login.php" method="post">
+        <?php echo csrf_input(); ?>
         <h2>Username:</h2>
         <input class="input-box" type="text" name="username" value=""/>
         <h2>Password:</h2>

@@ -39,6 +39,7 @@ if(is_post_request()) {
 
     <h1>Record use</h1>
     <form action="<?php echo url_for('/object_uses/new.php'); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <dl>
         <dt>Object Name</dt>
         <dd>
@@ -70,7 +71,7 @@ if(is_post_request()) {
         </dd>
       </dl>
       <dl>
-        <dt>Use Date</dt>
+        <dt>Interaction Date</dt>
         <dd><input type="date" name="UseDate" value="<?php echo date('Y') . '-' . date('m') . '-' . date('d'); ?>" /></dd>
       </dl>
       <div id="operations">

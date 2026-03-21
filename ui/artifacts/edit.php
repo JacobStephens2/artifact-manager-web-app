@@ -91,9 +91,10 @@
     </button>
 
     <form id="editForm"
-      action="<?php echo url_for('/artifacts/edit?id=' . h(u($id))); ?>" 
+      action="<?php echo url_for('/artifacts/edit?id=' . h(u($id))); ?>"
       method="post"
       >
+      <?php echo csrf_input(); ?>
 
       <label for="Title">Title</dt>
       <input type="text" name="Title" id="Title" value="<?php echo h($artifact['Title']); ?>" />

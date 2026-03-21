@@ -30,7 +30,7 @@ if(is_post_request()) {
   $response = find_use_details_by_id($id);
 }
 
-$page_title = 'Edit 1:n Use';
+$page_title = 'Edit 1:n Interaction';
 include(SHARED_PATH . '/header.php'); 
 
 ?>
@@ -46,12 +46,13 @@ include(SHARED_PATH . '/header.php');
 
     <?php echo display_errors($errors); ?>
 
-    <form 
-      action="<?php echo url_for('/uses/1-n-edit.php?id=' . h(u($id))); ?>" 
+    <form
+      action="<?php echo url_for('/uses/1-n-edit.php?id=' . h(u($id))); ?>"
       method="post"
       >
+      <?php echo csrf_input(); ?>
 
-      <label for="UseDate">Use Date</dt>
+      <label for="UseDate">Interaction Date</dt>
       <input 
         type="date" 
         id="UseDate" 
@@ -59,7 +60,7 @@ include(SHARED_PATH . '/header.php');
         value="<?php echo h(substr($response['use_date'],0,10)); ?>" 
       />
 
-      <label for="Title">Artifact</label>
+      <label for="Title">Entity</label>
       <select id="Title" name="artifact_id">
         <?php
           $artifact_set = list_games();
@@ -78,7 +79,7 @@ include(SHARED_PATH . '/header.php');
         $usersResultObject = find_users_by_use_id($response['id']);
       ?>
 
-      <label for="users">Users List</label>
+      <label for="users">People List</label>
       <section id="users">
         <?php
         $i = 0;
@@ -154,7 +155,7 @@ include(SHARED_PATH . '/header.php');
     href="<?php echo url_for('/uses/1-n-delete.php?id=' . h(u($response['id']))); ?>"
   >
     <button>
-      Delete Use
+      Delete Interaction
     </button>
   </a>
 

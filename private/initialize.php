@@ -46,5 +46,15 @@
   $db = db_connect();
   $errors = [];
 
+  // Generate CSRF token for all pages
+  generate_csrf_token();
+
+  // Validate CSRF token on all POST requests
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && php_sapi_name() !== 'cli') {
+    if (!validate_csrf_token()) {
+      http_response_code(403);
+      exit('Invalid CSRF token.');
+    }
+  }
 
 ?>

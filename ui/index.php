@@ -14,19 +14,19 @@ include(SHARED_PATH . '/header.php');
     <ul>
       <li>
         <a href="<?php echo url_for('/artifacts/index.php');?>">
-          Artifacts
+          Entities
         </a>
       </li>
 
       <ul>
         <li>
           <a class="action" href="<?php echo url_for('/artifacts/new.php'); ?>">
-            Create New Artifact
+            Create New Entity
           </a>
         </li>
         <li>
           <a href=" <?php echo url_for('/artifacts/useby.php');?>">
-            Use Artifacts by Date List
+            Interact with Entities by Date List
           </a>
         </li>
 
@@ -37,13 +37,13 @@ include(SHARED_PATH . '/header.php');
     <ul>
       <li>
         <a href="<?php echo url_for('/uses/1-n-uses.php');?>">
-          Uses
+          Interactions
         </a>
       </li>
     
       <ul>
         <li>
-          <a href="/uses/1-n-new.php">Record Use</a>
+          <a href="/uses/1-n-new.php">Record Interaction</a>
         </li>
       </ul>
 

@@ -122,6 +122,7 @@ include(SHARED_PATH . '/header.php');
    } else { ?>
 
       <form method="post" action="" name="reset">
+         <?php echo csrf_input(); ?>
          <label for="email">
             Enter Your Email Address
          </label>

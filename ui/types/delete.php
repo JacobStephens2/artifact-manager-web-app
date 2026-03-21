@@ -93,6 +93,7 @@ include(SHARED_PATH . '/header.php');
           ?>
         </p>
         <form method="post">
+          <?php echo csrf_input(); ?>
           <label for="new_type">
             Recategorize Existing <?php echo $type; ?> artifacts with this type
           </label>

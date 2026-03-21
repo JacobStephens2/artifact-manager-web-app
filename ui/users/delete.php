@@ -33,6 +33,7 @@ if(is_post_request()) {
     <p class="item"><?php echo h($player['FirstName']) . ' ' . h($player['LastName']); ?></p>
 
     <form action="<?php echo url_for('/users/delete.php?id=' . h(u($player['id']))); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <div id="operations">
         <input type="submit" name="commit" value="Delete player" />
       </div>

@@ -20,18 +20,18 @@
 
 ?>
 
-<?php $page_title = 'Delete use'; ?>
+<?php $page_title = 'Delete Interaction'; ?>
 <?php include(SHARED_PATH . '/header.php'); ?>
 
 <main>
 
   <div class="response-delete">
-    <h1>Delete Use</h1>
+    <h1><?php echo $page_title; ?></h1>
     <p>Are you sure you want to delete this use?</p>
-    <p class="item">Use id: <?php echo h($use['id']); ?></p>
-    <p class="item">Use date: <?php echo h(substr($use['use_date'], 0, 10)); ?></p>
+    <p class="item">Interaction id: <?php echo h($use['id']); ?></p>
+    <p class="item">Interaction date: <?php echo h(substr($use['use_date'], 0, 10)); ?></p>
     <p class="item">Artifact: <?php echo h($use['artifact']); ?></p>
-    <p class="item">Users: 
+    <p class="item">People: 
     <?php
       $usersResultObject = find_users_by_use_id($use['id']);
       $i = 0;
@@ -46,8 +46,9 @@
     </p>
 
     <form action="<?php echo url_for('/uses/1-n-delete.php?id=' . h(u($use['id']))); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <div id="operations">
-        <input type="submit" name="commit" value="Delete Use" />
+        <input type="submit" name="commit" value="Delete Interaction" />
       </div>
     </form>
   </div>

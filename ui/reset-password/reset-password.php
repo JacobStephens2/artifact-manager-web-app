@@ -57,6 +57,7 @@ if (
         ?>
           <br />
           <form method="post" action="reset-password.php" name="update">
+            <?php echo csrf_input(); ?>
             <input type="hidden" name="action" value="update" />
             <div>
               <label>Enter New Password</label>

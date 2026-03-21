@@ -31,10 +31,11 @@ include(SHARED_PATH . '/header.php');
     <p class="item">Game: <?php echo h($use['Title']); ?></p>
     <p class="item">Player: <?php echo h($use['FirstName']) . ' ' . h($use['LastName']); ?></p>
 
-    <form 
-      action="<?php echo url_for('/aversions/delete.php?id=' . h(u($use['id']))); ?>" 
+    <form
+      action="<?php echo url_for('/aversions/delete.php?id=' . h(u($use['id']))); ?>"
       method="post"
       >
+      <?php echo csrf_input(); ?>
       <div id="operations">
         <input type="submit" name="commit" value="Delete Aversion" />
       </div>

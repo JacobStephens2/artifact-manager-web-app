@@ -33,6 +33,7 @@ if(is_post_request()) {
     <p class="item"><?php echo h($object['ObjectName']); ?></p>
 
     <form action="<?php echo url_for('/objects/delete.php?id=' . h(u($object['ID']))); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <div id="operations">
         <input type="submit" name="commit" value="Delete object" />
       </div>

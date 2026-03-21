@@ -69,9 +69,10 @@ include(SHARED_PATH . '/header.php');
     </form>
 
     <form action="<?php echo url_for('/aversions/new.php?playerCount=' . $playerCount); ?>" method="post">
+      <?php echo csrf_input(); ?>
 
       <!-- This select gets populated by the JavaScript fetch request above -->
-      <label for="SearchTitles">Search Artifacts</label>
+      <label for="SearchTitles">Search Entities</label>
       <input type="text" name="SearchTitles" id="SearchTitles">
       
 			<label for="Title">Artifact</label>

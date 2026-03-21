@@ -20,7 +20,7 @@ if(is_post_request()) {
 
 ?>
 
-<?php $page_title = 'Delete object_use'; ?>
+<?php $page_title = 'Delete Interaction'; ?>
 <?php include(SHARED_PATH . '/header.php'); ?>
 
 <main>
@@ -28,14 +28,15 @@ if(is_post_request()) {
   <a class="back-link" href="<?php echo url_for('/object_uses/index.php'); ?>">&laquo; Back to List</a>
 
   <div class="object_use delete">
-    <h1>Delete object_use</h1>
-    <p>Are you sure you want to delete this use?</p>
+    <h1>Delete Interaction</h1>
+    <p>Are you sure you want to delete this interaction?</p>
     <p class="item"><?php echo h($use['ObjectName']); ?></p>
     <p class="item"><?php echo h($use['UseDate']); ?></p>
 
     <form action="<?php echo url_for('/object_uses/delete.php?id=' . h(u($use['ID']))); ?>" method="post">
+      <?php echo csrf_input(); ?>
       <div id="operations">
-        <input type="submit" name="commit" value="Delete use" />
+        <input type="submit" name="commit" value="Delete Interaction" />
       </div>
     </form>
   </div>

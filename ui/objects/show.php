@@ -18,7 +18,7 @@ include(SHARED_PATH . '/header.php');
 
   <li><a class="back-link" href="<?php echo url_for('/objects/index.php'); ?>">&laquo; Objects</a></li>
   <li><a class="back-link" href="<?php echo url_for('/object_uses/new.php'); ?>">&laquo; Use by</a></li>
-  <li><a class="back-link" href="<?php echo url_for('/uses/create.php'); ?>">&laquo; Record use</a></li>
+  <li><a class="back-link" href="<?php echo url_for('/uses/create.php'); ?>">&laquo; Record interaction</a></li>
   <li><a class="back-link" href="<?php echo url_for('/objects/new.php'); ?>">&laquo; Add new object</a></li>
 
   <div class="object show">
@@ -35,7 +35,7 @@ include(SHARED_PATH . '/header.php');
         <dd><?php echo h($object['Acq']); ?></dd>
       </dl>
       <dl>
-        <dt>Kept in collection</dt>
+        <dt>Tracked</dt>
         <dd><?php echo $object['KeptCol'] == '1' ? 'true' : 'false'; ?></dd>
       </dl>
       <dl>
