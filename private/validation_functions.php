@@ -120,15 +120,14 @@
   function has_unique_username($username, $current_id="0") {
     global $db;
 
-    $sql = "SELECT * FROM users ";
-    $sql .= "WHERE username='" . db_escape($db, $username) . "' ";
-    $sql .= "AND id != '" . db_escape($db, $current_id) . "'";
+    $stmt = mysqli_prepare($db, "SELECT id FROM users WHERE username = ? AND id != ?");
+    mysqli_stmt_bind_param($stmt, "si", $username, $current_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $count = mysqli_num_rows($result);
+    mysqli_stmt_close($stmt);
 
-    $result = mysqli_query($db, $sql);
-    $admin_count = mysqli_num_rows($result);
-    mysqli_free_result($result);
-
-    return $admin_count === 0;
+    return $count === 0;
   }
 
 ?>

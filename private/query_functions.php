@@ -19,10 +19,11 @@ use PHPMailer\PHPMailer\Exception;
   function delete_use($id) {
     global $db;
 
-    $sql = "DELETE FROM use_table ";
-    $sql .= "WHERE id='" . db_escape($db, $id) . "' ";
-    $sql .= "LIMIT 1";
-    $result = mysqli_query($db, $sql);
+    $sql = "DELETE FROM use_table WHERE id=? LIMIT 1";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $id);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     // For DELETE statements, $result is true/false
     if($result) {
@@ -44,10 +45,14 @@ use PHPMailer\PHPMailer\Exception;
     $sql .= "use_table.ID ";
     $sql .= "FROM use_table ";
     $sql .= "LEFT JOIN objects ON objects.ID = use_table.ObjectName ";
-    $sql .= "WHERE use_table.user_id = '" . db_escape($db, $_SESSION['user_id']) . "' ";
+    $sql .= "WHERE use_table.user_id = ? ";
     $sql .= "ORDER BY UseDate DESC";
 
-    $result = mysqli_query($db, $sql);
+    $stmt = mysqli_prepare($db, $sql);
+    $user_id = $_SESSION['user_id'];
+    mysqli_stmt_bind_param($stmt, "s", $user_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     return $result;
   }
@@ -63,8 +68,11 @@ use PHPMailer\PHPMailer\Exception;
     $sql .= "FROM use_table ";
     $sql .= "LEFT JOIN objects ON objects.ID = use_table.ObjectName ";
     $sql .= "LEFT JOIN types ON objects.ObjectType = types.ID ";
-    $sql .= "WHERE use_table.id='" . db_escape($db, $id) . "' ";
-    $result = mysqli_query($db, $sql);
+    $sql .= "WHERE use_table.id=? ";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     $subject = mysqli_fetch_assoc($result);
     mysqli_free_result($result);
@@ -262,14 +270,23 @@ use PHPMailer\PHPMailer\Exception;
     }
 
     $sql = "UPDATE objects SET ";
-    $sql .= "ObjectName='" . db_escape($db, $object['ObjectName']) . "', ";
-    $sql .= "Acq='" . db_escape($db, $object['Acq']) . "', ";
-    $sql .= "ObjectType='" . db_escape($db, $object['ObjectType']) . "', ";
-    $sql .= "KeptCol='" . db_escape($db, $object['KeptCol']) . "' ";
-    $sql .= "WHERE ID='" . db_escape($db, $object['ID']) . "' ";
+    $sql .= "ObjectName=?, ";
+    $sql .= "Acq=?, ";
+    $sql .= "ObjectType=?, ";
+    $sql .= "KeptCol=? ";
+    $sql .= "WHERE ID=? ";
     $sql .= "LIMIT 1;";
 
-    $result = mysqli_query($db, $sql);
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "sssss",
+      $object['ObjectName'],
+      $object['Acq'],
+      $object['ObjectType'],
+      $object['KeptCol'],
+      $object['ID']
+    );
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     // For UPDATE statements, $result is true/false
     if($result) {
       return true;
@@ -310,14 +327,18 @@ use PHPMailer\PHPMailer\Exception;
     $sql = "INSERT INTO objects ";
     // below did have 'user_id' in list after ObjectType
     $sql .= "(ObjectName, Acq, ObjectType, user_id, KeptCol) ";
-    $sql .= "VALUES (";
-    $sql .= "'" . db_escape($db, $object['ObjectName']) . "',";
-    $sql .= "'" . db_escape($db, $object['Acq']) . "',";
-    $sql .= "'" . db_escape($db, $object['ObjectType']) . "',";
-    $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "',";
-    $sql .= "'" . db_escape($db, $object['KeptCol']) . "'";
-    $sql .= ")";
-    $result = mysqli_query($db, $sql);
+    $sql .= "VALUES (?, ?, ?, ?, ?)";
+    $user_id = $_SESSION['user_id'];
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "sssss",
+      $object['ObjectName'],
+      $object['Acq'],
+      $object['ObjectType'],
+      $user_id,
+      $object['KeptCol']
+    );
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     // For INSERT statements, $result is true/false
     if($result) {
       return true;
@@ -331,10 +352,11 @@ use PHPMailer\PHPMailer\Exception;
   function delete_object($id) {
     global $db;
 
-    $sql = "DELETE FROM objects ";
-    $sql .= "WHERE id='" . db_escape($db, $id) . "' ";
-    $sql .= "LIMIT 1";
-    $result = mysqli_query($db, $sql);
+    $sql = "DELETE FROM objects WHERE id=? LIMIT 1";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $id);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     // For DELETE statements, $result is true/false
     if($result) {
@@ -351,10 +373,11 @@ use PHPMailer\PHPMailer\Exception;
   function find_user_by_username($username) {
     global $db;
 
-    $sql = "SELECT * FROM users ";
-    $sql .= "WHERE username='" . db_escape($db, $username) . "' ";
-    $sql .= "LIMIT 1";
-    $result = mysqli_query($db, $sql);
+    $sql = "SELECT * FROM users WHERE username=? LIMIT 1";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     $admin = mysqli_fetch_assoc($result); // find first
     mysqli_free_result($result);
@@ -422,10 +445,11 @@ use PHPMailer\PHPMailer\Exception;
 
     $hashed_password = password_hash($form_data['password'], PASSWORD_BCRYPT);
 
-    $sql = "UPDATE users ";
-    $sql .= "SET hashed_password = '" . db_escape($db, $hashed_password) . "' ";
-    $sql .= "WHERE 'email' = '" . db_escape($db, $form_data['email']) . "'";
-    $result = mysqli_query($db, $sql);
+    $sql = "UPDATE users SET hashed_password = ? WHERE email = ?";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "ss", $hashed_password, $form_data['email']);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     if($result) {
       return true;
     } else {
@@ -447,15 +471,17 @@ use PHPMailer\PHPMailer\Exception;
 
     $sql = "INSERT INTO users ";
     $sql .= "(first_name, last_name, email, username, hashed_password, user_group) ";
-    $sql .= "VALUES (";
-    $sql .= "'" . db_escape($db, $user['first_name']) . "',";
-    $sql .= "'" . db_escape($db, $user['last_name']) . "',";
-    $sql .= "'" . db_escape($db, $user['email']) . "',";
-    $sql .= "'" . db_escape($db, $user['username']) . "',";
-    $sql .= "'" . db_escape($db, $hashed_password) . "',";
-    $sql .= "'1'";
-    $sql .= ")";
-    $result = mysqli_query($db, $sql);
+    $sql .= "VALUES (?, ?, ?, ?, ?, '1')";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "sssss",
+      $user['first_name'],
+      $user['last_name'],
+      $user['email'],
+      $user['username'],
+      $hashed_password
+    );
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     // For INSERT statements, $result is true/false
     if($result) {
@@ -559,14 +585,17 @@ use PHPMailer\PHPMailer\Exception;
 
     $sql = "INSERT INTO admins ";
     $sql .= "(first_name, last_name, email, username, hashed_password) ";
-    $sql .= "VALUES (";
-    $sql .= "'" . db_escape($db, $admin['first_name']) . "',";
-    $sql .= "'" . db_escape($db, $admin['last_name']) . "',";
-    $sql .= "'" . db_escape($db, $admin['email']) . "',";
-    $sql .= "'" . db_escape($db, $admin['username']) . "',";
-    $sql .= "'" . db_escape($db, $hashed_password) . "'";
-    $sql .= ")";
-    $result = mysqli_query($db, $sql);
+    $sql .= "VALUES (?, ?, ?, ?, ?)";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "sssss",
+      $admin['first_name'],
+      $admin['last_name'],
+      $admin['email'],
+      $admin['username'],
+      $hashed_password
+    );
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     // For INSERT statements, $result is true/false
     if($result) {
@@ -591,16 +620,36 @@ use PHPMailer\PHPMailer\Exception;
     $hashed_password = password_hash($admin['password'], PASSWORD_BCRYPT);
 
     $sql = "UPDATE admins SET ";
-    $sql .= "first_name='" . db_escape($db, $admin['first_name']) . "', ";
-    $sql .= "last_name='" . db_escape($db, $admin['last_name']) . "', ";
-    $sql .= "email='" . db_escape($db, $admin['email']) . "', ";
+    $sql .= "first_name=?, ";
+    $sql .= "last_name=?, ";
+    $sql .= "email=?, ";
     if($password_sent) {
-      $sql .= "hashed_password='" . db_escape($db, $hashed_password) . "', ";
+      $sql .= "hashed_password=?, ";
     }
-    $sql .= "username='" . db_escape($db, $admin['username']) . "' ";
-    $sql .= "WHERE id='" . db_escape($db, $admin['id']) . "' ";
+    $sql .= "username=? ";
+    $sql .= "WHERE id=? ";
     $sql .= "LIMIT 1";
-    $result = mysqli_query($db, $sql);
+    $stmt = mysqli_prepare($db, $sql);
+    if($password_sent) {
+      mysqli_stmt_bind_param($stmt, "ssssss",
+        $admin['first_name'],
+        $admin['last_name'],
+        $admin['email'],
+        $hashed_password,
+        $admin['username'],
+        $admin['id']
+      );
+    } else {
+      mysqli_stmt_bind_param($stmt, "sssss",
+        $admin['first_name'],
+        $admin['last_name'],
+        $admin['email'],
+        $admin['username'],
+        $admin['id']
+      );
+    }
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     // For UPDATE statements, $result is true/false
     if($result) {
@@ -615,10 +664,11 @@ use PHPMailer\PHPMailer\Exception;
   function delete_admin($admin) {
     global $db;
 
-    $sql = "DELETE FROM admins ";
-    $sql .= "WHERE id='" . db_escape($db, $admin['id']) . "' ";
-    $sql .= "LIMIT 1;";
-    $result = mysqli_query($db, $sql);
+    $sql = "DELETE FROM admins WHERE id=? LIMIT 1;";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $admin['id']);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     // For DELETE statements, $result is true/false
     if($result) {
@@ -661,6 +711,12 @@ use PHPMailer\PHPMailer\Exception;
   function find_artifacts_by_user_id($kept, $type, $interval, $sweetSpot = '') {
     global $db;
 
+    $interval = (int)$interval;
+    $interval_double = (int)($interval * 2);
+
+    $params = [];
+    $param_types = '';
+
     $sql = "SELECT
         games.Title,
         games.mnp,
@@ -677,15 +733,15 @@ use PHPMailer\PHPMailer\Exception;
         games.type_id,
         DATE(MAX(responses.PlayDate)) AS MaxPlay,
         DATE(MAX(uses.use_date)) AS MaxUse,
-        CASE 
-          WHEN 
-            MAX(responses.PlayDate) < games.Acq 
-            THEN DATE_ADD(games.Acq, INTERVAL " . $interval . " DAY) 
-          WHEN 
-            MAX(responses.PlayDate) IS NULL 
-            THEN DATE_ADD(games.Acq, INTERVAL " . $interval . " DAY) 
-          ELSE 
-            DATE_ADD(MAX(responses.PlayDate), INTERVAL " . $interval * 2 . " DAY)
+        CASE
+          WHEN
+            MAX(responses.PlayDate) < games.Acq
+            THEN DATE_ADD(games.Acq, INTERVAL " . $interval . " DAY)
+          WHEN
+            MAX(responses.PlayDate) IS NULL
+            THEN DATE_ADD(games.Acq, INTERVAL " . $interval . " DAY)
+          ELSE
+            DATE_ADD(MAX(responses.PlayDate), INTERVAL " . $interval_double . " DAY)
           END UseBy,
         games.Acq,
         games.KeptCol
@@ -704,39 +760,56 @@ use PHPMailer\PHPMailer\Exception;
         games.type,
         games.id
     HAVING
-        games.user_id = " . db_escape($db, $_SESSION['user_id']) . " ";
+        games.user_id = ? ";
+
+        $params[] = $_SESSION['user_id'];
+        $param_types .= 's';
 
         if (strlen($sweetSpot) > 0) {
-          $sql .= " AND games.ss LIKE '%$sweetSpot%' ";
-          $sql .= " AND games.ss NOT LIKE '%1$sweetSpot%' ";
-          $sql .= " AND games.ss NOT LIKE '%2$sweetSpot%' ";
-          $sql .= " AND games.ss NOT LIKE '%3$sweetSpot%' ";
-          $sql .= " AND games.ss NOT LIKE '%$sweetSpot" . "0%' ";
-          $sql .= " AND games.ss NOT LIKE '%$sweetSpot" . "1%' ";
-          $sql .= " AND games.ss NOT LIKE '%$sweetSpot" . "2%' ";
-          $sql .= " AND games.ss NOT LIKE '%$sweetSpot" . "3%' ";
-          $sql .= " AND games.ss NOT LIKE '%$sweetSpot" . "4%' ";
-        }
-        
-        if (isset($type) && $type != [] && $type != '1') {
-          $sql .= " AND games.type_id IN ( ";
-          $i = 0;
-          foreach($type as $type_name => $type_id) {
-            $i++;
-            $sql .= "'$type_id'";
-            if ($i != count($type)) {
-              $sql .= ", ";
-            }
-          }
-          $sql .= ") ";
+          $sql .= " AND games.ss LIKE ? ";
+          $params[] = '%' . $sweetSpot . '%';
+          $param_types .= 's';
+          $sql .= " AND games.ss NOT LIKE ? ";
+          $params[] = '%1' . $sweetSpot . '%';
+          $param_types .= 's';
+          $sql .= " AND games.ss NOT LIKE ? ";
+          $params[] = '%2' . $sweetSpot . '%';
+          $param_types .= 's';
+          $sql .= " AND games.ss NOT LIKE ? ";
+          $params[] = '%3' . $sweetSpot . '%';
+          $param_types .= 's';
+          $sql .= " AND games.ss NOT LIKE ? ";
+          $params[] = '%' . $sweetSpot . '0%';
+          $param_types .= 's';
+          $sql .= " AND games.ss NOT LIKE ? ";
+          $params[] = '%' . $sweetSpot . '1%';
+          $param_types .= 's';
+          $sql .= " AND games.ss NOT LIKE ? ";
+          $params[] = '%' . $sweetSpot . '2%';
+          $param_types .= 's';
+          $sql .= " AND games.ss NOT LIKE ? ";
+          $params[] = '%' . $sweetSpot . '3%';
+          $param_types .= 's';
+          $sql .= " AND games.ss NOT LIKE ? ";
+          $params[] = '%' . $sweetSpot . '4%';
+          $param_types .= 's';
         }
 
-        if ( $kept == 'yes') { 
-          $sql .= " AND games.KeptCol = 1 "; 
+        if (isset($type) && $type != [] && $type != '1') {
+          $placeholders = implode(', ', array_fill(0, count($type), '?'));
+          $sql .= " AND games.type_id IN ( " . $placeholders . ") ";
+          foreach($type as $type_name => $type_id) {
+            $params[] = $type_id;
+            $param_types .= 's';
+          }
+        }
+
+        if ( $kept == 'yes') {
+          $sql .= " AND games.KeptCol = 1 ";
         } elseif ( $kept == 'no' ) {
-          $sql .= " AND games.KeptCol = 0 "; 
+          $sql .= " AND games.KeptCol = 0 ";
         } elseif ( $kept == 'secondary_only' ) {
-          $sql .= " AND games.InSecondaryCollection = 'yes' "; 
+          $sql .= " AND games.InSecondaryCollection = 'yes' ";
         }
 
     $sql .= "
@@ -747,7 +820,10 @@ use PHPMailer\PHPMailer\Exception;
         games.KeptCol DESC,
         id ASC
     ";
-    $result = mysqli_query($db, $sql);
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, $param_types, ...$params);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     return $result;
   }
@@ -946,19 +1022,19 @@ use PHPMailer\PHPMailer\Exception;
       return $errors;
     }
 
-    $type_id = db_escape($db, $object['type']);
+    $type_id = $object['type'];
     $type_name = get_type_name($type_id);
 
     $sql = "INSERT INTO games (
-        Title, 
+        Title,
         Notes,
-        Acq, 
-        type_id, 
+        Acq,
+        type_id,
         type,
-        KeptCol, 
-        Candidate, 
-        CandidateGroupDate, 
-        UsedRecUserCt, 
+        KeptCol,
+        Candidate,
+        CandidateGroupDate,
+        UsedRecUserCt,
         SS,
         MnT,
         MxT,
@@ -966,26 +1042,29 @@ use PHPMailer\PHPMailer\Exception;
         MxP,
         user_id,
         interaction_frequency_days
-      ) VALUES (
-        '" . db_escape($db, $object['Title']) . "',
-        '" . db_escape($db, $object['Notes']) . "',
-        '" . db_escape($db, $object['Acq']) . "',
-        '$type_id',
-        '$type_name',
-        '" . db_escape($db, $object['KeptCol']) . "',
-        '" . db_escape($db, $object['Candidate']) . "',
-        '" . db_escape($db, $object['CandidateGroupDate']) . "',
-        '" . db_escape($db, $object['UsedRecUserCt']) . "',
-        '" . db_escape($db, $object['SS']) . "',
-        '" . db_escape($db, $object['MnT']) . "',
-        '" . db_escape($db, $object['MxT']) . "',
-        '" . db_escape($db, $object['MnP']) . "',
-        '" . db_escape($db, $object['MxP']) . "',
-        '" . db_escape($db, $_SESSION['user_id']) . "',
-        '" . db_escape($db, $object['interaction_frequency_days']) . "'
-      )
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ";
-    $result = mysqli_query($db, $sql);
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, 'ssssssssssssssss',
+      $object['Title'],
+      $object['Notes'],
+      $object['Acq'],
+      $type_id,
+      $type_name,
+      $object['KeptCol'],
+      $object['Candidate'],
+      $object['CandidateGroupDate'],
+      $object['UsedRecUserCt'],
+      $object['SS'],
+      $object['MnT'],
+      $object['MxT'],
+      $object['MnP'],
+      $object['MxP'],
+      $_SESSION['user_id'],
+      $object['interaction_frequency_days']
+    );
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     // For INSERT statements, $result is true/false
 
     if($result) {
@@ -1001,10 +1080,11 @@ use PHPMailer\PHPMailer\Exception;
   function delete_artifact($id) {
     global $db;
 
-    $sql = "DELETE FROM games ";
-    $sql .= "WHERE id='" . db_escape($db, $id) . "' ";
-    $sql .= "LIMIT 1";
-    $result = mysqli_query($db, $sql);
+    $sql = "DELETE FROM games WHERE id=? LIMIT 1";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $id);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     // For DELETE statements, $result is true/false
     if($result) {
@@ -1031,32 +1111,24 @@ use PHPMailer\PHPMailer\Exception;
 
   function list_artifacts_by_query($query) {
     global $db;
-    $sql = 
-      "SELECT 
-        games.id, 
-        games.Title 
-      FROM games 
-      WHERE games.Title LIKE '%" . db_escape($db, $query) . "%'
-      ORDER BY games.Title ASC
-    ";
-    $result = mysqli_query($db, $sql);
+    $sql = "SELECT games.id, games.Title FROM games WHERE games.Title LIKE ? ORDER BY games.Title ASC";
+    $like_param = '%' . $query . '%';
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $like_param);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     return $result;
   }
 
   function list_users_by_query($query) {
     global $db;
-    $sql = 
-      "SELECT 
-        players.id, 
-        players.FirstName,
-        players.LastName 
-      FROM players 
-      WHERE players.FirstName LIKE '%" . db_escape($db, $query) . "%'
-      ORDER BY players.FirstName ASC,
-      LastName ASC
-    ";
-    $result = mysqli_query($db, $sql);
+    $sql = "SELECT players.id, players.FirstName, players.LastName FROM players WHERE players.FirstName LIKE ? ORDER BY players.FirstName ASC, LastName ASC";
+    $like_param = '%' . $query . '%';
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $like_param);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     return $result;
   }
@@ -1068,6 +1140,9 @@ use PHPMailer\PHPMailer\Exception;
     }
 
     global $db;
+
+    $params = [];
+    $param_types = '';
 
     $sql =
       "SELECT 
@@ -1103,8 +1178,11 @@ use PHPMailer\PHPMailer\Exception;
         games.Title,
         games.KeptCol, games.mnp, games.mxp, games.ss, games.type, games.id 
       HAVING 
-        games.user_id = " . db_escape($db, $user) . "
+        games.user_id = ?
       ";
+
+      $params[] = $user;
+      $param_types .= 's';
 
       if ($shelfSort == 'yes') {
         $sql .= " AND (games.KeptCol = 1 OR games.InSecondaryCollection = 'yes') ";
@@ -1115,46 +1193,63 @@ use PHPMailer\PHPMailer\Exception;
       if ($sweetSpot !== '') {
         $sql .= "AND 
           (
-            games.ss LIKE '$sweetSpot'
-            OR games.ss LIKE '$sweetSpot %' 
-            OR games.ss LIKE '%0$sweetSpot%' 
-            OR games.ss LIKE '%,$sweetSpot' 
-            OR games.ss LIKE '%,$sweetSpot,%' 
-            OR games.ss LIKE '%, $sweetSpot' 
-            OR games.ss LIKE '%, $sweetSpot,%' 
+            games.ss LIKE ?
+            OR games.ss LIKE ?
+            OR games.ss LIKE ?
+            OR games.ss LIKE ?
+            OR games.ss LIKE ?
+            OR games.ss LIKE ?
+            OR games.ss LIKE ?
           )
         ";
+        $params[] = $sweetSpot;
+        $param_types .= 's';
+        $params[] = $sweetSpot . ' %';
+        $param_types .= 's';
+        $params[] = '%0' . $sweetSpot . '%';
+        $param_types .= 's';
+        $params[] = '%,' . $sweetSpot;
+        $param_types .= 's';
+        $params[] = '%,' . $sweetSpot . ',%';
+        $param_types .= 's';
+        $params[] = '%, ' . $sweetSpot;
+        $param_types .= 's';
+        $params[] = '%, ' . $sweetSpot . ',%';
+        $param_types .= 's';
       }
 
       if ($minimumAge !== '' && $minimumAge !== 0 && $minimumAge !== '0') {
-        $sql .= " AND games.age >= '$minimumAge' ";
+        $sql .= " AND games.age >= ? ";
+        $params[] = $minimumAge;
+        $param_types .= 's';
       }
 
       if (gettype($type) === 'array') {
         if (count($type) > 0) {
-          $sql .= "AND games.type_id IN (";
-          $i = 1;
+          $placeholders = implode(',', array_fill(0, count($type), '?'));
+          $sql .= "AND games.type_id IN (" . $placeholders . ") ";
           foreach($type as $typeIndividual) {
-            $sql .= "'" . $typeIndividual . "'";
-            if (count($type) != $i) {
-              $sql .= ",";
-            }
-            $i++;
+            $params[] = $typeIndividual;
+            $param_types .= 's';
           }
-          $sql .= ") ";
         } else {
           $sql .= " AND type = '' ";
         }
       } elseif ($type === '') {
         // add no type clause
       } else {
-        $sql .= "AND type = '" . $type . "' ";
+        $sql .= "AND type = ? ";
+        $params[] = $type;
+        $param_types .= 's';
       }
 
       $sql .= "
         ORDER BY MostRecentUseOrResponse ASC
       ";
-      $result = mysqli_query($db, $sql);
+      $stmt = mysqli_prepare($db, $sql);
+      mysqli_stmt_bind_param($stmt, $param_types, ...$params);
+      mysqli_stmt_execute($stmt);
+      $result = mysqli_stmt_get_result($stmt);
       confirm_result_set($result);
       return $result;
   }
@@ -1254,26 +1349,30 @@ use PHPMailer\PHPMailer\Exception;
 
     $queriesArray = [];
 
+    $query = "INSERT INTO responses (
+      Title,
+      PlayDate,
+      Player,
+      user_id,
+      Note
+      ) VALUES (?, ?, ?, ?, ?)
+    ";
+    $stmt = mysqli_prepare($db, $query);
+
     $i = 0;
     foreach($postArray['user'] as $userArray) {
-      $query = "INSERT INTO responses (
-        Title, 
-        PlayDate, 
-        Player, 
-        user_id,
-        Note
-        ) VALUES (
-        '" . db_escape($db, $postArray['artifact']['id']) . "', 
-        '" . db_escape($db, $postArray['useDate']) . "', 
-        '" . db_escape($db, $userArray['id']) . "', 
-        '" . db_escape($db, $_SESSION['user_id']) . "',
-        '" . db_escape($db, $postArray['Note']) . "'
-        )
-      ";
-      $result = mysqli_query($db, $query);
+      mysqli_stmt_bind_param($stmt, 'sssss',
+        $postArray['artifact']['id'],
+        $postArray['useDate'],
+        $userArray['id'],
+        $_SESSION['user_id'],
+        $postArray['Note']
+      );
+      $result = mysqli_stmt_execute($stmt);
       $i++;
     }
-    
+    mysqli_stmt_close($stmt);
+
     // For INSERT statements, $result is true/false
     if ($result) {
       return $result;
@@ -1282,7 +1381,7 @@ use PHPMailer\PHPMailer\Exception;
       echo mysqli_error($db);
       db_disconnect($db);
       exit;
-    }  
+    }
   }
 
   function insert_response_one_to_many($postArray) {
@@ -1322,40 +1421,46 @@ use PHPMailer\PHPMailer\Exception;
 
     // table uses
     $query = "INSERT INTO uses (
-      artifact_id, 
-      use_date, 
+      artifact_id,
+      use_date,
       user_id,
       notesTwo,
       note
-      ) VALUES (
-      '" . db_escape($db, $postArray['artifact']['id']) . "', 
-      '" . db_escape($db, $postArray['useDate']) . "', 
-      '" . db_escape($db, $_SESSION['user_id']) . "',
-      '" . db_escape($db, $postArray['NotesTwo']) . "',
-      '" . db_escape($db, $postArray['Note']) . "'
-      )
+      ) VALUES (?, ?, ?, ?, ?)
     ";
-    $result = mysqli_query($db, $query);
+    $stmt = mysqli_prepare($db, $query);
+    mysqli_stmt_bind_param($stmt, 'sssss',
+      $postArray['artifact']['id'],
+      $postArray['useDate'],
+      $_SESSION['user_id'],
+      $postArray['NotesTwo'],
+      $postArray['Note']
+    );
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     $use_id = mysqli_insert_id($db);
+
+    // table uses_players
+    $query = "INSERT INTO uses_players (
+      use_id,
+      player_id,
+      user_id
+      ) VALUES (?, ?, ?)
+    ";
+    $stmt = mysqli_prepare($db, $query);
 
     $i = 0;
     foreach($postArray['user'] as $userArray) {
-      
-      // table uses_players
-      $query = "INSERT INTO uses_players (
-        use_id, 
-        player_id, 
-        user_id
-        ) VALUES (
-        '" . db_escape($db, $use_id) . "', 
-        '" . db_escape($db, $userArray['id']) . "', 
-        '" . db_escape($db, $_SESSION['user_id']) . "'
-        )
-      ";
-      $result = mysqli_query($db, $query);
+      mysqli_stmt_bind_param($stmt, 'sss',
+        $use_id,
+        $userArray['id'],
+        $_SESSION['user_id']
+      );
+      $result = mysqli_stmt_execute($stmt);
       $i++;
     }
-    
+    mysqli_stmt_close($stmt);
+
     // For INSERT statements, $result is true/false
     if ($result) {
       return $result;
@@ -1364,7 +1469,7 @@ use PHPMailer\PHPMailer\Exception;
       echo mysqli_error($db);
       db_disconnect($db);
       exit;
-    }  
+    }
   }
 
   function insert_response($response, $playerCount) {
@@ -1374,107 +1479,39 @@ use PHPMailer\PHPMailer\Exception;
     if(!empty($errors)) {
       return $errors;
     }
-    
+
+    // First player includes Note
     if ($playerCount >= 1) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, Note, PlayDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Note']) . "', ";
-      $sql .= "'" . db_escape($db, $response['PlayDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player1']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
+      $sql = "INSERT INTO responses (Title, Note, PlayDate, Player, user_id) VALUES (?, ?, ?, ?, ?)";
+      $stmt = mysqli_prepare($db, $sql);
+      mysqli_stmt_bind_param($stmt, 'sssss',
+        $response['Title'],
+        $response['Note'],
+        $response['PlayDate'],
+        $response['Player1'],
+        $_SESSION['user_id']
+      );
+      $result = mysqli_stmt_execute($stmt);
+      mysqli_stmt_close($stmt);
     }
+
+    // Remaining players (2-9) without Note
     if ($playerCount >= 2) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, PlayDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['PlayDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player2']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
+      $sql = "INSERT INTO responses (Title, PlayDate, Player, user_id) VALUES (?, ?, ?, ?)";
+      $stmt = mysqli_prepare($db, $sql);
+      for ($i = 2; $i <= $playerCount && $i <= 9; $i++) {
+        $playerKey = 'Player' . $i;
+        mysqli_stmt_bind_param($stmt, 'ssss',
+          $response['Title'],
+          $response['PlayDate'],
+          $response[$playerKey],
+          $_SESSION['user_id']
+        );
+        $result = mysqli_stmt_execute($stmt);
+      }
+      mysqli_stmt_close($stmt);
     }
-    if ($playerCount >= 3) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, PlayDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['PlayDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player3']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
-    if ($playerCount >= 4) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, PlayDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['PlayDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player4']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
-    if ($playerCount >= 5) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, PlayDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['PlayDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player5']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
-    if ($playerCount >= 6) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, PlayDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['PlayDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player6']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
-    if ($playerCount >= 7) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, PlayDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['PlayDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player7']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
-    if ($playerCount >= 8) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, PlayDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['PlayDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player8']) . "', ";
-       $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-     $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
-    if ($playerCount >= 9) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, PlayDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['PlayDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player9']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
+
     // For INSERT statements, $result is true/false
     if($result) {
       return true;
@@ -1483,7 +1520,7 @@ use PHPMailer\PHPMailer\Exception;
       echo mysqli_error($db);
       db_disconnect($db);
       exit;
-    }  
+    }
   }
   
   function insert_aversion($response, $playerCount) {
@@ -1493,106 +1530,23 @@ use PHPMailer\PHPMailer\Exception;
     if(!empty($errors)) {
       return $errors;
     }
-    
+
     if ($playerCount >= 1) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, AversionDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['AversionDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player1']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
+      $sql = "INSERT INTO responses (Title, AversionDate, Player, user_id) VALUES (?, ?, ?, ?)";
+      $stmt = mysqli_prepare($db, $sql);
+      for ($i = 1; $i <= $playerCount && $i <= 9; $i++) {
+        $playerKey = 'Player' . $i;
+        mysqli_stmt_bind_param($stmt, 'ssss',
+          $response['Title'],
+          $response['AversionDate'],
+          $response[$playerKey],
+          $_SESSION['user_id']
+        );
+        $result = mysqli_stmt_execute($stmt);
+      }
+      mysqli_stmt_close($stmt);
     }
-    if ($playerCount >= 2) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, AversionDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['AversionDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player2']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
-    if ($playerCount >= 3) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, AversionDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['AversionDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player3']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
-    if ($playerCount >= 4) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, AversionDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['AversionDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player4']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
-    if ($playerCount >= 5) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, AversionDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['AversionDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player5']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
-    if ($playerCount >= 6) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, AversionDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['AversionDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player6']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
-    if ($playerCount >= 7) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, AversionDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['AversionDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player7']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
-    if ($playerCount >= 8) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, AversionDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['AversionDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player8']) . "', ";
-       $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-     $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
-    if ($playerCount >= 9) {
-      $sql = "INSERT INTO responses ";
-      $sql .= "(Title, AversionDate, Player, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Title']) . "', ";
-      $sql .= "'" . db_escape($db, $response['AversionDate']) . "', ";
-      $sql .= "'" . db_escape($db, $response['Player9']) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
-    }
+
     // For INSERT statements, $result is true/false
     if($result) {
       return true;
@@ -1601,7 +1555,7 @@ use PHPMailer\PHPMailer\Exception;
       echo mysqli_error($db);
       db_disconnect($db);
       exit;
-    }  
+    }
   }
 
   function find_all_responses() {
@@ -1630,6 +1584,9 @@ use PHPMailer\PHPMailer\Exception;
   function find_uses_by_user_id($type, $minimumDate) {
     global $db;
 
+    $params = [];
+    $param_types = '';
+
     $sql = "SELECT
       games.Title,
       types.objectType AS type,
@@ -1643,29 +1600,30 @@ use PHPMailer\PHPMailer\Exception;
       FROM uses 
       LEFT JOIN games ON uses.artifact_id = games.id 
       LEFT JOIN types ON games.type_id = types.id
-      WHERE uses.user_id = " . db_escape($db, $_SESSION['user_id']) . " 
+      WHERE uses.user_id = ?
       AND uses.use_date IS NOT NULL 
     ";
 
+    $params[] = $_SESSION['user_id'];
+    $param_types .= 's';
+
     if (gettype($type == 'array')) {
       if (count($type) > 0) {
-        $sql .= "AND games.type_id IN (";
-        $i = 1;
+        $placeholders = implode(',', array_fill(0, count($type), '?'));
+        $sql .= "AND games.type_id IN (" . $placeholders . ") ";
         foreach($type as $typeIndividual) {
-          $sql .= "'" . $typeIndividual . "'";
-          if (count($type) != $i) {
-            $sql .= ",";
-          }
-          $i++;
+          $params[] = $typeIndividual;
+          $param_types .= 's';
         }
-        $sql .= ") ";
       } else {
         $sql .= " AND games.type_id = '' ";
       }
     }
 
     if ($minimumDate != '') {
-      $sql .= " AND uses.use_date >= '$minimumDate' ";
+      $sql .= " AND uses.use_date >= ? ";
+      $params[] = $minimumDate;
+      $param_types .= 's';
     }
 
     $sql .= " ORDER BY uses.use_date DESC, 
@@ -1674,7 +1632,10 @@ use PHPMailer\PHPMailer\Exception;
       LIMIT 9999
     ";
 
-    $result = mysqli_query($db, $sql);
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, $param_types, ...$params);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     return $result;
   }
@@ -1693,7 +1654,7 @@ use PHPMailer\PHPMailer\Exception;
     $sql .= "FROM responses ";
     $sql .= "LEFT JOIN games ON responses.Title = games.id ";
     $sql .= "LEFT JOIN players ON responses.Player = players.id ";
-    $sql .= "WHERE responses.user_id = " . db_escape($db, $_SESSION['user_id']) . " ";
+    $sql .= "WHERE responses.user_id = ? ";
     $sql .= "AND responses.PlayDate IS NOT NULL ";
     $sql .= "ORDER BY responses.PlayDate DESC, ";
     $sql .= "responses.id DESC, ";
@@ -1702,7 +1663,10 @@ use PHPMailer\PHPMailer\Exception;
     $sql .= "players.FirstName ASC ";
     $sql .= "LIMIT 9999";
 
-    $result = mysqli_query($db, $sql);
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $_SESSION['user_id']);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     return $result;
   }
@@ -1719,7 +1683,7 @@ use PHPMailer\PHPMailer\Exception;
   $sql .= "FROM responses ";
   $sql .= "LEFT JOIN games ON responses.Title = games.id ";
   $sql .= "LEFT JOIN players ON responses.Player = players.id ";
-  $sql .= "WHERE responses.user_id = " . db_escape($db, $_SESSION['user_id']) . " ";
+  $sql .= "WHERE responses.user_id = ? ";
   $sql .= "AND responses.AversionDate > 0 ";
   $sql .= "ORDER BY responses.AversionDate DESC, ";
   $sql .= "games.Title DESC, ";
@@ -1727,7 +1691,10 @@ use PHPMailer\PHPMailer\Exception;
   $sql .= "players.FirstName ASC ";
   $sql .= "LIMIT 9999";
 
-  $result = mysqli_query($db, $sql);
+  $stmt = mysqli_prepare($db, $sql);
+  mysqli_stmt_bind_param($stmt, "i", $_SESSION['user_id']);
+  mysqli_stmt_execute($stmt);
+  $result = mysqli_stmt_get_result($stmt);
   confirm_result_set($result);
   return $result;
 }
@@ -1740,10 +1707,13 @@ function find_users_by_use_id($use_id) {
     players.id
     FROM uses_players
     LEFT JOIN players ON uses_players.player_id = players.id
-    WHERE uses_players.user_id='" . db_escape($db, $_SESSION['user_id']) . "'
-    AND uses_players.use_id = '" . db_escape($db, $use_id) . "' 
+    WHERE uses_players.user_id=?
+    AND uses_players.use_id = ?
   ";
-  $result = mysqli_query($db, $query);
+  $stmt = mysqli_prepare($db, $query);
+  mysqli_stmt_bind_param($stmt, "is", $_SESSION['user_id'], $use_id);
+  mysqli_stmt_execute($stmt);
+  $result = mysqli_stmt_get_result($stmt);
   confirm_result_set($result);
   return $result; // returns an assoc. array
   mysqli_free_result($result);
@@ -1752,19 +1722,22 @@ function find_users_by_use_id($use_id) {
 function find_use_details_by_id($id) {
   global $db;
 
-  $sql = "SELECT 
-    games.id AS game_id, 
+  $sql = "SELECT
+    games.id AS game_id,
     games.Title AS artifact,
-    uses.use_date, 
-    uses.note AS note, 
-    uses.notesTwo AS notesTwo, 
-    uses.id 
-    FROM uses 
-    LEFT JOIN games ON uses.artifact_id = games.id 
-    WHERE uses.id='" . db_escape($db, $id) . "' 
+    uses.use_date,
+    uses.note AS note,
+    uses.notesTwo AS notesTwo,
+    uses.id
+    FROM uses
+    LEFT JOIN games ON uses.artifact_id = games.id
+    WHERE uses.id=?
   ";
 
-  $result = mysqli_query($db, $sql);
+  $stmt = mysqli_prepare($db, $sql);
+  mysqli_stmt_bind_param($stmt, "s", $id);
+  mysqli_stmt_execute($stmt);
+  $result = mysqli_stmt_get_result($stmt);
   confirm_result_set($result);
   $subject = mysqli_fetch_assoc($result);
   mysqli_free_result($result);
@@ -1774,23 +1747,26 @@ function find_use_details_by_id($id) {
 function find_use_users_by_id($id) {
   global $db;
 
-  $sql = "SELECT 
-    games.Title, 
-    games.id AS gameid, 
-    responses.PlayDate, 
-    responses.Player, 
-    responses.Note AS Note, 
-    players.FirstName, 
-    players.LastName, 
-    responses.Title AS responsetitle, 
-    responses.AversionDate, 
-    responses.id 
-    FROM responses 
-    LEFT JOIN players ON responses.Player = players.id 
-    LEFT JOIN games ON responses.Title = games.id 
-    WHERE responses.id='" . db_escape($db, $id) . "' 
+  $sql = "SELECT
+    games.Title,
+    games.id AS gameid,
+    responses.PlayDate,
+    responses.Player,
+    responses.Note AS Note,
+    players.FirstName,
+    players.LastName,
+    responses.Title AS responsetitle,
+    responses.AversionDate,
+    responses.id
+    FROM responses
+    LEFT JOIN players ON responses.Player = players.id
+    LEFT JOIN games ON responses.Title = games.id
+    WHERE responses.id=?
   ";
-  $result = mysqli_query($db, $sql);
+  $stmt = mysqli_prepare($db, $sql);
+  mysqli_stmt_bind_param($stmt, "s", $id);
+  mysqli_stmt_execute($stmt);
+  $result = mysqli_stmt_get_result($stmt);
   confirm_result_set($result);
   $subject = mysqli_fetch_assoc($result);
   mysqli_free_result($result);
@@ -1814,8 +1790,11 @@ function find_response_by_id($id) {
   $sql .= "FROM responses ";
   $sql .= "LEFT JOIN players ON responses.Player = players.id ";
   $sql .= "LEFT JOIN games ON responses.Title = games.id ";
-  $sql .= "WHERE responses.id='" . db_escape($db, $id) . "' ";
-  $result = mysqli_query($db, $sql);
+  $sql .= "WHERE responses.id=? ";
+  $stmt = mysqli_prepare($db, $sql);
+  mysqli_stmt_bind_param($stmt, "s", $id);
+  mysqli_stmt_execute($stmt);
+  $result = mysqli_stmt_get_result($stmt);
   confirm_result_set($result);
   $subject = mysqli_fetch_assoc($result);
   mysqli_free_result($result);
@@ -1830,15 +1809,18 @@ function update_response($object) {
     return $errors;
   }
 
-  $sql = "UPDATE responses SET ";
-  $sql .= "Title='" . db_escape($db, $object['Title']) . "', ";
-  $sql .= "PlayDate='" . db_escape($db, $object['PlayDate']) . "', ";
-  $sql .= "Note='" . db_escape($db, $object['Note']) . "', ";
-  $sql .= "Player='" . db_escape($db, $object['Player']) . "' ";
-  $sql .= "WHERE id='" . db_escape($db, $object['id']) . "' ";
-  $sql .= "LIMIT 1;";
+  $sql = "UPDATE responses SET Title=?, PlayDate=?, Note=?, Player=? WHERE id=? LIMIT 1";
+  $stmt = mysqli_prepare($db, $sql);
+  mysqli_stmt_bind_param($stmt, 'sssss',
+    $object['Title'],
+    $object['PlayDate'],
+    $object['Note'],
+    $object['Player'],
+    $object['id']
+  );
+  $result = mysqli_stmt_execute($stmt);
+  mysqli_stmt_close($stmt);
 
-  $result = mysqli_query($db, $sql);
   // For UPDATE statements, $result is true/false
   if($result) {
     return true;
@@ -1859,37 +1841,50 @@ function update_use($useArray) {
   }
 
   $sql = "UPDATE uses SET
-    artifact_id='" . db_escape($db, $useArray['artifact_id']) . "', 
-    use_date='" . db_escape($db, $useArray['use_date']) . "', 
-    notesTwo='" . db_escape($db, $useArray['notesTwo']) . "', 
-    note='" . db_escape($db, $useArray['note']) . "'
-    WHERE id='" . db_escape($db, $useArray['use_id']) . "' 
-    AND user_id='" . db_escape($db, $_SESSION['user_id']) . "' 
+    artifact_id=?,
+    use_date=?,
+    notesTwo=?,
+    note=?
+    WHERE id=?
+    AND user_id=?
     LIMIT 1
   ";
 
-  $result = mysqli_query($db, $sql);
+  $stmt = mysqli_prepare($db, $sql);
+  mysqli_stmt_bind_param($stmt, 'ssssss',
+    $useArray['artifact_id'],
+    $useArray['use_date'],
+    $useArray['notesTwo'],
+    $useArray['note'],
+    $useArray['use_id'],
+    $_SESSION['user_id']
+  );
+  mysqli_stmt_execute($stmt);
+  $result = mysqli_stmt_affected_rows($stmt) !== -1;
   // For UPDATE statements, $result is true/false
   
   if($result) {
     // do nothing
   } else {
     // UPDATE failed
-    echo mysqli_error($db);
+    echo mysqli_stmt_error($stmt);
     db_disconnect($db);
     exit;
   }
 
   $query = "DELETE FROM uses_players
-    WHERE use_id = '" . $useArray['use_id'] . "'
-    AND user_id='" . db_escape($db, $_SESSION['user_id']) . "' 
+    WHERE use_id = ?
+    AND user_id=?
   ";
-  $result = mysqli_query($db, $query);
+  $stmt = mysqli_prepare($db, $query);
+  mysqli_stmt_bind_param($stmt, 'ss', $useArray['use_id'], $_SESSION['user_id']);
+  mysqli_stmt_execute($stmt);
+  $result = mysqli_stmt_affected_rows($stmt) !== -1;
   if($result) {
     // do nothing
   } else {
     // UPDATE failed
-    echo mysqli_error($db);
+    echo mysqli_stmt_error($stmt);
     db_disconnect($db);
     exit;
   }
@@ -1903,17 +1898,20 @@ function update_use($useArray) {
         player_id, 
         user_id
       ) VALUES (
-        '" . $useArray['use_id'] . "',
-        '" . $user['id'] . "',
-        '" . db_escape($db, $_SESSION['user_id']) . "' 
+        ?,
+        ?,
+        ?
       )
     ";
-    $result = mysqli_query($db, $query);
+    $stmt = mysqli_prepare($db, $query);
+    mysqli_stmt_bind_param($stmt, 'sss', $useArray['use_id'], $user['id'], $_SESSION['user_id']);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_affected_rows($stmt) !== -1;
     if($result) {
       // do nothing
     } else {
       // UPDATE failed
-      echo mysqli_error($db);
+      echo mysqli_stmt_error($stmt);
       db_disconnect($db);
       exit;
     }
@@ -1925,11 +1923,11 @@ function update_use($useArray) {
 function delete_response($id) {
   global $db;
 
-  $sql = "DELETE FROM responses ";
-  $sql .= "WHERE id='" . db_escape($db, $id) . "' ";
-  $sql .= "AND user_id='" . db_escape($db, $_SESSION['user_id']) . "' ";
-  $sql .= "LIMIT 1";
-  $result = mysqli_query($db, $sql);
+  $sql = "DELETE FROM responses WHERE id=? AND user_id=? LIMIT 1";
+  $stmt = mysqli_prepare($db, $sql);
+  mysqli_stmt_bind_param($stmt, "si", $id, $_SESSION['user_id']);
+  $result = mysqli_stmt_execute($stmt);
+  mysqli_stmt_close($stmt);
 
   // For DELETE statements, $result is true/false
   if($result) {
@@ -1945,11 +1943,11 @@ function delete_response($id) {
 function delete_one_to_many_use($use_id) {
   global $db;
 
-  $sql = "DELETE FROM uses ";
-  $sql .= "WHERE id='" . db_escape($db, $use_id) . "' ";
-  $sql .= "AND user_id='" . db_escape($db, $_SESSION['user_id']) . "' ";
-  $sql .= "LIMIT 1";
-  $result = mysqli_query($db, $sql);
+  $sql = "DELETE FROM uses WHERE id=? AND user_id=? LIMIT 1";
+  $stmt = mysqli_prepare($db, $sql);
+  mysqli_stmt_bind_param($stmt, "si", $use_id, $_SESSION['user_id']);
+  $result = mysqli_stmt_execute($stmt);
+  mysqli_stmt_close($stmt);
 
   // For DELETE statements, $result is true/false
   if($result) {
@@ -1961,10 +1959,11 @@ function delete_one_to_many_use($use_id) {
     exit;
   }
 
-  $sql = "DELETE FROM uses_players ";
-  $sql .= "WHERE use_id='" . db_escape($db, $use_id) . "' ";
-  $sql .= "AND user_id='" . db_escape($db, $_SESSION['user_id']) . "' ";
-  $result = mysqli_query($db, $sql);
+  $sql = "DELETE FROM uses_players WHERE use_id=? AND user_id=?";
+  $stmt = mysqli_prepare($db, $sql);
+  mysqli_stmt_bind_param($stmt, "si", $use_id, $_SESSION['user_id']);
+  $result = mysqli_stmt_execute($stmt);
+  mysqli_stmt_close($stmt);
 
   if($result) {
     return true;
@@ -2019,17 +2018,12 @@ function delete_one_to_many_use($use_id) {
   function insert_player($player) {
     global $db;
 
-    $sql = "INSERT INTO players ";
-    $sql .= "(FirstName, LastName, FullName, G, Age, user_id) ";
-    $sql .= "VALUES (";
-    $sql .= "'" . db_escape($db, $player['FirstName']) . "',";
-    $sql .= "'" . db_escape($db, $player['LastName']) . "',";
-    $sql .= "'" . db_escape($db, $player['FirstName']) . " " . db_escape($db, $player['LastName']) . "',";
-    $sql .= "'" . db_escape($db, $player['G']) . "',";
-    $sql .= "'" . db_escape($db, $player['Age']) . "',";
-    $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-    $sql .= ")";
-    $result = mysqli_query($db, $sql);
+    $sql = "INSERT INTO players (FirstName, LastName, FullName, G, Age, user_id) VALUES (?, ?, ?, ?, ?, ?)";
+    $fullName = $player['FirstName'] . ' ' . $player['LastName'];
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "sssssi", $player['FirstName'], $player['LastName'], $fullName, $player['G'], $player['Age'], $_SESSION['user_id']);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     // For INSERT statements, $result is true/false
     if($result) {
       return true;
@@ -2043,33 +2037,30 @@ function delete_one_to_many_use($use_id) {
   function update_player($player) {
     global $db;
 
-    $sql = "UPDATE players SET ";
-    $sql .= "FirstName='" . db_escape($db, $player['FirstName']) . "', ";
-    $sql .= "LastName='" . db_escape($db, $player['LastName']) . "', ";
-    $sql .= "G='" . db_escape($db, $player['G']) . "', ";
     if ($player['thisPlayerIsMe'] === 'yes') {
-      $sql .= "represents_user_id='" . db_escape($db, $player['user_id']) . "', ";
+      $sql = "UPDATE players SET FirstName=?, LastName=?, G=?, represents_user_id=?, Age=? WHERE id=? LIMIT 1";
+      $stmt = mysqli_prepare($db, $sql);
+      mysqli_stmt_bind_param($stmt, "ssssss", $player['FirstName'], $player['LastName'], $player['G'], $player['user_id'], $player['Age'], $player['id']);
     } else {
-      $sql .= "represents_user_id = NULL, ";
+      $sql = "UPDATE players SET FirstName=?, LastName=?, G=?, represents_user_id = NULL, Age=? WHERE id=? LIMIT 1";
+      $stmt = mysqli_prepare($db, $sql);
+      mysqli_stmt_bind_param($stmt, "sssss", $player['FirstName'], $player['LastName'], $player['G'], $player['Age'], $player['id']);
     }
-    $sql .= "Age='" . db_escape($db, $player['Age']) . "' ";
-    $sql .= "WHERE id='" . db_escape($db, $player['id']) . "' ";
-    $sql .= "LIMIT 1";
-    $result = mysqli_query($db, $sql);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
-    $updateUserQuery = "UPDATE users ";
-    
     if ($player['thisPlayerIsMe'] === 'yes') {
       // Update user record with player_id
-      $updateUserQuery .= " SET player_id = '" . db_escape($db, $player['id']) . "'";
+      $updateUserQuery = "UPDATE users SET player_id = ? WHERE id = ? LIMIT 1";
+      $stmt2 = mysqli_prepare($db, $updateUserQuery);
+      mysqli_stmt_bind_param($stmt2, "ss", $player['id'], $player['user_id']);
     } else {
-      $updateUserQuery .= " SET player_id = NULL";
+      $updateUserQuery = "UPDATE users SET player_id = NULL WHERE id = ? LIMIT 1";
+      $stmt2 = mysqli_prepare($db, $updateUserQuery);
+      mysqli_stmt_bind_param($stmt2, "s", $player['user_id']);
     }
-
-    $updateUserQuery .= " WHERE id = '" . db_escape($db, $player['user_id']) . "'
-      LIMIT 1
-    ";
-    $updateUserResult = mysqli_query($db, $updateUserQuery);
+    $updateUserResult = mysqli_stmt_execute($stmt2);
+    mysqli_stmt_close($stmt2);
 
     // For UPDATE statements, $result is true/false
     if($result) {
@@ -2094,10 +2085,11 @@ function delete_one_to_many_use($use_id) {
   function delete_player($id) {
     global $db;
 
-    $sql = "DELETE FROM players ";
-    $sql .= "WHERE id='" . db_escape($db, $id) . "' ";
-    $sql .= "LIMIT 1";
-    $result = mysqli_query($db, $sql);
+    $sql = "DELETE FROM players WHERE id=? LIMIT 1";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $id);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     // For DELETE statements, $result is true/false
     if($result) {
@@ -2170,51 +2162,55 @@ function choose_games_for_group($range, $typeArray, $kept = 0) {
     players.G,
     players.Priority 
   HAVING ";
-  $sql .= " games.user_id = " . db_escape($db, $_SESSION['user_id']) . " ";
+  $sql .= " games.user_id = ? ";
   $sql .= "AND ( MaxOfPlayDate IS NOT NULL OR MaxOfAversionDate IS NOT NULL ) ";
+  $params = [];
+  $types = "i";
+  $params[] = $_SESSION['user_id'];
   if ($range == 'true') {
-    $sql .= "AND games.MnP <= " . $playgroup_count['count'] . " ";
-    $sql .= "AND games.MxP >= " . $playgroup_count['count'] . " ";
+    $count = (int) $playgroup_count['count'];
+    $sql .= "AND games.MnP <= ? ";
+    $sql .= "AND games.MxP >= ? ";
+    $types .= "ii";
+    $params[] = $count;
+    $params[] = $count;
   }
   if (isset($typeArray) && $typeArray != 1 && count($typeArray) > 0) {
-    $sql .= "AND games.type IN (";
-    $i = 1;
+    $placeholders = implode(',', array_fill(0, count($typeArray), '?'));
+    $sql .= "AND games.type IN (" . $placeholders . ") ";
     foreach($typeArray as $type) {
-      $sql .= "'" . $type . "'";
-      if (count($typeArray) != $i) {
-        $sql .= ",";
-      }
-      $i++;
-    } 
-    $sql .= ") ";
+      $types .= "s";
+      $params[] = $type;
+    }
   }
-
 
   if ($kept == 1) {
     $sql .= " AND keptcol = 1 ";
   }
-  $sql .= "ORDER BY 
+  $sql .= "ORDER BY
     players.G,
     players.Priority DESC,
     Max(responses.AversionDate) ASC,
     Max(responses.PlayDate) DESC,
     Max(responses.PassDate) ASC,
     Max(responses.RequestDate) DESC
-  "; 
+  ";
 
-  $result = mysqli_query($db, $sql);
-  confirm_result_set($result);
+  $stmt = mysqli_prepare($db, $sql);
+  mysqli_stmt_bind_param($stmt, $types, ...$params);
+  mysqli_stmt_execute($stmt);
+  $result = mysqli_stmt_get_result($stmt);
   return $result;
 }
 
 function update_playgroup_player($playgroupplayer) {
     global $db;
 
-    $sql = "UPDATE playgroup SET ";
-    $sql .= "FullName='" . db_escape($db, $playgroupplayer['FullName']) . "' ";
-    $sql .= "WHERE ID='" . db_escape($db, $playgroupplayer['ID']) . "' ";
-    $sql .= "LIMIT 1";
-    $result = mysqli_query($db, $sql);
+    $sql = "UPDATE playgroup SET FullName=? WHERE ID=? LIMIT 1";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "ss", $playgroupplayer['FullName'], $playgroupplayer['ID']);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
     // For UPDATE statements, $result is true/false
     if($result) {
       return true;
@@ -2229,9 +2225,11 @@ function update_playgroup_player($playgroupplayer) {
   function delete_playgroup_player($ID) {
     global $db;
 
-    $sql = "DELETE FROM playgroup ";
-    $sql .= "WHERE ID='" . db_escape($db, $ID) . "'";
-    $result = mysqli_query($db, $sql);
+    $sql = "DELETE FROM playgroup WHERE ID=?";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $ID);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     // For DELETE statements, $result is true/false
     if($result) {
@@ -2275,19 +2273,18 @@ function update_playgroup_player($playgroupplayer) {
 
   function insert_playgroup($response) {
     global $db;
-    
+
     $playerCount = $response['playerCount'];
+    $sql = "INSERT INTO playgroup (FullName, user_id) VALUES (?, ?)";
+    $stmt = mysqli_prepare($db, $sql);
     $i = 1;
     while($playerCount >= $i) {
-      $sql = "INSERT INTO playgroup ";
-      $sql .= "(FullName, user_id) ";
-      $sql .= "VALUES (";
-      $sql .= "'" . db_escape($db, $response['Player' . $i]) . "', ";
-      $sql .= "'" . db_escape($db, $_SESSION['user_id']) . "'";
-      $sql .= ")";
-      $result = mysqli_query($db, $sql);
+      $playerValue = $response['Player' . $i];
+      mysqli_stmt_bind_param($stmt, "si", $playerValue, $_SESSION['user_id']);
+      $result = mysqli_stmt_execute($stmt);
       $i++;
     }
+    mysqli_stmt_close($stmt);
     // For INSERT statements, $result is true/false
     if($result) {
       return true;
@@ -2296,7 +2293,7 @@ function update_playgroup_player($playgroupplayer) {
       echo mysqli_error($db);
       db_disconnect($db);
       exit;
-  }  
+  }
 
 }
 // Explore
@@ -2307,14 +2304,21 @@ function find_artifacts_by_characteristic($kept, $type, $allGames, $favCt) {
   $sql .= "FROM games ";
   $sql .= "WHERE ";
 
+  $params = [];
+  $types = "";
+
   if ($allGames == 'true') {
-    $sql .= "user_id = " . db_escape($db, $_SESSION['user_id']) . " OR user_id = 8 ";
+    $sql .= "(user_id = ? OR user_id = 8) ";
+    $types .= "i";
+    $params[] = $_SESSION['user_id'];
   } else {
-    $sql .= "user_id = " . db_escape($db, $_SESSION['user_id']) . " ";
-  } 
-  
+    $sql .= "user_id = ? ";
+    $types .= "i";
+    $params[] = $_SESSION['user_id'];
+  }
+
   $sql .= "AND ";
-  
+
   if ($kept == 'true') {
     $sql .= "KeptCol = 1 ";
   } else {
@@ -2324,7 +2328,9 @@ function find_artifacts_by_characteristic($kept, $type, $allGames, $favCt) {
   $sql .= "AND ";
 
   if ($type != '1') {
-    $sql .= "type = '" . $type . "' ";
+    $sql .= "type = ? ";
+    $types .= "s";
+    $params[] = $type;
   } else {
     $sql .= "1 = 1 ";
   }
@@ -2335,23 +2341,17 @@ function find_artifacts_by_characteristic($kept, $type, $allGames, $favCt) {
 
   $sql .= "ORDER BY ";
   if ($favCt != '') {
-    $sql .= "favct DESC, ";
-    $sql .= "ss ASC, ";
-    $sql .= "mxt ASC, ";
-    $sql .= "mnt ASC, ";
-    $sql .= "age ASC, ";
-    $sql .= "bgg_rat DESC ";
+    $sql .= "favct DESC, ss ASC, mxt ASC, mnt ASC, age ASC, bgg_rat DESC ";
   } else {
-    $sql .= "ss ASC, ";
-    $sql .= "mxt ASC, ";
-    $sql .= "mnt ASC, ";
-    $sql .= "age ASC, ";
-    $sql .= "favct DESC, ";
-    $sql .= "bgg_rat DESC ";
+    $sql .= "ss ASC, mxt ASC, mnt ASC, age ASC, favct DESC, bgg_rat DESC ";
   }
 
-  $result = mysqli_query($db, $sql);
-  confirm_result_set($result);
+  $stmt = mysqli_prepare($db, $sql);
+  if (!empty($params)) {
+    mysqli_stmt_bind_param($stmt, $types, ...$params);
+  }
+  mysqli_stmt_execute($stmt);
+  $result = mysqli_stmt_get_result($stmt);
   return $result;
 }
 
@@ -2383,11 +2383,17 @@ function query($query) {
 }
 
 function get_type_name($type_id) {
-  return singleValueQuery(
-    "SELECT objectType
-    FROM types
-    WHERE id = '$type_id'"
-  );
+  global $db;
+  $stmt = mysqli_prepare($db, "SELECT objectType FROM types WHERE id = ?");
+  mysqli_stmt_bind_param($stmt, "i", $type_id);
+  mysqli_stmt_execute($stmt);
+  $result = mysqli_stmt_get_result($stmt);
+  $row = mysqli_fetch_array($result);
+  mysqli_stmt_close($stmt);
+  if ($row !== null) {
+    return $row[0];
+  }
+  return 'No results';
 }
 
 function email_artifact_use_notice($user_id) {
@@ -2397,13 +2403,14 @@ function email_artifact_use_notice($user_id) {
   $shelfSort = 'no';
   $type = '';
 
-  $query = 
-    "SELECT default_use_interval
-    FROM users
-    WHERE id = '$user_id'
-  ";
-  
-  $interval = singleValueQuery($query);
+  global $db;
+  $stmt = mysqli_prepare($db, "SELECT default_use_interval FROM users WHERE id = ?");
+  mysqli_stmt_bind_param($stmt, "i", $user_id);
+  mysqli_stmt_execute($stmt);
+  $result = mysqli_stmt_get_result($stmt);
+  $row = mysqli_fetch_array($result);
+  mysqli_stmt_close($stmt);
+  $interval = ($row !== null) ? $row[0] : DEFAULT_USE_INTERVAL;
   
   $artifact_set = use_by($type, $interval, $sweetSpot, $minimumAge, $shelfSort, $user_id);
   
@@ -2472,7 +2479,14 @@ function email_artifact_use_notice($user_id) {
   if($count_to_notify_about > 0) { // email this list to the user
   
       // get user email address
-      $email = singleValueQuery("SELECT email FROM users WHERE id = '$user_id'");
+      $email_stmt = mysqli_prepare($db, "SELECT email FROM users WHERE id = ?");
+      mysqli_stmt_bind_param($email_stmt, "i", $user_id);
+      mysqli_stmt_execute($email_stmt);
+      $email_result = mysqli_stmt_get_result($email_stmt);
+      $email_row = mysqli_fetch_array($email_result);
+      mysqli_stmt_close($email_stmt);
+      $email = ($email_row !== null) ? $email_row[0] : null;
+      if ($email === null) { return 0; }
   
       $mail = new PHPMailer(true);
   

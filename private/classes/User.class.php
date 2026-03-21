@@ -39,27 +39,23 @@ class User extends DatabaseObject {
   }
 
   public static function list_users_by_query($query, $user_id) {
-    $sql = 
-      "SELECT 
-        id, 
-        FullName,
-        FirstName,
-        LastName
-      FROM players 
-      WHERE FullName LIKE '%" . self::$database->escape_string($query) . "%'
-      AND FullName IS NOT NULL
-      AND user_id = '$user_id'
-      ORDER BY LastName ASC,
-      FirstName ASC
-    ";
-    $result = self::$database->query($sql);
-    if ($result->num_rows > 0) {
-      while($record = $result->fetch_assoc()) {
-        $array[] = $record;
-      }
-    } else {
-      $array = array();
+    $stmt = self::$database->prepare(
+      "SELECT id, FullName, FirstName, LastName
+       FROM players
+       WHERE FullName LIKE ?
+       AND FullName IS NOT NULL
+       AND user_id = ?
+       ORDER BY LastName ASC, FirstName ASC"
+    );
+    $like_query = '%' . $query . '%';
+    $stmt->bind_param("si", $like_query, $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $array = array();
+    while($record = $result->fetch_assoc()) {
+      $array[] = $record;
     }
+    $stmt->close();
     return $array;
   }
 
