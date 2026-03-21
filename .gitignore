@@ -88,3 +88,4 @@ private/vendor
 api/private/vendor
 api/vendor
 ui/uses/publicEnvironmentVaribles.js
+.phpunit.result.cache
