@@ -46,6 +46,12 @@
   $db = db_connect();
   $errors = [];
 
+  // Load OOP data access layer (shared with API)
+  require_once('classes/DatabaseObject.class.php');
+  DatabaseObject::set_database($db);
+  require_once('classes/Artifact.class.php');
+  require_once('classes/User.class.php');
+
   // Generate CSRF token for all pages
   generate_csrf_token();
 
