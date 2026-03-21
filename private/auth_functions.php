@@ -83,6 +83,10 @@ function authenticate() {
 
 // Performs all actions necessary to log out an admin
 function log_out() {
+  global $logger;
+  if (isset($logger)) {
+    $logger->logAuth('logout', ['user_id' => isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null]);
+  }
   $_SESSION = [];
   session_destroy();
 

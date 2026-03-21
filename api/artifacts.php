@@ -2,7 +2,11 @@
 
   require_once('private/initialize.php');
   require_once('../private/rate_limiter.php');
+  require_once('../private/app_logger.php');
   header('Content-Type: application/json');
+
+  $logger = new AppLogger();
+  $logger->logApiRequest('artifacts', ['method' => $_SERVER['REQUEST_METHOD']]);
 
   $response = new stdClass;
 

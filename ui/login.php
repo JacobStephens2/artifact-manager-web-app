@@ -36,6 +36,7 @@ if(is_post_request()) {
 
       if(password_verify($password, $user['hashed_password'])) { // original
         // password matches
+        $logger->logAuth('login_success', ['username' => $username]);
         log_in_user($user);
         if (isset($_POST['redirectURL'])) {
           redirect_to(url_for(urldecode($_POST['redirectURL'])));      
@@ -44,11 +45,13 @@ if(is_post_request()) {
         }
       } else {
         // username found, but password does not match
+        $logger->logAuth('login_failed', ['username' => $username]);
         $errors[] = $login_failure_msg;
       }
 
     } else {
       // no username found
+      $logger->logAuth('login_failed', ['username' => $username]);
       $errors[] = $login_failure_msg;
     }
 

@@ -42,6 +42,7 @@
   require_once('query_functions.php');
   require_once('validation_functions.php');
   require_once('auth_functions.php');
+  require_once('app_logger.php');
 
   $db = db_connect();
   $errors = [];
@@ -51,6 +52,8 @@
   DatabaseObject::set_database($db);
   require_once('classes/Artifact.class.php');
   require_once('classes/User.class.php');
+
+  $logger = new AppLogger();
 
   // Generate CSRF token for all pages
   generate_csrf_token();
