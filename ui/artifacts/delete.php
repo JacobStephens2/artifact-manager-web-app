@@ -10,12 +10,12 @@ $id = $_GET['id'];
 
 if(is_post_request()) {
 
-  $result = delete_game($id);
+  $result = delete_artifact($id);
   $_SESSION['message'] = 'The artifact was deleted successfully.';
   redirect_to(url_for('/artifacts/index.php'));
 
 } else {
-  $object = find_game_by_id($id);
+  $object = find_artifact_by_id($id);
 }
 
 ?>

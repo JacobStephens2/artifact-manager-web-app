@@ -37,7 +37,7 @@ class Artifact extends DatabaseObject {
   public $Wt;
   public $Yr;
 
-  public static function list_games() {
+  public static function list_artifacts() {
     $sql = "SELECT ";
     $sql .= "games.id, ";
     $sql .= "games.Title ";
@@ -56,7 +56,7 @@ class Artifact extends DatabaseObject {
     return $array;
   }
 
-  public static function list_games_by_query($query, $user_id) {
+  public static function list_artifacts_by_query($query, $user_id) {
     $stmt = self::$database->prepare(
       "SELECT
         games.id,

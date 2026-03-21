@@ -40,7 +40,7 @@
   $interval = $_POST['interval'] ?? $default_use_interval;
   $sweetSpotFilter = $_POST['sweetSpotFilter'] ?? '';
   $showAttributes = $_POST['showAttributes'] ?? 'no';
-  $artifact_set = find_games_by_user_id($kept, $type, $interval, $sweetSpotFilter);
+  $artifact_set = find_artifacts_by_user_id($kept, $type, $interval, $sweetSpotFilter);
   $page_title = 'Entities';
   if ($kept === 'secondary_only') { $page_title .= ' (Secondary Only)'; }
   include(SHARED_PATH . '/header.php'); 

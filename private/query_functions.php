@@ -632,7 +632,7 @@ use PHPMailer\PHPMailer\Exception;
   }
 
 // Games
-  function find_games_by_user() {
+  function find_artifacts_by_user() {
     global $db;
 
     $sql = "SELECT ";
@@ -658,7 +658,7 @@ use PHPMailer\PHPMailer\Exception;
     return $result;
   }
 
-  function find_games_by_user_id($kept, $type, $interval, $sweetSpot = '') {
+  function find_artifacts_by_user_id($kept, $type, $interval, $sweetSpot = '') {
     global $db;
 
     $sql = "SELECT
@@ -752,7 +752,7 @@ use PHPMailer\PHPMailer\Exception;
     return $result;
   }
 
-  function find_game_by_id($id) {
+  function find_artifact_by_id($id) {
     global $db;
 
     $stmt = mysqli_prepare($db,
@@ -774,7 +774,7 @@ use PHPMailer\PHPMailer\Exception;
   function update_artifact($artifact) {
     global $db;
 
-    $errors = validate_game($artifact);
+    $errors = validate_artifact($artifact);
     if(!empty($errors)) {
       return $errors;
     }
@@ -813,7 +813,7 @@ use PHPMailer\PHPMailer\Exception;
 
   }
   
-  function validate_game($artifact) {
+  function validate_artifact($artifact) {
     $errors = [];
 
     // Title
@@ -833,10 +833,10 @@ use PHPMailer\PHPMailer\Exception;
     return $errors;
   }
 
-  function insert_game($object) {
+  function insert_artifact($object) {
     global $db;
 
-    $errors = validate_game($object);
+    $errors = validate_artifact($object);
     if(!empty($errors)) {
       return $errors;
     }
@@ -893,7 +893,7 @@ use PHPMailer\PHPMailer\Exception;
     }
   }
 
-  function delete_game($id) {
+  function delete_artifact($id) {
     global $db;
 
     $sql = "DELETE FROM games ";
@@ -912,7 +912,7 @@ use PHPMailer\PHPMailer\Exception;
     }
   }
 
-  function list_games() {
+  function list_artifacts() {
     global $db;
     $sql = "SELECT ";
     $sql .= "games.id, ";
@@ -924,7 +924,7 @@ use PHPMailer\PHPMailer\Exception;
     return $result;
   }
 
-  function list_games_by_query($query) {
+  function list_artifacts_by_query($query) {
     global $db;
     $sql = 
       "SELECT 
@@ -2195,7 +2195,7 @@ function update_playgroup_player($playgroupplayer) {
 
 }
 // Explore
-function find_games_by_characteristic($kept, $type, $allGames, $favCt) {
+function find_artifacts_by_characteristic($kept, $type, $allGames, $favCt) {
   global $db;
 
   $sql = "SELECT Title, id, mxt, mnt, ss, yr, wt, mnp, mxp, av, favct, age, bgg_rat, KeptCol, type ";

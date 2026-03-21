@@ -8,7 +8,7 @@ $kept = $_POST['kept'] ?? '';
 $type = $_POST['type'] ?? '1';
 $allGames = $_POST['allGames'] ?? '';
 $favCt = $_POST['favCt'] ?? '';
-$object_set = find_games_by_characteristic($kept, $type, $allGames, $favCt);
+$object_set = find_artifacts_by_characteristic($kept, $type, $allGames, $favCt);
 
 $page_title = 'Explore Artifacts';
 

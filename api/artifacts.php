@@ -17,12 +17,12 @@
   );
     
   if (isset($requestBody->query) && $requestBody->query != '') {
-    $artifacts = Artifact::list_games_by_query(
+    $artifacts = Artifact::list_artifacts_by_query(
       $requestBody->query, 
       $requestBody->userid
     );
   } else {
-    $artifacts = Artifact::list_games();
+    $artifacts = Artifact::list_artifacts();
   }
   $response->artifacts = $artifacts;
 

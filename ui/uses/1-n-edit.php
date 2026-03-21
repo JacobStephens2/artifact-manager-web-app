@@ -63,7 +63,7 @@ include(SHARED_PATH . '/header.php');
       <label for="Title">Entity</label>
       <select id="Title" name="artifact_id">
         <?php
-          $artifact_set = list_games();
+          $artifact_set = list_artifacts();
           while($artifact = mysqli_fetch_assoc($artifact_set)) {
             echo "<option value=\"" . h($artifact['id']) . "\"";
             if($response["game_id"] == $artifact['id']) {

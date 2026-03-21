@@ -52,7 +52,7 @@
     }
   }
 
-  $artifact = find_game_by_id($id);
+  $artifact = find_artifact_by_id($id);
 
   $sweetSpotsStmt = mysqli_prepare($db, "SELECT
     sweetspots.id AS id,
