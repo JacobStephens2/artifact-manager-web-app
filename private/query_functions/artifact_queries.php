@@ -19,7 +19,7 @@ use PHPMailer\PHPMailer\Exception;
     confirm_result_set($result);
     return $result;
   }
-  function find_all_board_games() {
+  function find_all_board_artifacts() {
     global $db;
 
     $sql = "SELECT * FROM games ";
@@ -336,15 +336,15 @@ use PHPMailer\PHPMailer\Exception;
     return $errors;
   }
 
-  function insert_artifact($object) {
+  function insert_artifact($artifact) {
     global $db;
 
-    $errors = validate_artifact($object);
+    $errors = validate_artifact($artifact);
     if(!empty($errors)) {
       return $errors;
     }
 
-    $type_id = $object['type'];
+    $type_id = $artifact['type'];
     $type_name = get_type_name($type_id);
 
     $sql = "INSERT INTO games (
@@ -368,22 +368,22 @@ use PHPMailer\PHPMailer\Exception;
     ";
     $stmt = mysqli_prepare($db, $sql);
     mysqli_stmt_bind_param($stmt, 'ssssssssssssssss',
-      $object['Title'],
-      $object['Notes'],
-      $object['Acq'],
+      $artifact['Title'],
+      $artifact['Notes'],
+      $artifact['Acq'],
       $type_id,
       $type_name,
-      $object['KeptCol'],
-      $object['Candidate'],
-      $object['CandidateGroupDate'],
-      $object['UsedRecUserCt'],
-      $object['SS'],
-      $object['MnT'],
-      $object['MxT'],
-      $object['MnP'],
-      $object['MxP'],
+      $artifact['KeptCol'],
+      $artifact['Candidate'],
+      $artifact['CandidateGroupDate'],
+      $artifact['UsedRecUserCt'],
+      $artifact['SS'],
+      $artifact['MnT'],
+      $artifact['MxT'],
+      $artifact['MnP'],
+      $artifact['MxP'],
       $_SESSION['user_id'],
-      $object['interaction_frequency_days']
+      $artifact['interaction_frequency_days']
     );
     $result = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);

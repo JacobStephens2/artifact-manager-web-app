@@ -1,6 +1,6 @@
 <?php
 
-function find_artifacts_by_characteristic($kept, $type, $allGames, $favCt) {
+function find_artifacts_by_characteristic($kept, $type, $allArtifacts, $favCt) {
   global $db;
 
   $sql = "SELECT Title, id, mxt, mnt, ss, yr, wt, mnp, mxp, av, favct, age, bgg_rat, KeptCol, type ";
@@ -10,7 +10,7 @@ function find_artifacts_by_characteristic($kept, $type, $allGames, $favCt) {
   $params = [];
   $types = "";
 
-  if ($allGames == 'true') {
+  if ($allArtifacts == 'true') {
     $sql .= "(user_id = ? OR user_id = 8) ";
     $types .= "i";
     $params[] = $_SESSION['user_id'];

@@ -1,4 +1,5 @@
 <?php
+// Legacy query functions for the 'use_table' table
 
   function delete_use($id) {
     global $db;

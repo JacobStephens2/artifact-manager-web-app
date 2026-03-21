@@ -10,7 +10,7 @@ function count_playgroup() {
   return $subject; // returns an assoc. array
 }
 
-function choose_games_for_group($range, $typeArray, $kept = 0) {
+function choose_artifacts_for_group($range, $typeArray, $kept = 0) {
   global $db;
   $playgroup_count = count_playgroup();
 

@@ -12,7 +12,7 @@
   $typeArray = $_SESSION['type'] ?? [];
   $type = $_SESSION['type'] ?? [];
   $kept = $_SESSION['kept'] ?? [];
-  $game_set = choose_games_for_group($range, $typeArray, $kept);
+  $artifact_set = choose_artifacts_for_group($range, $typeArray, $kept);
   $usergroup = find_playgroup_by_user_id();
 ?>
 
@@ -46,7 +46,7 @@
         <input type="submit" value="Submit" />
     </form>
 
-    <p><?php echo $game_set->num_rows; ?> results</p>
+    <p><?php echo $artifact_set->num_rows; ?> results</p>
 
   	<table class="list">
   	  <tr class="header-row">
@@ -61,37 +61,37 @@
   	    <th class="table-header">Type</th>
   	  </tr>
 
-      <?php while($game = mysqli_fetch_assoc($game_set)) { ?>
+      <?php while($artifact = mysqli_fetch_assoc($artifact_set)) { ?>
         <tr>
           <td class="edit">
-            <a class="table-action" href="<?php echo url_for('/artifacts/edit.php?id=' . h(u($game['id']))); ?>">
-              <?php echo h($game['title']); ?>
+            <a class="table-action" href="<?php echo url_for('/artifacts/edit.php?id=' . h(u($artifact['id']))); ?>">
+              <?php echo h($artifact['title']); ?>
             </a>
           </td>
     	    <td class="edit name">
-            <a class="table-action" href="<?php echo url_for('/users/edit.php?id=' . h(u($game['PlayerID']))); ?>">
-              <?php echo h($game['FirstName']) . ' ' . h($game['LastName']); ?>
+            <a class="table-action" href="<?php echo url_for('/users/edit.php?id=' . h(u($artifact['PlayerID']))); ?>">
+              <?php echo h($artifact['FirstName']) . ' ' . h($artifact['LastName']); ?>
             </a>
           </td>
-    	    <td class="edit"><?php echo ltrim(h($game['ss']), '0'); ?></td>
-          <td class="edit"><?php echo h($game['MnP']); ?></td>
-          <td class="edit"><?php echo h($game['MxP']); ?></td>
-          <td class="edit"><?php echo h($game['MxT']); ?></td>
+    	    <td class="edit"><?php echo ltrim(h($artifact['ss']), '0'); ?></td>
+          <td class="edit"><?php echo h($artifact['MnP']); ?></td>
+          <td class="edit"><?php echo h($artifact['MxP']); ?></td>
+          <td class="edit"><?php echo h($artifact['MxT']); ?></td>
           <td class="edit date">
-            <a class="table-action" href="<?php echo url_for('/uses/edit.php?id=' . h(u($game['ResponseID']))); ?>">
-              <?php echo h($game['MaxOfPlayDate']); ?>
+            <a class="table-action" href="<?php echo url_for('/uses/edit.php?id=' . h(u($artifact['ResponseID']))); ?>">
+              <?php echo h($artifact['MaxOfPlayDate']); ?>
             </a>
           </td>
           <td class="edit">
-            <a class="table-action" href="<?php echo url_for('/aversions/edit.php?id=' . h(u($game['ResponseID']))); ?>">
-              <?php echo h($game['MaxOfAversionDate']); ?></td>
+            <a class="table-action" href="<?php echo url_for('/aversions/edit.php?id=' . h(u($artifact['ResponseID']))); ?>">
+              <?php echo h($artifact['MaxOfAversionDate']); ?></td>
             </a>
-          <td class="edit"><?php echo h($game['type']); ?></td>
+          <td class="edit"><?php echo h($artifact['type']); ?></td>
     	  </tr>
       <?php } ?>
   	</table>
 
-    <?php mysqli_free_result($game_set); ?>
+    <?php mysqli_free_result($artifact_set); ?>
   </div>
 
 </main>

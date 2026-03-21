@@ -463,10 +463,10 @@ function find_response_by_id($id) {
   return $subject; // returns an assoc. array
 }
 
-function update_response($object) {
+function update_response($response) {
   global $db;
 
-  $errors = validate_response($object);
+  $errors = validate_response($response);
   if(!empty($errors)) {
     return $errors;
   }
@@ -474,11 +474,11 @@ function update_response($object) {
   $sql = "UPDATE responses SET Title=?, PlayDate=?, Note=?, Player=? WHERE id=? LIMIT 1";
   $stmt = mysqli_prepare($db, $sql);
   mysqli_stmt_bind_param($stmt, 'sssss',
-    $object['Title'],
-    $object['PlayDate'],
-    $object['Note'],
-    $object['Player'],
-    $object['id']
+    $response['Title'],
+    $response['PlayDate'],
+    $response['Note'],
+    $response['Player'],
+    $response['id']
   );
   $result = mysqli_stmt_execute($stmt);
   mysqli_stmt_close($stmt);

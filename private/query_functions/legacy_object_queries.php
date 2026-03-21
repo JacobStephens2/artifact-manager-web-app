@@ -1,4 +1,5 @@
 <?php
+// Legacy query functions for the 'objects' table
 
   function use_objects_by_user($interval, $limit) {
     global $db;
