@@ -37,44 +37,48 @@ class Artifact extends DatabaseObject {
   public $Wt;
   public $Yr;
 
-  public static function list_artifacts() {
-    $sql = "SELECT ";
-    $sql .= "games.id, ";
-    $sql .= "games.Title ";
-    $sql .= "FROM games ";
-    $sql .= "ORDER BY games.Title ASC ";
-    $sql .= "LIMIT 1000";
+  public static function list_artifacts($page = 1, $per_page = 50) {
+    $page = max(1, (int) $page);
+    $per_page = max(1, min(200, (int) $per_page));
+    $offset = ($page - 1) * $per_page;
 
-    $result = self::$database->query($sql);
-    if ($result->num_rows > 0) {
-      while($record = $result->fetch_assoc()) {
-        $array[] = $record;
-      }
-    } else {
-      $array = array();
-    }
-    return $array;
-  }
-
-  public static function list_artifacts_by_query($query, $user_id) {
     $stmt = self::$database->prepare(
-      "SELECT
-        games.id,
-        games.Title
-      FROM games
-      WHERE games.Title LIKE ?
-      AND user_id = ?
-      ORDER BY games.Title ASC"
+      "SELECT games.id, games.Title
+       FROM games
+       ORDER BY games.Title ASC
+       LIMIT ? OFFSET ?"
     );
-    $like_query = '%' . $query . '%';
-    $stmt->bind_param("si", $like_query, $user_id);
+    $stmt->bind_param("ii", $per_page, $offset);
     $stmt->execute();
     $result = $stmt->get_result();
     $array = array();
-    if ($result->num_rows > 0) {
-      while($record = $result->fetch_assoc()) {
-        $array[] = $record;
-      }
+    while($record = $result->fetch_assoc()) {
+      $array[] = $record;
+    }
+    $stmt->close();
+    return $array;
+  }
+
+  public static function list_artifacts_by_query($query, $user_id, $page = 1, $per_page = 50) {
+    $page = max(1, (int) $page);
+    $per_page = max(1, min(200, (int) $per_page));
+    $offset = ($page - 1) * $per_page;
+
+    $stmt = self::$database->prepare(
+      "SELECT games.id, games.Title
+       FROM games
+       WHERE games.Title LIKE ?
+       AND user_id = ?
+       ORDER BY games.Title ASC
+       LIMIT ? OFFSET ?"
+    );
+    $like_query = '%' . $query . '%';
+    $stmt->bind_param("siii", $like_query, $user_id, $per_page, $offset);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $array = array();
+    while($record = $result->fetch_assoc()) {
+      $array[] = $record;
     }
     $stmt->close();
     return $array;

@@ -16,15 +16,22 @@
     file_get_contents('php://input')
   );
     
+  $page = isset($requestBody->page) ? (int) $requestBody->page : 1;
+  $per_page = isset($requestBody->per_page) ? (int) $requestBody->per_page : 50;
+
   if (isset($requestBody->query) && $requestBody->query != '') {
     $artifacts = Artifact::list_artifacts_by_query(
-      $requestBody->query, 
-      $requestBody->userid
+      $requestBody->query,
+      $requestBody->userid,
+      $page,
+      $per_page
     );
   } else {
-    $artifacts = Artifact::list_artifacts();
+    $artifacts = Artifact::list_artifacts($page, $per_page);
   }
   $response->artifacts = $artifacts;
+  $response->page = $page;
+  $response->per_page = $per_page;
 
   echo json_encode($response);
 

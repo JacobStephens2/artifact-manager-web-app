@@ -28,8 +28,14 @@ class DatabaseObject {
     return $object_array;
   }
 
-  static public function find_all() {
+  static public function find_all($page = 0, $per_page = 0) {
     $sql = "SELECT * FROM " . static::$table_name;
+    if ($per_page > 0) {
+      $page = max(1, (int) $page);
+      $per_page = max(1, min(200, (int) $per_page));
+      $offset = ($page - 1) * $per_page;
+      $sql .= " LIMIT " . (int) $per_page . " OFFSET " . (int) $offset;
+    }
     return static::find_by_sql($sql);
   }
 
