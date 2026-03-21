@@ -55,7 +55,7 @@
             if ($artifactType == '') {
               echo 'no-type';
             } else {
-              echo $artifactType; 
+              echo str_replace(' ', '-', $artifactType);
             }
           ?>" 
           value="<?php echo $id; ?>" 
@@ -100,11 +100,10 @@
     document.querySelector('#typeCheckboxes #childrens-game').checked = true;
     document.querySelector('#typeCheckboxes #gambling-game').checked = true;
     document.querySelector('#typeCheckboxes #game').checked = true;
-    document.querySelector('#typeCheckboxes #gambling-game').checked = true;
-    document.querySelector('#typeCheckboxes #individual-display').checked = true;
+    document.querySelector('#typeCheckboxes #individual-display-game').checked = true;
     document.querySelector('#typeCheckboxes #mobile-game').checked = true;
     document.querySelector('#typeCheckboxes #role-playing-game').checked = true;
-    document.querySelector('#typeCheckboxes #shared-display').checked = true;
+    document.querySelector('#typeCheckboxes #shared-display-game').checked = true;
     document.querySelector('#typeCheckboxes #sport').checked = true;
     document.querySelector('#typeCheckboxes #table-game').checked = true;
     document.querySelector('#typeCheckboxes #vr-game').checked = true;
