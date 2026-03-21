@@ -1,9 +1,19 @@
 <?php
 
   require_once('private/initialize.php');
+  require_once('../private/rate_limiter.php');
   header('Content-Type: application/json');
 
   $response = new stdClass;
+
+  // Rate limit: 60 requests per minute per IP
+  $rate_limiter = new RateLimiter($database);
+  if (!$rate_limiter->checkAndRecord('api', 60, 60)) {
+    http_response_code(429);
+    $response->message = 'Rate limit exceeded. Please try again later.';
+    echo json_encode($response);
+    exit;
+  }
 
   $authentication_response = authenticate();
   if ($authentication_response->authenticated != true) {

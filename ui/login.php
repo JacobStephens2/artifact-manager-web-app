@@ -1,11 +1,19 @@
 <?php
 require_once('../private/initialize.php');
+require_once(PRIVATE_PATH . '/rate_limiter.php');
 
 $errors = [];
 $username = '';
 $password = '';
 
 if(is_post_request()) {
+
+  $rate_limiter = new RateLimiter($db);
+
+  // 5 login attempts per 15 minutes per IP
+  if (!$rate_limiter->checkAndRecord('login', 5, 900)) {
+    $errors[] = "Too many login attempts. Please try again in 15 minutes.";
+  }
 
   $username = $_POST['username'] ?? '';
   $password = $_POST['password'] ?? '';
