@@ -85,7 +85,7 @@ if ($action == 'logout') {
         <?php
           if (isset($_GET['redirectURL'])) {
             ?>
-            <input type="hidden" name="redirectURL" value="<?php echo urldecode($_GET['redirectURL']); ?>">
+            <input type="hidden" name="redirectURL" value="<?php echo h(urldecode($_GET['redirectURL'])); ?>">
             <?php
           }
         ?>
