@@ -124,6 +124,7 @@
         <?php
           if ($showAttributes === 'yes') {
             ?>
+            <th>Record</th>
             <th>SwS</th>
             <th>AvgT</th>
             <th>Age</th>
@@ -131,6 +132,10 @@
             <th>MnP</th>
             <th>MxP</th>
             <th>C</th>
+            <?php
+          } else {
+            ?>
+            <th>Record Interaction</th>
             <?php
           }
         ?>
@@ -188,6 +193,15 @@
             </div>
           </td>
 
+          
+            <td class="record">
+              <a href="/uses/1-n-new?artifact_id=<?php echo $id; ?>"
+                target="_blank"
+                >
+                Record
+              </a>
+            </td>
+
           <?php
           if ($showAttributes === 'yes') {
             ?>
@@ -222,9 +236,6 @@
 
           <td class="overdue"
             <?php 
-                ini_set('display_errors', 1);
-                ini_set('display_startup_errors', 1);
-                error_reporting(E_ALL);
                 date_default_timezone_set('America/New_York');
                 $DateTimeNow = new DateTime(date('Y-m-d')); 
                 $DateTimeMostRecentUse = new DateTime(substr($artifact['MostRecentUseOrResponse'],0,10)); 
@@ -279,30 +290,30 @@
           ?>
           order: [
             [ 0, 'asc'], // Type
-            [ 2, 'asc'], // SwS
-            [ 3, 'asc'], // AvgT
-            [ 4, 'asc'], // Age
-            [ 5, 'asc'], // SwS's
-            [ 6, 'asc'], // MnP
-            [ 7, 'asc'], // MxP
-            [ 11, 'desc'], // recent use
-            [ 8, 'desc'], // C
+            [ 3, 'asc'], // SwS
+            [ 4, 'asc'], // AvgT
+            [ 5, 'asc'], // Age
+            [ 6, 'asc'], // SwS's
+            [ 7, 'asc'], // MnP
+            [ 8, 'asc'], // MxP
+            [ 12, 'desc'], // recent use
+            [ 9, 'desc'], // C
           ]
           <?php
         } elseif ($showAttributes === 'yes') { 
           ?>
           order: [
-            [ 10, 'asc'],  // use by date
-            [ 3, 'asc'],  // AvgT
-            [ 4, 'asc'],  // Age
+            [ 11, 'asc'],  // use by date
+            [ 4, 'asc'],  // AvgT
+            [ 5, 'asc'],  // Age
           ]
           <?php
         } else {
           ?>
           order: [
-            [ 3, 'asc'],  // use by date
-            [ 4, 'asc'],  // recent use
-            [ 5, 'asc'],  // acquisition date
+            [ 4, 'asc'],  // use by date
+            [ 5, 'asc'],  // recent use
+            [ 6, 'asc'],  // acquisition date
           ]
           <?php
         }

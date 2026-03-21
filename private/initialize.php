@@ -1,7 +1,14 @@
 <?php
-  ini_set('display_errors', 1);
-  ini_set('display_startup_errors', 1);
-  error_reporting(E_ALL);
+  if (getenv('APP_ENV') === 'development') {
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+  } else {
+    ini_set('display_errors', 0);
+    ini_set('display_startup_errors', 0);
+    error_reporting(E_ALL);
+    ini_set('log_errors', 1);
+  }
 
   ob_start(); // output buffering is turned on
 
