@@ -824,10 +824,59 @@ use PHPMailer\PHPMailer\Exception;
     }
 
     // KeptCol
-    // Make sure we are working with a string
     $visible_str = (string) $artifact['KeptCol'];
     if(!has_inclusion_of($visible_str, ["0","1"])) {
       $errors[] = "Kept must be true or false.";
+    }
+
+    // Numeric fields must be valid integers
+    $numeric_fields = ['MnT' => 'Minimum Time', 'MxT' => 'Maximum Time',
+                       'MnP' => 'Minimum User Count', 'MxP' => 'Maximum User Count'];
+    foreach($numeric_fields as $field => $label) {
+      if(isset($artifact[$field]) && $artifact[$field] !== '' && !is_numeric($artifact[$field])) {
+        $errors[] = "{$label} must be a number.";
+      }
+    }
+
+    // MnT <= MxT and MnP <= MxP range checks
+    if(isset($artifact['MnT']) && isset($artifact['MxT'])
+       && is_numeric($artifact['MnT']) && is_numeric($artifact['MxT'])
+       && (int)$artifact['MnT'] > (int)$artifact['MxT']) {
+      $errors[] = "Minimum Time cannot exceed Maximum Time.";
+    }
+    if(isset($artifact['MnP']) && isset($artifact['MxP'])
+       && is_numeric($artifact['MnP']) && is_numeric($artifact['MxP'])
+       && (int)$artifact['MnP'] > (int)$artifact['MxP']) {
+      $errors[] = "Minimum User Count cannot exceed Maximum User Count.";
+    }
+
+    // Age must be non-negative
+    if(isset($artifact['age']) && $artifact['age'] !== '' && $artifact['age'] !== 0) {
+      if(!is_numeric($artifact['age']) || (int)$artifact['age'] < 0) {
+        $errors[] = "Minimum Age must be a non-negative number.";
+      }
+    }
+
+    // Acquisition date format
+    if(isset($artifact['Acq']) && !empty($artifact['Acq'])) {
+      $date = DateTime::createFromFormat('Y-m-d', $artifact['Acq']);
+      if(!$date || $date->format('Y-m-d') !== $artifact['Acq']) {
+        $errors[] = "Tracking Start Date must be a valid date (YYYY-MM-DD).";
+      }
+    }
+
+    // Interaction frequency must be positive
+    if(isset($artifact['interaction_frequency_days']) && $artifact['interaction_frequency_days'] !== '') {
+      if(!is_numeric($artifact['interaction_frequency_days']) || (float)$artifact['interaction_frequency_days'] <= 0) {
+        $errors[] = "Interaction Frequency must be a positive number.";
+      }
+    }
+
+    // Type must be a valid integer
+    if(isset($artifact['type']) && $artifact['type'] !== '') {
+      if(!is_numeric($artifact['type']) || (int)$artifact['type'] < 0) {
+        $errors[] = "Type must be a valid selection.";
+      }
     }
 
     return $errors;
