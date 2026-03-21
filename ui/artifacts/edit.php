@@ -54,18 +54,7 @@
 
   $artifact = find_artifact_by_id($id);
 
-  $sweetSpotsStmt = mysqli_prepare($db, "SELECT
-    sweetspots.id AS id,
-    games.Title AS Title,
-    sweetspots.SwS AS SwS
-    FROM sweetspots
-    JOIN games ON games.id = sweetspots.Title
-    WHERE sweetspots.Title = ?
-    ORDER BY games.Title ASC
-  ");
-  mysqli_stmt_bind_param($sweetSpotsStmt, "i", $id);
-  mysqli_stmt_execute($sweetSpotsStmt);
-  $sweetSpotsResultObject = mysqli_stmt_get_result($sweetSpotsStmt);
+  $sweetSpotsResultObject = find_sweet_spots_by_artifact_id($id);
 
   $page_title = h($artifact['Title']); 
   include(SHARED_PATH . '/header.php'); 
@@ -206,18 +195,7 @@
 
   <section id="oneToManyUsesList">
     <?php
-      $usesStmt = mysqli_prepare($db, "SELECT
-        id,
-        use_date,
-        note
-        FROM uses
-        WHERE artifact_id = ?
-        ORDER BY use_date DESC,
-        id DESC
-      ");
-      mysqli_stmt_bind_param($usesStmt, "i", $artifact['id']);
-      mysqli_stmt_execute($usesStmt);
-      $usesOfArtifactByUserResultObject = mysqli_stmt_get_result($usesStmt);
+      $usesOfArtifactByUserResultObject = find_one_to_many_uses_by_artifact_id($artifact['id']);
     ?>
     <h2>
       You have recorded
@@ -247,20 +225,7 @@
 
   <section id="recordedUseList">
     <?php
-      $responsesStmt = mysqli_prepare($db, "SELECT
-        responses.PlayDate,
-        responses.id,
-        players.FirstName,
-        players.LastName
-        FROM responses
-        JOIN players ON responses.Player = players.id
-        WHERE responses.Title = ?
-        ORDER BY responses.PlayDate DESC,
-        responses.id DESC
-      ");
-      mysqli_stmt_bind_param($responsesStmt, "i", $artifact['id']);
-      mysqli_stmt_execute($responsesStmt);
-      $usesOfArtifactByUserResultObject = mysqli_stmt_get_result($responsesStmt);
+      $usesOfArtifactByUserResultObject = find_one_to_one_uses_by_artifact_id($artifact['id']);
     ?>
     <h2>
       You have recorded
