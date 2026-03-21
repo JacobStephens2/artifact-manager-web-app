@@ -57,23 +57,26 @@ class Artifact extends DatabaseObject {
   }
 
   public static function list_games_by_query($query, $user_id) {
-    $sql = 
-      "SELECT 
-        games.id, 
-        games.Title 
-      FROM games 
-      WHERE games.Title LIKE '%" . self::$database->escape_string($query) . "%'
-      AND user_id = '$user_id'
-      ORDER BY games.Title ASC
-    ";
-    $result = self::$database->query($sql);
+    $stmt = self::$database->prepare(
+      "SELECT
+        games.id,
+        games.Title
+      FROM games
+      WHERE games.Title LIKE ?
+      AND user_id = ?
+      ORDER BY games.Title ASC"
+    );
+    $like_query = '%' . $query . '%';
+    $stmt->bind_param("si", $like_query, $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $array = array();
     if ($result->num_rows > 0) {
       while($record = $result->fetch_assoc()) {
         $array[] = $record;
       }
-    } else {
-      $array = array();
     }
+    $stmt->close();
     return $array;
   }
 

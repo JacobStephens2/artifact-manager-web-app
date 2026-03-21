@@ -11,11 +11,13 @@
   $id = $_GET['id'];
 
   $user_id = $_SESSION['user_id'];
-  $default_interval = singleValueQuery(
-    "SELECT default_use_interval
-    FROM users
-    WHERE id = '$user_id'
-  ");
+  $stmt = mysqli_prepare($db, "SELECT default_use_interval FROM users WHERE id = ?");
+  mysqli_stmt_bind_param($stmt, "i", $user_id);
+  mysqli_stmt_execute($stmt);
+  $default_interval_result = mysqli_stmt_get_result($stmt);
+  $default_interval_row = mysqli_fetch_array($default_interval_result);
+  $default_interval = ($default_interval_row !== null) ? $default_interval_row[0] : null;
+  mysqli_stmt_close($stmt);
 
   if(is_post_request()) {
     // Handle form values sent by new.php
@@ -47,7 +49,7 @@
     ($_POST['SS'] == '') ? $artifact['SS'] = 1 : $artifact['SS'] = $_POST['SS'];
     $result = update_artifact($artifact);
     if($result === true) {
-      $_SESSION['message'] = 'The artifact was updated successfully.';
+      $_SESSION['message'] = 'The entity was updated successfully.';
       redirect_to(url_for('/artifacts/edit.php?id=' . $id));
     } else {
       $errors = $result;
@@ -56,17 +58,18 @@
 
   $artifact = find_game_by_id($id);
 
-  $sweetSpotsSQL = "SELECT
+  $sweetSpotsStmt = mysqli_prepare($db, "SELECT
     sweetspots.id AS id,
     games.Title AS Title,
     sweetspots.SwS AS SwS
     FROM sweetspots
     JOIN games ON games.id = sweetspots.Title
-    WHERE sweetspots.Title = " . $id . "
+    WHERE sweetspots.Title = ?
     ORDER BY games.Title ASC
-  ";
-
-  $sweetSpotsResultObject = mysqli_query($db, $sweetSpotsSQL);
+  ");
+  mysqli_stmt_bind_param($sweetSpotsStmt, "i", $id);
+  mysqli_stmt_execute($sweetSpotsStmt);
+  $sweetSpotsResultObject = mysqli_stmt_get_result($sweetSpotsStmt);
 
   $page_title = h($artifact['Title']); 
   include(SHARED_PATH . '/header.php'); 
@@ -78,6 +81,14 @@
     <h1>Edit <?php echo h($artifact['Title']); ?></h1>
 
     <?php echo display_errors($errors); ?>
+
+    <li style="margin-bottom: 0.4rem;">
+      <a class="back-link" 
+        href="<?php echo url_for('/uses/1-n-new.php?artifact_id=' . h(u($id))); ?>"
+        >
+        Record Use
+      </a>
+    </li>
 
     <button id="editFormDisplayButton">
       Toggle Edit Form Display
@@ -99,10 +110,10 @@
         ?>
       </select>
 
-      <label for="Acq">Acquisition Date</label>
+      <label for="Acq">Tracking Start Date</label>
       <input type="date" name="Acq" id="Acq" value="<?php echo h($artifact['Acq']); ?>" />
 
-      <label for="KeptCol" >Kept in Collection? (Checked means yes)</label>
+      <label for="KeptCol" >Tracked? (Checked means yes)</label>
       <input type="hidden" name="KeptCol" value="0" />
       <input type="checkbox" name="KeptCol" id="KeptCol" value="1"<?php if($artifact['KeptCol'] == "1") { echo " checked"; } ?> />
 
@@ -198,16 +209,18 @@
 
   <section id="oneToManyUsesList">
     <?php
-      $findUsesOfArtifactByUserSQL = "SELECT
+      $usesStmt = mysqli_prepare($db, "SELECT
         id,
         use_date,
         note
         FROM uses
-        WHERE artifact_id = " . $artifact['id'] . "
+        WHERE artifact_id = ?
         ORDER BY use_date DESC,
         id DESC
-      ";
-      $usesOfArtifactByUserResultObject = mysqli_query($db, $findUsesOfArtifactByUserSQL);
+      ");
+      mysqli_stmt_bind_param($usesStmt, "i", $artifact['id']);
+      mysqli_stmt_execute($usesStmt);
+      $usesOfArtifactByUserResultObject = mysqli_stmt_get_result($usesStmt);
     ?>
     <h2>
       You have recorded
@@ -217,7 +230,7 @@
     </h2>
     <table>
       <tr>
-        <th>Use Date (<?php echo $usesOfArtifactByUserResultObject->num_rows; ?>)</th>
+        <th>Interaction Date (<?php echo $usesOfArtifactByUserResultObject->num_rows; ?>)</th>
       <tr>
       <?php 
         foreach ($usesOfArtifactByUserResultObject as $usesOfArtifactByUserArray) { 
@@ -237,18 +250,20 @@
 
   <section id="recordedUseList">
     <?php
-      $findUsesOfArtifactByUserSQL = "SELECT
+      $responsesStmt = mysqli_prepare($db, "SELECT
         responses.PlayDate,
         responses.id,
         players.FirstName,
         players.LastName
         FROM responses
         JOIN players ON responses.Player = players.id
-        WHERE responses.Title = " . $artifact['id'] . "
+        WHERE responses.Title = ?
         ORDER BY responses.PlayDate DESC,
         responses.id DESC
-      ";
-      $usesOfArtifactByUserResultObject = mysqli_query($db, $findUsesOfArtifactByUserSQL);
+      ");
+      mysqli_stmt_bind_param($responsesStmt, "i", $artifact['id']);
+      mysqli_stmt_execute($responsesStmt);
+      $usesOfArtifactByUserResultObject = mysqli_stmt_get_result($responsesStmt);
     ?>
     <h2>
       You have recorded
@@ -258,8 +273,8 @@
     </h2>
     <table>
       <tr>
-        <th>Use Date (<?php echo $usesOfArtifactByUserResultObject->num_rows; ?>)</th>
-        <th>User</th>
+        <th>Interaction Date (<?php echo $usesOfArtifactByUserResultObject->num_rows; ?>)</th>
+        <th>Person</th>
       <tr>
       <?php foreach ($usesOfArtifactByUserResultObject as $usesOfArtifactByUserArray) { ?>        
         <tr>

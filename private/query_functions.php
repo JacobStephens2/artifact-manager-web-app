@@ -127,38 +127,41 @@ use PHPMailer\PHPMailer\Exception;
     LIMIT 1024
     */
 
-    $sql = "SELECT ";
-    $sql .=   "objects.ID, ";
-    $sql .=   "objects.user_id, ";
-    $sql .=   "objects.ObjectName, ";
-    $sql .=   "types.ObjectType, ";
-    $sql .=     "CASE ";
-    $sql .=       "WHEN Max(use_table.UseDate) > objects.Acq THEN DATE_ADD(Max(use_table.UseDate), INTERVAL " . $interval * 2 . " DAY) ";
-    $sql .=       "ELSE DATE_ADD(objects.Acq, INTERVAL " . $interval ." DAY) ";
-    $sql .=     "END UseBy, ";
-    $sql .=   "objects.KeptCol, ";
-    $sql .=   "objects.Acq, ";
-    $sql .=   "Max(use_table.UseDate) AS MaxUse ";
-    $sql .= "FROM objects ";
-    $sql .= "LEFT JOIN use_table ON objects.ID = use_table.ObjectName ";
-    $sql .= "LEFT JOIN types ON objects.ObjectType = types.ID ";
-    $sql .= "GROUP BY ";
-    $sql .= "objects.ObjectName, ";
-    $sql .= "objects.Acq, ";
-    $sql .= "objects.KeptCol, ";
-    $sql .= "objects.ID, ";
-    $sql .= "types.ObjectType ";
-    $sql .= "HAVING objects.KeptCol = 1 ";
-    $sql .= "AND objects.user_id = '" . db_escape($db, $_SESSION['user_id']) . "' ";
-    $sql .= "ORDER BY UseBy ASC ";
-    if ($limit == 1) {
-      $sql .= "LIMIT 1";
-    } else {
-      $sql .= "LIMIT 1024";
-    }
+    $interval = (int) $interval;
+    $interval_double = $interval * 2;
+    $row_limit = ($limit == 1) ? 1 : 1024;
+    $user_id = $_SESSION['user_id'];
 
-    $result = mysqli_query($db, $sql);
-    confirm_result_set($result);
+    $stmt = mysqli_prepare($db,
+      "SELECT
+        objects.ID,
+        objects.user_id,
+        objects.ObjectName,
+        types.ObjectType,
+        CASE
+          WHEN Max(use_table.UseDate) > objects.Acq THEN DATE_ADD(Max(use_table.UseDate), INTERVAL ? DAY)
+          ELSE DATE_ADD(objects.Acq, INTERVAL ? DAY)
+        END UseBy,
+        objects.KeptCol,
+        objects.Acq,
+        Max(use_table.UseDate) AS MaxUse
+      FROM objects
+      LEFT JOIN use_table ON objects.ID = use_table.ObjectName
+      LEFT JOIN types ON objects.ObjectType = types.ID
+      GROUP BY
+        objects.ObjectName,
+        objects.Acq,
+        objects.KeptCol,
+        objects.ID,
+        types.ObjectType
+      HAVING objects.KeptCol = 1
+        AND objects.user_id = ?
+      ORDER BY UseBy ASC
+      LIMIT ?"
+    );
+    mysqli_stmt_bind_param($stmt, "iiii", $interval_double, $interval, $user_id, $row_limit);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     return $result;
   }
   function find_object_names_by_user() {
@@ -752,18 +755,18 @@ use PHPMailer\PHPMailer\Exception;
   function find_game_by_id($id) {
     global $db;
 
-    $sql = 
+    $stmt = mysqli_prepare($db,
       "SELECT types.objectType AS type_name, games.*
-      FROM games 
+      FROM games
       JOIN types ON games.type_id = types.id
-      WHERE games.id='" . db_escape($db, $id) . "' 
-    ";
-
-    $result = mysqli_query($db, $sql);
-    confirm_result_set($result);
+      WHERE games.id = ?"
+    );
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     $subject = mysqli_fetch_assoc($result);
-    mysqli_free_result($result);
+    mysqli_stmt_close($stmt);
 
     return $subject; // returns an assoc. array
   }
@@ -776,39 +779,33 @@ use PHPMailer\PHPMailer\Exception;
       return $errors;
     }
 
-    $type_id = db_escape($db, $artifact['type']);
+    $type_id = (int) $artifact['type'];
     $type_name = get_type_name($type_id);
 
-    $sql = 
-      "UPDATE games SET 
-        Title='" . db_escape($db, $artifact['Title']) . "', 
-        KeptCol='" . db_escape($db, $artifact['KeptCol']) . "', 
-        Acq='" . db_escape($db, $artifact['Acq']) . "', 
-        Candidate='" . db_escape($db, $artifact['Candidate']) . "', 
-        UsedRecUserCt='" . db_escape($db, $artifact['UsedRecUserCt']) . "', 
-        type_id='$type_id', 
-        type='$type_name', 
-        SS='" . db_escape($db, $artifact['SS']) . "', 
-        Notes='" . db_escape($db, $artifact['Notes']) . "', 
-        CandidateGroupDate='" . db_escape($db, $artifact['CandidateGroupDate']) . "', 
-        MnT='" . db_escape($db, $artifact['MnT']) . "', 
-        MxT='" . db_escape($db, $artifact['MxT']) . "', 
-        Age='" . db_escape($db, $artifact['age']) . "', 
-        InSecondaryCollection='" . db_escape($db, $artifact['InSecondaryCollection']) . "', 
-        MnP='" . db_escape($db, $artifact['MnP']) . "', 
-        MxP='" . db_escape($db, $artifact['MxP']) . "',
-        interaction_frequency_days='" . db_escape($db, $artifact['interaction_frequency_days']) . "'
-      WHERE id='" . db_escape($db, $artifact['id']) . "' 
-      LIMIT 1
-    ";
+    $stmt = mysqli_prepare($db,
+      "UPDATE games SET
+        Title=?, KeptCol=?, Acq=?, Candidate=?, UsedRecUserCt=?,
+        type_id=?, type=?, SS=?, Notes=?, CandidateGroupDate=?,
+        MnT=?, MxT=?, Age=?, InSecondaryCollection=?, MnP=?, MxP=?,
+        interaction_frequency_days=?
+      WHERE id=?
+      LIMIT 1"
+    );
+    mysqli_stmt_bind_param($stmt, "sssssissssssssssi",
+      $artifact['Title'], $artifact['KeptCol'], $artifact['Acq'],
+      $artifact['Candidate'], $artifact['UsedRecUserCt'],
+      $type_id, $type_name, $artifact['SS'], $artifact['Notes'],
+      $artifact['CandidateGroupDate'], $artifact['MnT'], $artifact['MxT'],
+      $artifact['age'], $artifact['InSecondaryCollection'],
+      $artifact['MnP'], $artifact['MxP'], $artifact['interaction_frequency_days'],
+      $artifact['id']
+    );
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
-    $result = mysqli_query($db, $sql);
-    // For UPDATE statements, $result is true/false
     if($result) {
       return true;
     } else {
-      // UPDATE failed
-      echo '<p>' . $sql . "</p>";
       echo mysqli_error($db);
       db_disconnect($db);
       exit;
@@ -2412,16 +2409,16 @@ function email_artifact_use_notice($user_id) {
                       $body .= "
                           <li>
                               <a href='https://" . DOMAIN . "/artifacts/edit.php?id=$id'>$name</a>: 
+                              <a href='https://" . DOMAIN . "/uses/1-n-new?artifact_id=$id'>Record Interaction</a>
                               $most_recent_use, interact by $use_by_date (" . date('l', strtotime($use_by_date)) . ", interval: $interval days)
-                              <a href='https://" . DOMAIN . "/artifacts/1-n-new.php?artifact_id=$id'>Record Interaction</a>
                           </li>
                       ";
                   } else {
                       $body .= "
                           <li>
                               <a href='https://" . DOMAIN . "/artifacts/edit.php?id=$id'>$name</a>: 
+                              <a href='https://" . DOMAIN . "/uses/1-n-new?artifact_id=$id'>Record Interaction</a>
                               last interacted $most_recent_use, interact by $use_by_date (" . date('l', strtotime($use_by_date)) . " interval: $interval days)
-                              <a href='https://" . DOMAIN . "/artifacts/1-n-new.php?artifact_id=$id'>Record Interaction</a>
                           </li>
                       ";
                   }
@@ -2446,8 +2443,8 @@ function email_artifact_use_notice($user_id) {
                   $body .= "
                       <li>
                           <a href='https://" . DOMAIN . "/artifacts/edit.php?id=$id'>$name</a>: 
+                          <a href='https://" . DOMAIN . "/uses/1-n-new?artifact_id=$id'>Record Interaction</a>
                           last interacted $most_recent_use (interval: $interval days)
-                          <a href='https://" . DOMAIN . "/artifacts/1-n-new.php?artifact_id=$id'>Record Interaction</a>
                       </li>
                   ";
               }
@@ -2473,16 +2470,16 @@ function email_artifact_use_notice($user_id) {
                       $body .= "
                           <li>
                               <a href='https://" . DOMAIN . "/artifacts/edit.php?id=$id'>$name</a>: 
+                              <a href='https://" . DOMAIN . "/uses/1-n-new?artifact_id=$id'>Record Interaction</a>
                               $most_recent_use, interact by $use_by_date (" . date('l', strtotime($use_by_date)) . ", interval: $interval days)
-                              <a href='https://" . DOMAIN . "/artifacts/1-n-new.php?artifact_id=$id'>Record Interaction</a>
                           </li>
                       ";
                   } else {
                       $body .= "
                           <li>
                               <a href='https://" . DOMAIN . "/artifacts/edit.php?id=$id'>$name</a>: 
-                              last used $most_recent_use, interact by $use_by_date (" . date('l', strtotime($use_by_date)) . ", interval: $interval days)
-                              <a href='https://" . DOMAIN . "/artifacts/1-n-new.php?artifact_id=$id'>Record Interaction</a>
+                              <a href='https://" . DOMAIN . "/uses/1-n-new?artifact_id=$id'>Record Interaction</a>
+                              last interacted $most_recent_use, interact by $use_by_date (" . date('l', strtotime($use_by_date)) . ", interval: $interval days)
                           </li>
                       ";
                   }
@@ -2506,7 +2503,7 @@ function email_artifact_use_notice($user_id) {
 
           try {
               $mail->Subject = "Error with Artifact Uses Due Today Email";
-              $mail->Body = '<p>The following Exception was thrown when trying to email a use by list:</p>
+              $mail->Body = '<p>The following Exception was thrown when trying to email an interact by list:</p>
                   <pre>' . print_r($Exception, true) . '</pre>
               ';
               $mail->send();
