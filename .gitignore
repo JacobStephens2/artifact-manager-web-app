@@ -75,6 +75,9 @@ yarn-error.log
 # Yarn Integrity file
 .yarn-integrity
 
+# Cache
+cache/
+
 #Other
 error_log
 

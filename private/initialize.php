@@ -43,6 +43,7 @@
   require_once('validation_functions.php');
   require_once('auth_functions.php');
   require_once('app_logger.php');
+  require_once('cache.php');
 
   $db = db_connect();
   $errors = [];
@@ -54,6 +55,7 @@
   require_once('classes/User.class.php');
 
   $logger = new AppLogger();
+  $cache = new Cache();
 
   // Generate CSRF token for all pages
   generate_csrf_token();

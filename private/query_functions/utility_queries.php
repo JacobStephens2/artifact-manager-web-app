@@ -28,17 +28,21 @@ function query($query) {
 }
 
 function get_type_name($type_id) {
-  global $db;
-  $stmt = mysqli_prepare($db, "SELECT objectType FROM types WHERE id = ?");
-  mysqli_stmt_bind_param($stmt, "i", $type_id);
-  mysqli_stmt_execute($stmt);
-  $result = mysqli_stmt_get_result($stmt);
-  $row = mysqli_fetch_array($result);
-  mysqli_stmt_close($stmt);
-  if ($row !== null) {
-    return $row[0];
-  }
-  return 'No results';
+  global $db, $cache;
+
+  $cache_key = 'get_type_name_' . $type_id;
+  return $cache->remember($cache_key, 3600, function() use ($db, $type_id) {
+    $stmt = mysqli_prepare($db, "SELECT objectType FROM types WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $type_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_array($result);
+    mysqli_stmt_close($stmt);
+    if ($row !== null) {
+      return $row[0];
+    }
+    return 'No results';
+  });
 }
 
 ?>
