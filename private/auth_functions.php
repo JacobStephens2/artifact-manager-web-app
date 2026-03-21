@@ -68,7 +68,7 @@ function authenticate() {
       return $response;
     }
   } else {
-    if ($headers['Authorization'] == ARTIFACTS_API_KEY) {
+    if (isset($headers['Authorization']) && hash_equals(ARTIFACTS_API_KEY, $headers['Authorization'])) {
       $response->message = 'Your API Key is valid.';
       $response->authenticated = true;
       return $response;
@@ -92,18 +92,11 @@ function log_out() {
 }
 
 function is_logged_in() {
-  // Having a admin_id in the session serves a dual-purpose:
-  // - Its presence indicates the admin is logged in.
-  // - Its value tells which admin for looking up their record.
-  return isset($_SESSION['admin_id']);
-  }
+  return isset($_SESSION['user_id']);
+}
 
-
-// Requires the user logging in at least be in the user group or higher
 function is_admin($user_group) {
-  if(!$user_group = 2 ) {
-    echo 1;
-  }
+  return $user_group == 2;
 }
 
 // Requires the user logging in at least be in the user group or higher
