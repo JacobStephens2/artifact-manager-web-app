@@ -9,11 +9,13 @@ function log_in_user($user) {
   session_regenerate_id();
 
   global $db;
-  
-  $userResultObject = mysqli_query($db, "SELECT * FROM users 
-    WHERE id = " . $user['id']
-  );
+
+  $stmt = mysqli_prepare($db, "SELECT * FROM users WHERE id = ?");
+  mysqli_stmt_bind_param($stmt, "i", $user['id']);
+  mysqli_stmt_execute($stmt);
+  $userResultObject = mysqli_stmt_get_result($stmt);
   $userArray = mysqli_fetch_assoc($userResultObject);
+  mysqli_stmt_close($stmt);
 
   $_SESSION['FullName'] = $userArray['first_name'] . ' ' . $userArray['last_name'];
   $_SESSION['user_id'] = $user['id'];
@@ -41,8 +43,8 @@ function log_in_user($user) {
   setcookie(
       "access_token",         // name
       $access_token,          // value
-      time() + (86400 * 7),   // expire, 86400 = 1 day
-      "",                     // path
+      time() + 86400,         // expire in 24 hours, matching JWT expiry
+      "/",                    // path
       ARTIFACTS_DOMAIN,       // domain
       COOKIE_SECURE,         // if true, send cookie only to https requests
       true                    // httponly
@@ -81,13 +83,20 @@ function authenticate() {
 
 // Performs all actions necessary to log out an admin
 function log_out() {
-  unset($_SESSION['admin_id']);
-  unset($_SESSION['user_id']);
-  unset($_SESSION['last_login']);
-  unset($_SESSION['username']);
-  unset($_SESSION['user_group']);
-  unset($_SESSION['logged_in']);
-  // session_destroy(); // optional: destroys the whole session
+  $_SESSION = [];
+  session_destroy();
+
+  // Clear the JWT access token cookie
+  setcookie(
+    "access_token",
+    "",
+    time() - 3600,
+    "/",
+    ARTIFACTS_DOMAIN,
+    COOKIE_SECURE,
+    true
+  );
+
   return true;
 }
 
