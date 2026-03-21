@@ -59,6 +59,108 @@ class Artifact extends DatabaseObject {
     return $array;
   }
 
+  public static function list_artifacts_paginated($per_page = 50, $cursor = null) {
+    $per_page = max(1, min(200, (int) $per_page));
+    $fetch_limit = $per_page + 1;
+
+    if ($cursor !== null) {
+      $cursor = (int) $cursor;
+      $stmt = self::$database->prepare(
+        "SELECT games.id, games.Title
+         FROM games
+         WHERE games.id > ?
+         ORDER BY games.id ASC
+         LIMIT ?"
+      );
+      $stmt->bind_param("ii", $cursor, $fetch_limit);
+    } else {
+      $stmt = self::$database->prepare(
+        "SELECT games.id, games.Title
+         FROM games
+         ORDER BY games.id ASC
+         LIMIT ?"
+      );
+      $stmt->bind_param("i", $fetch_limit);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $array = [];
+    while ($record = $result->fetch_assoc()) {
+      $array[] = $record;
+    }
+    $stmt->close();
+
+    $has_more = count($array) > $per_page;
+    if ($has_more) {
+      array_pop($array);
+    }
+
+    $next_cursor = null;
+    if ($has_more && !empty($array)) {
+      $last_item = end($array);
+      $next_cursor = $last_item['id'];
+    }
+
+    return [
+      'data' => $array,
+      'next_cursor' => $next_cursor,
+      'has_more' => $has_more,
+    ];
+  }
+
+  public static function list_artifacts_by_user_paginated($user_id, $per_page = 50, $cursor = null) {
+    $user_id = (int) $user_id;
+    $per_page = max(1, min(200, (int) $per_page));
+    $fetch_limit = $per_page + 1;
+
+    if ($cursor !== null) {
+      $cursor = (int) $cursor;
+      $stmt = self::$database->prepare(
+        "SELECT games.id, games.Title
+         FROM games
+         WHERE games.user_id = ? AND games.id > ?
+         ORDER BY games.id ASC
+         LIMIT ?"
+      );
+      $stmt->bind_param("iii", $user_id, $cursor, $fetch_limit);
+    } else {
+      $stmt = self::$database->prepare(
+        "SELECT games.id, games.Title
+         FROM games
+         WHERE games.user_id = ?
+         ORDER BY games.id ASC
+         LIMIT ?"
+      );
+      $stmt->bind_param("ii", $user_id, $fetch_limit);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $array = [];
+    while ($record = $result->fetch_assoc()) {
+      $array[] = $record;
+    }
+    $stmt->close();
+
+    $has_more = count($array) > $per_page;
+    if ($has_more) {
+      array_pop($array);
+    }
+
+    $next_cursor = null;
+    if ($has_more && !empty($array)) {
+      $last_item = end($array);
+      $next_cursor = $last_item['id'];
+    }
+
+    return [
+      'data' => $array,
+      'next_cursor' => $next_cursor,
+      'has_more' => $has_more,
+    ];
+  }
+
   public static function list_artifacts_by_query($query, $user_id, $page = 1, $per_page = 50) {
     $page = max(1, (int) $page);
     $per_page = max(1, min(200, (int) $per_page));

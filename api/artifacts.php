@@ -30,22 +30,60 @@
     file_get_contents('php://input')
   );
     
-  $page = isset($requestBody->page) ? (int) $requestBody->page : 1;
   $per_page = isset($requestBody->per_page) ? (int) $requestBody->per_page : 50;
 
-  if (isset($requestBody->query) && $requestBody->query != '') {
-    $artifacts = Artifact::list_artifacts_by_query(
-      $requestBody->query,
-      $requestBody->userid,
-      $page,
-      $per_page
-    );
+  // Determine pagination mode: cursor-based or offset-based
+  if (isset($requestBody->cursor)) {
+    // Cursor-based pagination
+    $cursor = $requestBody->cursor !== null ? (int) $requestBody->cursor : null;
+
+    if (isset($requestBody->query) && $requestBody->query != '') {
+      // Query search does not support cursor-based pagination; fall back to offset
+      $page = isset($requestBody->page) ? (int) $requestBody->page : 1;
+      $artifacts = Artifact::list_artifacts_by_query(
+        $requestBody->query,
+        $requestBody->userid,
+        $page,
+        $per_page
+      );
+      $response->artifacts = $artifacts;
+      $response->page = $page;
+      $response->per_page = $per_page;
+    } elseif (isset($requestBody->userid) && $requestBody->userid != '') {
+      $result = Artifact::list_artifacts_by_user_paginated(
+        $requestBody->userid,
+        $per_page,
+        $cursor
+      );
+      $response->artifacts = $result['data'];
+      $response->next_cursor = $result['next_cursor'];
+      $response->has_more = $result['has_more'];
+      $response->per_page = $per_page;
+    } else {
+      $result = Artifact::list_artifacts_paginated($per_page, $cursor);
+      $response->artifacts = $result['data'];
+      $response->next_cursor = $result['next_cursor'];
+      $response->has_more = $result['has_more'];
+      $response->per_page = $per_page;
+    }
   } else {
-    $artifacts = Artifact::list_artifacts($page, $per_page);
+    // Offset-based pagination (existing behavior)
+    $page = isset($requestBody->page) ? (int) $requestBody->page : 1;
+
+    if (isset($requestBody->query) && $requestBody->query != '') {
+      $artifacts = Artifact::list_artifacts_by_query(
+        $requestBody->query,
+        $requestBody->userid,
+        $page,
+        $per_page
+      );
+    } else {
+      $artifacts = Artifact::list_artifacts($page, $per_page);
+    }
+    $response->artifacts = $artifacts;
+    $response->page = $page;
+    $response->per_page = $per_page;
   }
-  $response->artifacts = $artifacts;
-  $response->page = $page;
-  $response->per_page = $per_page;
 
   echo json_encode($response);
 
