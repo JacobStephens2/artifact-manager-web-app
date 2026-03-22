@@ -120,8 +120,9 @@
   <table id="useBy" class="list" data-page-length='100'>
     <thead>
       <tr id="headerRow">
-        <th>Type</th>
         <th>Name (<?php echo $artifact_set->num_rows; ?>)</th>
+        <th>Interact By</th>
+        <th>Type</th>
         <?php
           if ($showAttributes === 'yes') {
             ?>
@@ -141,7 +142,6 @@
           }
         ?>
         <th>Overdue (<span id="totalOverdue"></span>)</th>
-        <th>Interact By</th>
         <th class="hideOnPrint">Recent Interaction</th>
         <th>Tracking Start</th>
         <th>Interval</th>
@@ -158,22 +158,20 @@
         }
         ?>
         <tr>
-          <td class="type"><?php echo h($artifact['type']); ?></td>
-
           <td class="name artifact edit">
             <div>
-              <a id="artifact_id_<?php echo $id; ?>" 
+              <a id="artifact_id_<?php echo $id; ?>"
                 class="action edit"
                 href="<?php echo url_for('/artifacts/edit.php?id=' . $id); ?>"
-                ><?php echo h($artifact['Title']); 
+                ><?php echo h($artifact['Title']);
               ?></a>
               </a>
-              <img class="clipboard" 
-                id="artifact_id_copy_<?php echo $id; ?>" 
-                src="/assets/copy.png" 
+              <img class="clipboard"
+                id="artifact_id_copy_<?php echo $id; ?>"
+                src="/assets/copy.png"
                 alt="A clipboard icon for copying"
               >
-              
+
               <script>
                 document
                   .querySelector('img#artifact_id_copy_<?php echo $id; ?>')
@@ -186,7 +184,7 @@
                     setTimeout(() => {
                       copied_message.innerText = '';
                       copied_message.style.display = 'none';
-                    }, 1500); 
+                    }, 1500);
                   }
                 );
 
@@ -194,7 +192,29 @@
             </div>
           </td>
 
-          
+          <?php
+              date_default_timezone_set('America/New_York');
+              $DateTimeNow = new DateTime(date('Y-m-d'));
+              $DateTimeMostRecentUse = new DateTime(substr($artifact['MostRecentUseOrResponse'],0,10));
+              $DateTimeAcquisition = new DateTime(substr($artifact['Acq'],0,10));
+
+              $intervalInHours = $this_interval * 24;
+
+              if ($DateTimeMostRecentUse < $DateTimeAcquisition || $artifact['MostRecentUseOrResponse'] === NULL) {
+                $DateInterval = DateInterval::createFromDateString("$intervalInHours hour");
+                $useByDate = date_add($DateTimeAcquisition, $DateInterval);
+              } else {
+                $doubledInterval = $intervalInHours * 2;
+                $DateInterval = DateInterval::createFromDateString("$doubledInterval hour");
+                $useByDate = date_add($DateTimeMostRecentUse, $DateInterval);
+              }
+          ?>
+
+          <td class="useByDate date"><?php print_r($useByDate->format('Y-m-d')); ?></td>
+
+          <td class="type"><?php echo h($artifact['type']); ?></td>
+
+
             <td class="record">
               <a href="/uses/1-n-new?artifact_id=<?php echo $id; ?>"
                 target="_blank"
@@ -207,25 +227,25 @@
           if ($showAttributes === 'yes') {
             ?>
             <td class="SwS">
-              <?php 
+              <?php
                 // find the first number without leading zeros
                 preg_match(
-                  '/([1-9][0-9])|[1-9]/', 
+                  '/([1-9][0-9])|[1-9]/',
                   $artifact['ss'],
                   $match
                 );
-                echo h($match[0]); 
+                echo h($match[0]);
               ?>
             </td>
-            
+
             <td class="AvgT"><?php echo (h($artifact['mnt']) + h($artifact['mxt'])) / 2; ?></td>
             <td class="Age"><?php echo h($artifact['age']); ?></td>
             <td class="SwSs"><?php echo h($artifact['ss']); ?></td>
             <td class="MnP" ><?php echo h($artifact['mnp']); ?></td>
             <td class="MxP"><?php echo h($artifact['mxp']); ?></td>
-            
+
             <td class="candidate">
-              <?php 
+              <?php
               if ( strlen($artifact['Candidate']) > 0 ) {
                 echo 'Yes';
               }
@@ -236,29 +256,13 @@
           ?>
 
           <td class="overdue"
-            <?php 
-                date_default_timezone_set('America/New_York');
-                $DateTimeNow = new DateTime(date('Y-m-d')); 
-                $DateTimeMostRecentUse = new DateTime(substr($artifact['MostRecentUseOrResponse'],0,10)); 
-                $DateTimeAcquisition = new DateTime(substr($artifact['Acq'],0,10)); 
-
-                $intervalInHours = $this_interval * 24;
-
-                if ($DateTimeMostRecentUse < $DateTimeAcquisition || $artifact['MostRecentUseOrResponse'] === NULL) {
-                  $DateInterval = DateInterval::createFromDateString("$intervalInHours hour");
-                  $useByDate = date_add($DateTimeAcquisition, $DateInterval);
-                } else {
-                  $doubledInterval = $intervalInHours * 2;
-                  $DateInterval = DateInterval::createFromDateString("$doubledInterval hour");
-                  $useByDate = date_add($DateTimeMostRecentUse, $DateInterval);
-                }
-
+            <?php
                 if ($useByDate < $DateTimeNow) {
                   echo 'style="color: red;"';
                 }
             ?>
             >
-            <?php 
+            <?php
                 if ($useByDate < $DateTimeNow) {
                   $total_overdue++;
                   echo 'Yes';
@@ -267,8 +271,6 @@
                 }
               ?>
           </td>
-          
-          <td class="useByDate date"><?php print_r($useByDate->format('Y-m-d')); ?></td>
 
           <td class="mostRecentUse date hideOnPrint">
             <?php echo h(substr($artifact['MostRecentUseOrResponse'],0,10)); ?>
@@ -286,33 +288,33 @@
     document.querySelector('span#totalOverdue').innerText = '<?php echo $total_overdue; ?>';
     let table = new DataTable('#useBy', {
       // options
-      <?php 
+      <?php
         if ($shelfSort === 'yes') {
           ?>
           order: [
-            [ 0, 'asc'], // Type
-            [ 3, 'asc'], // SwS
-            [ 4, 'asc'], // AvgT
-            [ 5, 'asc'], // Age
-            [ 6, 'asc'], // SwS's
-            [ 7, 'asc'], // MnP
-            [ 8, 'asc'], // MxP
+            [ 2, 'asc'], // Type
+            [ 4, 'asc'], // SwS
+            [ 5, 'asc'], // AvgT
+            [ 6, 'asc'], // Age
+            [ 7, 'asc'], // SwS's
+            [ 8, 'asc'], // MnP
+            [ 9, 'asc'], // MxP
             [ 12, 'desc'], // recent use
-            [ 9, 'desc'], // C
+            [ 10, 'desc'], // C
           ]
           <?php
-        } elseif ($showAttributes === 'yes') { 
+        } elseif ($showAttributes === 'yes') {
           ?>
           order: [
-            [ 11, 'asc'],  // use by date
-            [ 4, 'asc'],  // AvgT
-            [ 5, 'asc'],  // Age
+            [ 1, 'asc'],  // interact by date
+            [ 5, 'asc'],  // AvgT
+            [ 6, 'asc'],  // Age
           ]
           <?php
         } else {
           ?>
           order: [
-            [ 4, 'asc'],  // use by date
+            [ 1, 'asc'],  // interact by date
             [ 5, 'asc'],  // recent use
             [ 6, 'asc'],  // acquisition date
           ]
