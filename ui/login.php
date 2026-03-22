@@ -37,7 +37,8 @@ if(is_post_request()) {
       if(password_verify($password, $user['hashed_password'])) { // original
         // password matches
         $logger->logAuth('login_success', ['username' => $username]);
-        log_in_user($user);
+        $remember = isset($_POST['remember_me']);
+        log_in_user($user, $remember);
         if (isset($_POST['redirectURL'])) {
           redirect_to(url_for(urldecode($_POST['redirectURL'])));      
         } else {
@@ -96,6 +97,9 @@ if ($action == 'logout') {
         <input class="input-box" type="text" name="username" value=""/>
         <h2>Password:</h2>
         <input class="input-box" type="password" name="password" value=""/>
+        <label>
+          <input type="checkbox" name="remember_me" /> Remember me
+        </label>
         <?php
           if (isset($_GET['redirectURL'])) {
             ?>

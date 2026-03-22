@@ -4,7 +4,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 // Performs all actions necessary to log in an admin
-function log_in_user($user) {
+function log_in_user($user, $remember = false) {
   // Renerating the ID protects the admin from session fixation.
   session_regenerate_id();
 
@@ -17,6 +17,10 @@ function log_in_user($user) {
   $userArray = mysqli_fetch_assoc($userResultObject);
   mysqli_stmt_close($stmt);
 
+  // 30 days if "Remember me" is checked, otherwise 24 hours
+  $expiry_seconds = $remember ? 2592000 : 86400;
+  $expiry_minutes = $expiry_seconds / 60;
+
   $_SESSION['FullName'] = $userArray['first_name'] . ' ' . $userArray['last_name'];
   $_SESSION['user_id'] = $user['id'];
   $_SESSION['player_id'] = $user['player_id'];
@@ -24,14 +28,19 @@ function log_in_user($user) {
   $_SESSION['username'] = $user['username'];
   $_SESSION['user_group'] = $user['user_group'];
   $_SESSION['logged_in'] = true;
-  // Create JWT access token cookie for response 
+
+  // Extend PHP session lifetime to match
+  ini_set('session.gc_maxlifetime', $expiry_seconds);
+  session_set_cookie_params($expiry_seconds);
+
+  // Create JWT access token cookie for response
   $issuedAt   = new DateTimeImmutable();
   $jwt_access_token_data = [
       // Issued at: time when the token was generated
-      'iat'  => $issuedAt->getTimestamp(),  
+      'iat'  => $issuedAt->getTimestamp(),
       'iss'  => $_SERVER['SERVER_NAME'], // Issuer
-      'nbf'  => $issuedAt->getTimestamp(), // Not before 
-      'exp'  => $issuedAt->modify('+1440 minutes')->getTimestamp(), // Expire in 24 hours                    
+      'nbf'  => $issuedAt->getTimestamp(), // Not before
+      'exp'  => $issuedAt->modify('+' . $expiry_minutes . ' minutes')->getTimestamp(),
       'user_id' => $user['id'],
   ];
   $access_token = JWT::encode(
@@ -43,7 +52,7 @@ function log_in_user($user) {
   setcookie(
       "access_token",         // name
       $access_token,          // value
-      time() + 86400,         // expire in 24 hours, matching JWT expiry
+      time() + $expiry_seconds,
       "/",                    // path
       ARTIFACTS_DOMAIN,       // domain
       COOKIE_SECURE,         // if true, send cookie only to https requests
@@ -105,7 +114,38 @@ function log_out() {
 }
 
 function is_logged_in() {
-  return isset($_SESSION['user_id']);
+  if (isset($_SESSION['user_id'])) {
+    return true;
+  }
+  // Restore session from JWT if PHP session expired but token is still valid
+  if (isset($_COOKIE['access_token'])) {
+    try {
+      $decoded = JWT::decode($_COOKIE['access_token'], new Key(JWT_SECRET, 'HS256'));
+      if (isset($decoded->user_id)) {
+        global $db;
+        $stmt = mysqli_prepare($db, "SELECT * FROM users WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, "i", $decoded->user_id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $user = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+        if ($user) {
+          session_regenerate_id();
+          $_SESSION['FullName'] = $user['first_name'] . ' ' . $user['last_name'];
+          $_SESSION['user_id'] = $user['id'];
+          $_SESSION['player_id'] = $user['player_id'];
+          $_SESSION['last_login'] = time();
+          $_SESSION['username'] = $user['username'];
+          $_SESSION['user_group'] = $user['user_group'];
+          $_SESSION['logged_in'] = true;
+          return true;
+        }
+      }
+    } catch (Exception $e) {
+      // JWT invalid or expired — user must log in again
+    }
+  }
+  return false;
 }
 
 function is_admin($user_group) {
@@ -114,13 +154,13 @@ function is_admin($user_group) {
 
 // Requires the user logging in at least be in the user group or higher
 function require_login() {
-    if($_SESSION['user_group'] < 1 ) {
+    if(!is_logged_in() || $_SESSION['user_group'] < 1) {
       redirect_to(url_for('/login.php?redirectURL=' . urlencode($_SERVER['REQUEST_URI'])));
     }
 }
 
 function require_admin() {
-  if($_SESSION['user_group'] < 2 ) {
+  if(!is_logged_in() || $_SESSION['user_group'] < 2) {
     redirect_to(url_for('/login.php'));
   }
 }

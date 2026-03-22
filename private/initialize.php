@@ -12,6 +12,9 @@
 
   ob_start(); // output buffering is turned on
 
+  // Set session lifetime to 24 hours (matching JWT token expiry)
+  ini_set('session.gc_maxlifetime', 86400);
+  session_set_cookie_params(86400);
   session_start(); // turn on sessions
   
   // Assign file paths to PHP constants
