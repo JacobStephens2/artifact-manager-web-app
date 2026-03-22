@@ -66,6 +66,8 @@ if (isset($_REQUEST['action'])) {
 }
 if ($action == 'logout') {
   log_out();
+  session_start();
+  generate_csrf_token();
 }
 
 ?>

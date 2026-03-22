@@ -19,7 +19,7 @@
     <link rel="manifest" href="<?php echo url_for('manifest.json') ?>">
     <link rel="apple-touch-icon" href="<?php echo url_for('assets/icon-192x192.png') ?>">
 
-    <link rel="stylesheet" media="all" href="../../style.css?v=2" />
+    <link rel="stylesheet" media="all" href="../../style.css?v=3" />
 
     <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
 
