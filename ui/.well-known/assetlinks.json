@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.stewardgoods.artifact",
+      "sha256_cert_fingerprints": [
+        "ED:6B:36:41:F0:9C:EE:1A:88:39:F0:2A:8E:59:AC:1B:53:8E:FF:85:29:10:8C:1D:7F:54:60:7E:3F:57:F7:5C"
+      ]
+    }
+  }
+]
