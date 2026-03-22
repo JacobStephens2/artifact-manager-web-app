@@ -12,12 +12,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#30395c">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <link rel="shortcut icon" type="image/jpg" href="<?php echo url_for('favicon.ico') ?>">
     <link rel="manifest" href="<?php echo url_for('manifest.json') ?>">
-    <link rel="apple-touch-icon" href="<?php echo url_for('icons/icon-192x192.png') ?>">
+    <link rel="apple-touch-icon" href="<?php echo url_for('assets/icon-192x192.png') ?>">
 
     <link rel="stylesheet" media="all" href="../../style.css?v=2" />
 

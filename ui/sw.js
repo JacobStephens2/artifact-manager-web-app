@@ -1,9 +1,8 @@
 const CACHE_NAME = 'artifact-manager-v1';
 const STATIC_ASSETS = [
   '/style.css',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
-  'https://fonts.googleapis.com/css2?family=Raleway&display=swap'
+  '/assets/icon-192x192.png',
+  '/assets/icon-512x512.png'
 ];
 
 self.addEventListener('install', event => {
