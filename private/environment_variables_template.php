@@ -5,10 +5,12 @@ define("DB_USER", "");
 define("DB_PASS", "");
 define("DB_NAME", "");
 
-define(
-  "SENDGRID_API_KEY", 
-  ""
-);
+// SMTP Configuration
+define("SMTP_HOST", "");
+define("SMTP_PORT", 587);
+define("SMTP_USER", "");
+define("SMTP_PASS", "");
+define("SMTP_FROM_EMAIL", "");
 
 define(
   "ARTIFACTS_API_KEY", 

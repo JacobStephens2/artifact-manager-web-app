@@ -84,18 +84,18 @@ include(SHARED_PATH . '/header.php');
 
          try {
             // Server settings
-            $mail->isSMTP();                                   //Send using SMTP
-            $mail->Host       = 'smtp.sendgrid.net';           //Set the SMTP server to send through
-            $mail->SMTPAuth   = true;                          //Enable SMTP authentication
-            $mail->Username   = 'apikey';                      //SMTP username
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;   //Enable implicit TLS encryption
-            $mail->Password   = SENDGRID_API_KEY;              //SMTP password 
-            $mail->Port       = 465;                           //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
-            
+            $mail->isSMTP();
+            $mail->Host       = SMTP_HOST;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = SMTP_USER;
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Password   = SMTP_PASS;
+            $mail->Port       = SMTP_PORT;
+
             // Recipients
-            $mail->setFrom('jacob@stewardgoods.com', 'Jacob');
+            $mail->setFrom(SMTP_FROM_EMAIL, APP_NAME);
             $mail->addAddress($email);
-            $mail->addReplyTo('jacob@stewardgoods.com', 'Jacob');
+            $mail->addReplyTo(DEV_EMAIL, DEV_NAME);
    
             // Content
             $mail->isHTML(true);
