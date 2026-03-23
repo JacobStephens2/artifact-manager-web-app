@@ -7,7 +7,7 @@
     
     require_once('/var/www/artifact-management-tool/private/initialize.php');
 
-    $users = query("SELECT id FROM users");
+    $users = query("SELECT id FROM users WHERE daily_email = 1");
 
     foreach ($users as $user) {
 

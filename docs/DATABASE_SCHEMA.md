@@ -71,6 +71,7 @@ Authentication and account records for application users.
 | `user_group` | INT | YES | Authorization group (1 = regular user, 2 = admin) |
 | `default_use_interval` | DECIMAL/FLOAT | YES | Default interaction interval in days for use-by calculations |
 | `default_setting` | VARCHAR(255) | YES | Default UI setting preference |
+| `daily_email` | TINYINT(1) | NO | Whether user receives the daily use-by email (1 = yes, 0 = no, default 1) |
 | `player_id` | INT | YES | FK to `players.id` -- links this user account to their player record |
 
 **Primary key:** `id`

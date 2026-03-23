@@ -14,7 +14,8 @@ if(is_post_request()) {
       email = '" . db_escape($db, $_POST['email']) . "',
       username = '" . db_escape($db, $_POST['username']) . "',
       default_setting = '" . db_escape($db, $_POST['default_setting']) . "',
-      default_use_interval  = '" . db_escape($db, $_POST['default_use_interval']) . "'
+      default_use_interval  = '" . db_escape($db, $_POST['default_use_interval']) . "',
+      daily_email = " . (isset($_POST['daily_email']) ? 1 : 0) . "
       WHERE id = " . $_SESSION['user_id'] . "
       LIMIT 1
   ";
@@ -27,7 +28,8 @@ $findUserSQL = "SELECT
   email,
   username,
   default_use_interval,
-  default_setting
+  default_setting,
+  daily_email
   FROM users
   WHERE id = " . $_SESSION['user_id'] . "
 ;";
@@ -95,12 +97,23 @@ $userArray = mysqli_fetch_assoc($userResult);
     >
     
     <label for="default_setting">Default Setting</label>
-    <input 
-      type="text" 
-      name="default_setting" 
+    <input
+      type="text"
+      name="default_setting"
       id="default_setting"
       value="<?php echo $userArray['default_setting']; ?>"
     >
+
+    <label for="daily_email">
+      <input
+        type="checkbox"
+        name="daily_email"
+        id="daily_email"
+        value="1"
+        <?php if ($userArray['daily_email']) echo 'checked'; ?>
+      >
+      Receive daily use-by email
+    </label>
 
     <input type="submit" value="Update Settings">
   </form>
