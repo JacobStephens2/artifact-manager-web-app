@@ -1,4 +1,4 @@
-const CACHE_NAME = 'artifact-manager-v2';
+const CACHE_NAME = 'artifact-manager-v3';
 const STATIC_ASSETS = [
   '/style.css',
   '/manifest.json',

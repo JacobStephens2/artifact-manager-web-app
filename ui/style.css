@@ -578,8 +578,22 @@ p.menu-about {
 }
 
 @media (max-width: 750px) {
+  .overdue-table td {
+    padding: 0.35rem 0.25rem;
+  }
+
+  .overdue-name {
+    width: 100%;
+  }
+
   .overdue-date {
-    display: none;
+    display: table-cell;
+    font-size: 0.9rem;
+    text-align: right;
+  }
+
+  .overdue-action a {
+    font-size: 0.85rem;
   }
 }
 
@@ -620,6 +634,21 @@ main {
   padding-bottom: 2rem;
   padding-left: 3rem;
   padding-right: 3rem;
+}
+
+@media (max-width: 750px) {
+  main {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  #main-menu {
+    width: 100%;
+  }
+
+  .menu-card {
+    padding: 0.9rem 1rem;
+  }
 }
 
 a.back-link {
