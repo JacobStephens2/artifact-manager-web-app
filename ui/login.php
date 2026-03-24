@@ -20,7 +20,7 @@ if(is_post_request()) {
 
   // Validations
   if(is_blank($username)) {
-    $errors[] = "Username cannot be blank.";
+    $errors[] = "Username or email cannot be blank.";
   }
   if(is_blank($password)) {
     $errors[] = "Password cannot be blank.";
@@ -93,7 +93,7 @@ if ($action == 'logout') {
 
       <form action="login.php" method="post">
         <?php echo csrf_input(); ?>
-        <h2>Username:</h2>
+        <h2>Username or Email:</h2>
         <input class="input-box" type="text" name="username" value=""/>
         <h2>Password:</h2>
         <input class="input-box" type="password" name="password" value=""/>

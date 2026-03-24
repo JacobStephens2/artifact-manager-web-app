@@ -3,9 +3,9 @@
   function find_user_by_username($username) {
     global $db;
 
-    $sql = "SELECT * FROM users WHERE username=? LIMIT 1";
+    $sql = "SELECT * FROM users WHERE username=? OR email=? LIMIT 1";
     $stmt = mysqli_prepare($db, $sql);
-    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_bind_param($stmt, "ss", $username, $username);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
