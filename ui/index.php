@@ -10,6 +10,10 @@ include(SHARED_PATH . '/header.php');
 
     <h1>Main Menu</h1>
 
+    <a class="prominent-link" href="<?php echo url_for('/artifacts/useby.php'); ?>">
+      Interact by Date
+    </a>
+
     <!-- Artifacts -->
     <ul>
       <li>

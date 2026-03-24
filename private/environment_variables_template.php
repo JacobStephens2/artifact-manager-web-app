@@ -23,7 +23,7 @@ define(
 );
 define("COOKIE_SECURE", true);
 
-define("ARTIFACTS_DOMAIN", "artifact.stewardgoods.com");
+define("ARTIFACTS_DOMAIN", "artifact.stephens.page");
 define("DOMAIN", ARTIFACTS_DOMAIN);
 define("API_ORIGIN", "api." . ARTIFACTS_DOMAIN);
 define("REQUEST_ORIGIN", ARTIFACTS_DOMAIN);

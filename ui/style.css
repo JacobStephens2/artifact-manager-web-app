@@ -479,6 +479,23 @@ strong {
   padding-left: 0rem;
 }
 
+a.prominent-link {
+  display: inline-block;
+  background: #0093e9;
+  color: white;
+  text-decoration: none;
+  padding: 0.7rem 1.3rem;
+  border-radius: 0.8rem;
+  font-size: 1.3rem;
+  font-family: "Raleway", Arial, Helvetica, sans-serif;
+  margin-bottom: 0.8rem;
+}
+
+a.prominent-link:hover {
+  background: #80d0c7;
+  color: white;
+}
+
 ul ul {
   padding-left: 2rem;
 }

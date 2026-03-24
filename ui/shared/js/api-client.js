@@ -8,7 +8,7 @@
 // Override it after import if needed: ApiClient.baseUrl = 'https://other-host';
 
 const ApiClient = {
-  baseUrl: 'https://api.artifact.stewardgoods.com',
+  baseUrl: 'https://api.artifact.stephens.page',
 
   /**
    * Core request method. All other methods delegate here.
