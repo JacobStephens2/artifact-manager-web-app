@@ -57,45 +57,51 @@ mysqli_stmt_close($stmt);
   ?>
 
   <form method='POST'>
+    <?php echo csrf_input(); ?>
     <label for="first_name">First Name</label>
-    <input 
-      type="text" 
-      name="first_name" 
-      id="first_name" 
-      value="<?php echo $userArray['first_name']; ?>"
+    <input
+      type="text"
+      name="first_name"
+      id="first_name"
+      value="<?php echo h($userArray['first_name']); ?>"
+      required minlength="2" maxlength="255"
     >
 
     <label for="last_name">Last Name</label>
-    <input 
-      type="text" 
-      name="last_name" 
+    <input
+      type="text"
+      name="last_name"
       id="last_name"
-      value="<?php echo $userArray['last_name']; ?>"
+      value="<?php echo h($userArray['last_name']); ?>"
+      required minlength="2" maxlength="255"
     >
 
     <label for="email">Email</label>
-    <input 
-      type="email" 
-      name="email" 
+    <input
+      type="email"
+      name="email"
       id="email"
-      value="<?php echo $userArray['email']; ?>"
+      value="<?php echo h($userArray['email']); ?>"
+      required maxlength="255"
     >
 
     <label for="username">Username</label>
-    <input 
-      type="text" 
-      name="username" 
+    <input
+      type="text"
+      name="username"
       id="username"
-      value="<?php echo $userArray['username']; ?>"
+      value="<?php echo h($userArray['username']); ?>"
+      required minlength="8" maxlength="255"
     >
-    
+
     <label for="default_use_interval">Default Use Interval</label>
-    <input 
-      type="number" 
+    <input
+      type="number"
       step="0.1"
-      name="default_use_interval" 
+      name="default_use_interval"
       id="default_use_interval"
-      value="<?php echo $userArray['default_use_interval']; ?>"
+      value="<?php echo h($userArray['default_use_interval']); ?>"
+      required min="1"
     >
     
     <label for="default_setting">Default Setting</label>
@@ -103,7 +109,7 @@ mysqli_stmt_close($stmt);
       type="text"
       name="default_setting"
       id="default_setting"
-      value="<?php echo $userArray['default_setting']; ?>"
+      value="<?php echo h($userArray['default_setting']); ?>"
     >
 
     <label for="daily_email">

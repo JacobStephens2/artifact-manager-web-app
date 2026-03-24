@@ -94,9 +94,9 @@ if ($action == 'logout') {
       <form action="login.php" method="post">
         <?php echo csrf_input(); ?>
         <h2>Username or Email:</h2>
-        <input class="input-box" type="text" name="username" value=""/>
+        <input class="input-box" type="text" name="username" value="" required/>
         <h2>Password:</h2>
-        <input class="input-box" type="password" name="password" value=""/>
+        <input class="input-box" type="password" name="password" value="" required/>
         <label>
           <input type="checkbox" name="remember_me" /> Remember me
         </label>
