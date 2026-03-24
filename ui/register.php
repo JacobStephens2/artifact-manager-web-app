@@ -6,6 +6,13 @@ $username = '';
 $password = '';
 
 if (is_post_request()) {
+  require_once(PRIVATE_PATH . '/rate_limiter.php');
+  $rate_limiter = new RateLimiter($db);
+
+  if (!$rate_limiter->checkAndRecord('register', 5, 3600)) {
+    $errors[] = "Too many registration attempts. Please try again in an hour.";
+  }
+
   $subject = [];
   $user['first_name'] = $_POST['first_name'] ?? '';
   $user['last_name'] = $_POST['last_name'] ?? '';
@@ -14,9 +21,11 @@ if (is_post_request()) {
   $user['password'] = $_POST['password'] ?? '';
   $user['confirm_password'] = $_POST['confirm_password'] ?? '';
 
-  $result = insert_user($user);
+  if (empty($errors)) {
+    $result = insert_user($user);
+  }
 
-  if($result === true) {
+  if(empty($errors) && $result === true) {
     $new_id = mysqli_insert_id($db);
     $_SESSION['message'] = 'User registered';
     $user['user_group'] = 1;

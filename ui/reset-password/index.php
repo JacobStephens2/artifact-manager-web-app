@@ -20,24 +20,35 @@ include(SHARED_PATH . '/header.php');
 
    <?php
 
+   require_once(PRIVATE_PATH . '/rate_limiter.php');
+   $rate_limiter = new RateLimiter($db);
+
    if(isset($_POST["email"]) && (!empty($_POST["email"]))){
+
+      if (!$rate_limiter->checkAndRecord('password_reset', 3, 900)) {
+         echo "<div class='error'><p>Too many reset attempts. Please try again in 15 minutes.</p></div>";
+      } else {
+
       $email = $_POST["email"];
       $email = filter_var($email, FILTER_SANITIZE_EMAIL);
       $email = filter_var($email, FILTER_VALIDATE_EMAIL);
 
       if (!$email) {
-         $error .="
+         $error = "
             <p>
                Invalid email address please type a valid email address!
             </p>
          ";
 
       } else {
-         $sql = "SELECT * FROM `users` WHERE email='".$email."'";
-         $results = mysqli_query($db, $sql);
+         $stmt = mysqli_prepare($db, "SELECT id FROM users WHERE email = ?");
+         mysqli_stmt_bind_param($stmt, "s", $email);
+         mysqli_stmt_execute($stmt);
+         $results = mysqli_stmt_get_result($stmt);
          $row = mysqli_num_rows($results);
-         if ($row==""){
-            $error .= "
+         mysqli_stmt_close($stmt);
+         if ($row == 0){
+            $error = "
                <p>
                   No user is registered with this email address!
                </p>
@@ -49,25 +60,19 @@ include(SHARED_PATH . '/header.php');
          echo "
             <div class='error'>".$error."</div>
             <a href='javascript:history.go(-1)'>Go Back</a>";
-      
+
       } else {
 
-         $expFormat = mktime(
-            date("H"), date("i"), date("s"), date("m") ,date("d")+1, date("Y")
-         );
-         $expDate = date("Y-m-d H:i:s",$expFormat);
-         $key = md5(2418*2); // original
-         $addKey = substr(md5(uniqid(rand(),1)),3,10);
-         $key = $key . $addKey;
+         $expDate = date("Y-m-d H:i:s", strtotime('+1 day'));
+         $key = bin2hex(random_bytes(32));
 
          // Insert Temp Table
-         mysqli_query($db,
-            "INSERT INTO 
-               `password_reset_temp` 
-               (`email`, `key`, `expDate`)
-            VALUES 
-               ('".$email."', '".$key."', '".$expDate."');
-         ");
+         $stmt = mysqli_prepare($db,
+            "INSERT INTO password_reset_temp (email, `key`, expDate) VALUES (?, ?, ?)"
+         );
+         mysqli_stmt_bind_param($stmt, "sss", $email, $key, $expDate);
+         mysqli_stmt_execute($stmt);
+         mysqli_stmt_close($stmt);
          
          $output='<p>Dear user,</p>';
          $output.='<p>Please click on the following link to reset your password.</p>';
@@ -78,7 +83,7 @@ include(SHARED_PATH . '/header.php');
          $output.='<p>Copy the link to your browser. The link will expire after 1 day.</p>';
          $output.='<p>If you did not request this reset password email, no action is needed. Your password will not be reset.</p>';   
          $output.='<p>Thanks,</p>';
-         $output.='<p>Steward Goods</p>';
+         $output.='<p>' . APP_NAME . '</p>';
          
          $mail = new PHPMailer(true);
 
@@ -119,6 +124,7 @@ include(SHARED_PATH . '/header.php');
             echo 'Caught exception: '. $e->getMessage() ."</br>";
          }
       }
+      } // end rate limit else
    } else { ?>
 
       <form method="post" action="" name="reset">
