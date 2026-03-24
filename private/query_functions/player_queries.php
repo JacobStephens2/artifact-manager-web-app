@@ -3,15 +3,11 @@
   function list_players() {
     global $db;
 
-    $sql = "SELECT ";
-    $sql .= "id, ";
-    $sql .= "FirstName, ";
-    $sql .= "LastName ";
-    $sql .= "FROM players ";
-    $sql .= "WHERE user_id='" . db_escape($db, $_SESSION['user_id']) . "' ";
-    $sql .= "ORDER BY FirstName ASC, ";
-    $sql .= "LastName ASC";
-    $result = mysqli_query($db, $sql);
+    $user_id = (int) $_SESSION['user_id'];
+    $stmt = mysqli_prepare($db, "SELECT id, FirstName, LastName FROM players WHERE user_id = ? ORDER BY FirstName ASC, LastName ASC");
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     return $result;
   }
@@ -19,22 +15,24 @@
   function find_player_by_id($id) {
     global $db;
 
-    $sql = "SELECT *";
-    $sql .= "FROM players ";
-    $sql .= "WHERE players.id='" . db_escape($db, $id) . "' ";
-    $result = mysqli_query($db, $sql);
+    $stmt = mysqli_prepare($db, "SELECT * FROM players WHERE players.id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     $subject = mysqli_fetch_assoc($result);
     mysqli_free_result($result);
-    return $subject; // returns an assoc. array
+    return $subject;
   }
 
   function find_players_by_user_id() {
     global $db;
-    $sql = "SELECT * FROM players ";
-    $sql .= "WHERE user_id='" . db_escape($db, $_SESSION['user_id']) . "' ";
-    $sql .= "ORDER BY id";
-    $result = mysqli_query($db, $sql);
+
+    $user_id = (int) $_SESSION['user_id'];
+    $stmt = mysqli_prepare($db, "SELECT * FROM players WHERE user_id = ? ORDER BY id");
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     return $result;
   }

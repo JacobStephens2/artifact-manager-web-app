@@ -12,18 +12,19 @@
     echo 'Go to users, choose yourself, ensure "This user is me" is checked, submit the form, then log out and log back in.';
   }
 
-  $getUseCountsByPlayerSQL = "SELECT 
-    COUNT('responses.PlayDate') AS CountOfUses, 
+  $player_id = (int) $_SESSION['player_id'];
+  $stmt = mysqli_prepare($db, "SELECT
+    COUNT('responses.PlayDate') AS CountOfUses,
     games.Title AS ArtifactTitle,
     responses.Title AS ArtifactID
     FROM responses
     JOIN games ON games.id = responses.Title
-    WHERE responses.Player = " . $_SESSION['player_id'] . "
+    WHERE responses.Player = ?
     GROUP BY responses.Title
-    ORDER BY CountOfUses DESC
-  ";
-
-  $usesByPlayerResultObject = mysqli_query($db, $getUseCountsByPlayerSQL);
+    ORDER BY CountOfUses DESC");
+  mysqli_stmt_bind_param($stmt, "i", $player_id);
+  mysqli_stmt_execute($stmt);
+  $usesByPlayerResultObject = mysqli_stmt_get_result($stmt);
 
   // find the last letter of the name
   // and set fitting punctuation

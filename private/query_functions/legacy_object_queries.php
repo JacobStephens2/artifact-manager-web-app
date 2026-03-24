@@ -75,11 +75,11 @@
   function find_object_names_by_user() {
     global $db;
 
-    $sql = "SELECT ";
-    $sql .= "ObjectName ";
-    $sql .= "FROM objects ";
-    $sql .= "WHERE user_id = '" . db_escape($db, $_SESSION['user_id']) . "'";
-    $result = mysqli_query($db, $sql);
+    $user_id = (int) $_SESSION['user_id'];
+    $stmt = mysqli_prepare($db, "SELECT ObjectName FROM objects WHERE user_id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     return $result;
   }
@@ -96,34 +96,22 @@
   function list_objects_by_user() {
     global $db;
 
-    $sql = "SELECT ";
-    $sql .= "objects.ID, ";
-    $sql .= "objects.ObjectName, ";
-    $sql .= "objects.KeptCol, ";
-    $sql .= "objects.Acq, ";
-    $sql .= "types.ObjectType ";
-    $sql .= "FROM objects ";
-    $sql .= "LEFT JOIN types ON objects.ObjectType = types.ID ";
-    $sql .= "WHERE user_id = '" . db_escape($db, $_SESSION['user_id']) . "' ";
-    $sql .= "ORDER BY objects.ObjectName ASC";
-    $result = mysqli_query($db, $sql);
+    $user_id = (int) $_SESSION['user_id'];
+    $stmt = mysqli_prepare($db, "SELECT objects.ID, objects.ObjectName, objects.KeptCol, objects.Acq, types.ObjectType FROM objects LEFT JOIN types ON objects.ObjectType = types.ID WHERE user_id = ? ORDER BY objects.ObjectName ASC");
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     return $result;
   }
   function find_objects_by_user() {
     global $db;
 
-    $sql = "SELECT ";
-    $sql .= "objects.ID, ";
-    $sql .= "objects.ObjectName, ";
-    $sql .= "objects.KeptCol, ";
-    $sql .= "objects.Acq, ";
-    $sql .= "types.ObjectType ";
-    $sql .= "FROM objects ";
-    $sql .= "LEFT JOIN types ON objects.ObjectType = types.ID ";
-    $sql .= "WHERE user_id = '" . db_escape($db, $_SESSION['user_id']) . "' ";
-    $sql .= "ORDER BY objects.Acq DESC";
-    $result = mysqli_query($db, $sql);
+    $user_id = (int) $_SESSION['user_id'];
+    $stmt = mysqli_prepare($db, "SELECT objects.ID, objects.ObjectName, objects.KeptCol, objects.Acq, types.ObjectType FROM objects LEFT JOIN types ON objects.ObjectType = types.ID WHERE user_id = ? ORDER BY objects.Acq DESC");
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     return $result;
   }
@@ -146,20 +134,14 @@
   function find_object_by_id($id) {
     global $db;
 
-    $sql = "SELECT ";
-    $sql .= "objects.ID, ";
-    $sql .= "objects.ObjectName, ";
-    $sql .= "objects.KeptCol, ";
-    $sql .= "objects.Acq, ";
-    $sql .= "types.ObjectType ";
-    $sql .= "FROM objects ";
-    $sql .= "LEFT JOIN types ON objects.ObjectType = types.ID ";
-    $sql .= "WHERE objects.id='" . db_escape($db, $id) . "' ";
-    $result = mysqli_query($db, $sql);
+    $stmt = mysqli_prepare($db, "SELECT objects.ID, objects.ObjectName, objects.KeptCol, objects.Acq, types.ObjectType FROM objects LEFT JOIN types ON objects.ObjectType = types.ID WHERE objects.id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     $subject = mysqli_fetch_assoc($result);
     mysqli_free_result($result);
-    return $subject; // returns an assoc. array
+    return $subject;
   }
   function update_object($object) {
     global $db;

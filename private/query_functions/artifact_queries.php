@@ -7,15 +7,11 @@ use PHPMailer\PHPMailer\Exception;
   function find_artifacts_by_user() {
     global $db;
 
-    $sql = "SELECT ";
-    $sql .= "games.id, ";
-    $sql .= "games.Title, ";
-    $sql .= "games.KeptCol, ";
-    $sql .= "games.Acq, ";
-    $sql .= "FROM games ";
-    $sql .= "WHERE user_id = '" . db_escape($db, $_SESSION['user_id']) . "' ";
-    $sql .= "ORDER BY objects.Acq DESC";
-    $result = mysqli_query($db, $sql);
+    $user_id = (int) $_SESSION['user_id'];
+    $stmt = mysqli_prepare($db, "SELECT games.id, games.Title, games.KeptCol, games.Acq FROM games WHERE user_id = ? ORDER BY games.Acq DESC");
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     return $result;
   }

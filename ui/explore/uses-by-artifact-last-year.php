@@ -9,19 +9,21 @@ $page_title = 'Uses By Artifact Over Last 365 Days';
 include(SHARED_PATH . '/header.php');
 include(SHARED_PATH . '/dataTable.html'); 
 
-$getUseCountsByPlayerSQL = "SELECT 
-  COUNT('responses.PlayDate') AS CountOfUses, 
+$player_id = (int) $_SESSION['player_id'];
+$stmt1 = mysqli_prepare($db, "SELECT
+  COUNT('responses.PlayDate') AS CountOfUses,
   games.Title AS ArtifactTitle,
   responses.Title AS ArtifactID,
   games.type AS ArtifactType
   FROM responses
   JOIN games ON games.id = responses.Title
-  WHERE responses.Player = " . $_SESSION['player_id'] . "
+  WHERE responses.Player = ?
   AND responses.PlayDate > DATE_SUB(NOW(), INTERVAL 365 DAY)
   GROUP BY responses.Title
-  ORDER BY CountOfUses DESC
-";
-$usesSingleByPlayerResultObject = mysqli_query($db, $getUseCountsByPlayerSQL);
+  ORDER BY CountOfUses DESC");
+mysqli_stmt_bind_param($stmt1, "i", $player_id);
+mysqli_stmt_execute($stmt1);
+$usesSingleByPlayerResultObject = mysqli_stmt_get_result($stmt1);
 
 // get counts from multi use table
 $usesMultiByPlayerResultObjec = mysqli_query($db, "SELECT title,

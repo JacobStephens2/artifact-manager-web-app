@@ -78,11 +78,12 @@
       <input type="checkbox" name="thisPlayerIsMe" id="thisPlayerIsMe"
         value="yes"
         <?php 
-          $query = "SELECT represents_user_id
-            FROM players
-            WHERE id = '$id'
-          ";
-          $userIDThisPlayerIDRepresents = singleValueQuery($query);
+          $stmt_rep = mysqli_prepare($db, "SELECT represents_user_id FROM players WHERE id = ?");
+          mysqli_stmt_bind_param($stmt_rep, "i", $id);
+          mysqli_stmt_execute($stmt_rep);
+          $rep_result = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_rep));
+          mysqli_stmt_close($stmt_rep);
+          $userIDThisPlayerIDRepresents = $rep_result['represents_user_id'] ?? null;
           if ($userIDThisPlayerIDRepresents == $_SESSION['user_id']) {
             echo 'checked';
           }
@@ -97,16 +98,14 @@
 
   <section id="uses">
     <?php 
-      $player_id = $_REQUEST['id'];
+      $player_id = (int) $_REQUEST['id'];
+      $user_id_int = (int) $user_id;
 
       // get 1:n uses
-      $query = 
-        "SELECT use_id
-        FROM uses_players
-        WHERE user_id = '$user_id'
-        AND player_id = '$player_id'
-      ";
-      $results = query($query);
+      $stmt_up = mysqli_prepare($db, "SELECT use_id FROM uses_players WHERE user_id = ? AND player_id = ?");
+      mysqli_stmt_bind_param($stmt_up, "ii", $user_id_int, $player_id);
+      mysqli_stmt_execute($stmt_up);
+      $results = mysqli_stmt_get_result($stmt_up);
       ?>
       <p><?php $results->num_rows; ?> 1:n interactions recorded</p>
       <table>
@@ -119,13 +118,12 @@
         <tbody>
           <?php
             foreach ($results as $result) {
-              $use_id = $result['use_id'];
-              $data = singleRowQuery(
-                "SELECT games.title, DATE(use_date) AS use_date
-                FROM uses
-                JOIN games ON uses.artifact_id = games.id
-                WHERE uses.id = '$use_id'
-              ");
+              $use_id = (int) $result['use_id'];
+              $stmt_ud = mysqli_prepare($db, "SELECT games.title, DATE(use_date) AS use_date FROM uses JOIN games ON uses.artifact_id = games.id WHERE uses.id = ?");
+              mysqli_stmt_bind_param($stmt_ud, "i", $use_id);
+              mysqli_stmt_execute($stmt_ud);
+              $data = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_ud));
+              mysqli_stmt_close($stmt_ud);
               ?>
               <tr>
                 <td><?php echo $data['title']; ?></td>
@@ -141,18 +139,19 @@
 
     
       // get 1:1 uses
-      $sql = "SELECT 
-        responses.PlayDate, 
+      $stmt_11 = mysqli_prepare($db, "SELECT
+        responses.PlayDate,
         responses.id as responseID,
         games.Title,
         games.type,
         games.id AS artifactID
-        FROM responses 
+        FROM responses
         JOIN games ON games.id = responses.Title
-        WHERE responses.Player = '$player_id' 
-        ORDER BY responses.PlayDate DESC
-      ";
-      $resultObject = mysqli_query($db, $sql);
+        WHERE responses.Player = ?
+        ORDER BY responses.PlayDate DESC");
+      mysqli_stmt_bind_param($stmt_11, "i", $player_id);
+      mysqli_stmt_execute($stmt_11);
+      $resultObject = mysqli_stmt_get_result($stmt_11);
     ?>
     <h2>
       <?php echo $resultObject->num_rows; ?>

@@ -22,16 +22,17 @@
     }
   }
 
-  $sql = "SELECT * 
+  $sql = "SELECT *
     FROM games
     WHERE Candidate IS NOT NULL
     AND Candidate != '0'
     AND Candidate != ''
-    AND user_id = " . $_SESSION['user_id'] . "
+    AND user_id = ?
   ";
+  $params = [(int) $_SESSION['user_id']];
+  $types = "i";
 
   if (isset($_POST['showOnline'])) {
-
     switch($_POST['showOnline']) {
       case 'showOnlyOnline':
         $sql .= " AND Candidate LIKE '%online%' ";
@@ -40,35 +41,35 @@
         $sql .= " AND Candidate NOT LIKE '%online%' ";
         break;
     }
+  }
 
-  }
-  
   if (isset($_POST['removeUserByName']) && $_POST['removeUserByName'] != '') {
-    $sql .= " AND Candidate NOT LIKE '%" . $_POST['removeUserByName'] . "%' ";
+    $sql .= " AND Candidate NOT LIKE ? ";
+    $params[] = '%' . $_POST['removeUserByName'] . '%';
+    $types .= "s";
   }
-  
+
   if (isset($_POST['removeUserByNameTwo']) && $_POST['removeUserByNameTwo'] != '') {
-    $sql .= " AND Candidate NOT LIKE '%" . $_POST['removeUserByNameTwo'] . "%' ";
+    $sql .= " AND Candidate NOT LIKE ? ";
+    $params[] = '%' . $_POST['removeUserByNameTwo'] . '%';
+    $types .= "s";
   }
 
   if (count($type) > 0) {
-    $sql .= "AND type IN (";
-    $i = 1;
-    foreach($type as $typeIndividual) {
-      $sql .= "'" . $typeIndividual . "'";
-      if (count($type) != $i) {
-        $sql .= ",";
-      }
-      $i++;
+    $placeholders = implode(',', array_fill(0, count($type), '?'));
+    $sql .= "AND type IN (" . $placeholders . ") ";
+    foreach ($type as $typeIndividual) {
+      $params[] = $typeIndividual;
+      $types .= "s";
     }
-    $sql .= ") ";
   }
 
-  $sql .= " ORDER BY type ASC,
-    Candidate ASC
-  ";
+  $sql .= " ORDER BY type ASC, Candidate ASC";
 
-  $resultObject = mysqli_query($db, $sql);
+  $stmt = mysqli_prepare($db, $sql);
+  mysqli_stmt_bind_param($stmt, $types, ...$params);
+  mysqli_stmt_execute($stmt);
+  $resultObject = mysqli_stmt_get_result($stmt);
 
   include(SHARED_PATH . '/header.php');
   include(SHARED_PATH . '/dataTable.html'); 
@@ -119,14 +120,14 @@
       <div style="margin-top: 0.6rem">
         <label for="removeUserByName" style="display: inline">Remove User By Name</label>
         <input type="text" name="removeUserByName" id="removeUserByName" style="display: inline"
-          value="<?php if (isset($_POST['removeUserByName'])) { echo $_POST['removeUserByName']; } ?>"
+          value="<?php if (isset($_POST['removeUserByName'])) { echo h($_POST['removeUserByName']); } ?>"
         >
       </div>
       
       <div style="margin-top: 0.6rem">
         <label for="removeUserByNameTwo" style="display: inline">Remove Second User By Name</label>
         <input type="text" name="removeUserByNameTwo" id="removeUserByNameTwo" style="display: inline"
-          value="<?php if (isset($_POST['removeUserByNameTwo'])) { echo $_POST['removeUserByNameTwo']; } ?>"
+          value="<?php if (isset($_POST['removeUserByNameTwo'])) { echo h($_POST['removeUserByNameTwo']); } ?>"
         >
       </div>
     </section>
@@ -153,19 +154,14 @@
     <tbody>
       <?php foreach ($resultObject as $row) { 
         // find most recent use
-          $artifact_id = $row['id'];
+          $artifact_id = (int) $row['id'];
+          $current_user_id = (int) $_SESSION['user_id'];
 
-          $query = "SELECT 
-              id,
-              MAX(use_date) AS most_recent_use_date
-            FROM
-              uses
-            WHERE
-              artifact_id = '$artifact_id' 
-              AND user_id = " . $_SESSION['user_id'] . "
-          ";
-
-          $mostRecentUseDateArray = singleRowQuery($query);
+          $stmt_uses = mysqli_prepare($db, "SELECT id, MAX(use_date) AS most_recent_use_date FROM uses WHERE artifact_id = ? AND user_id = ?");
+          mysqli_stmt_bind_param($stmt_uses, "ii", $artifact_id, $current_user_id);
+          mysqli_stmt_execute($stmt_uses);
+          $mostRecentUseDateArray = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_uses));
+          mysqli_stmt_close($stmt_uses);
 
           $oneToManyUse = true;
 
@@ -173,17 +169,11 @@
 
             $oneToManyUse = false;
 
-            $query = "SELECT 
-                id,
-                MAX(PlayDate) AS most_recent_use_date
-              FROM
-                responses
-              WHERE
-                Title = '$artifact_id' 
-                AND user_id = " . $_SESSION['user_id'] . "
-            ";
-
-            $mostRecentUseDateArray = singleRowQuery($query);
+            $stmt_resp = mysqli_prepare($db, "SELECT id, MAX(PlayDate) AS most_recent_use_date FROM responses WHERE Title = ? AND user_id = ?");
+            mysqli_stmt_bind_param($stmt_resp, "ii", $artifact_id, $current_user_id);
+            mysqli_stmt_execute($stmt_resp);
+            $mostRecentUseDateArray = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_resp));
+            mysqli_stmt_close($stmt_resp);
 
           }
 

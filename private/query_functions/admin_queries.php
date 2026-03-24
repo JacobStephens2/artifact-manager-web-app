@@ -13,14 +13,14 @@
   function find_admin_by_id($id) {
     global $db;
 
-    $sql = "SELECT * FROM admins ";
-    $sql .= "WHERE id='" . db_escape($db, $id) . "' ";
-    $sql .= "LIMIT 1";
-    $result = mysqli_query($db, $sql);
+    $stmt = mysqli_prepare($db, "SELECT * FROM admins WHERE id = ? LIMIT 1");
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
-    $admin = mysqli_fetch_assoc($result); // find first
+    $admin = mysqli_fetch_assoc($result);
     mysqli_free_result($result);
-    return $admin; // returns an assoc. array
+    return $admin;
   }
   function validate_admin($admin, $options=[]) {
 

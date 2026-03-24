@@ -141,30 +141,26 @@ function update_playgroup_player($playgroupplayer) {
   function find_playgroup_by_user_id() {
     global $db;
 
-    $sql = "SELECT
-      playgroup.ID,
-      playgroup.FullName,
-      players.FirstName,
-      players.LastName,
-      players.id AS playerID ";
-    $sql .= "FROM playgroup LEFT JOIN players ON playgroup.FullName = players.id ";
-    $sql .= "WHERE playgroup.user_id = '" . db_escape($db, $_SESSION['user_id']) . "'";
-    $result = mysqli_query($db, $sql);
+    $user_id = (int) $_SESSION['user_id'];
+    $stmt = mysqli_prepare($db, "SELECT playgroup.ID, playgroup.FullName, players.FirstName, players.LastName, players.id AS playerID FROM playgroup LEFT JOIN players ON playgroup.FullName = players.id WHERE playgroup.user_id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
-    return $result; // returns an assoc. array
+    return $result;
   }
 
   function find_playgroup_player_by_id($ID) {
     global $db;
 
-    $sql = "SELECT playgroup.ID, playgroup.FullName, players.FirstName, players.LastName FROM playgroup LEFT JOIN players ON playgroup.FullName = players.id ";
-    $sql .= "WHERE playgroup.ID='" . db_escape($db, $ID) . "' ";
-    $sql .= "LIMIT 1";
-    $result = mysqli_query($db, $sql);
+    $stmt = mysqli_prepare($db, "SELECT playgroup.ID, playgroup.FullName, players.FirstName, players.LastName FROM playgroup LEFT JOIN players ON playgroup.FullName = players.id WHERE playgroup.ID = ? LIMIT 1");
+    mysqli_stmt_bind_param($stmt, "i", $ID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     confirm_result_set($result);
     $subject = mysqli_fetch_assoc($result);
     mysqli_free_result($result);
-    return $subject; // returns an assoc. array
+    return $subject;
   }
 
   function insert_playgroup($response) {

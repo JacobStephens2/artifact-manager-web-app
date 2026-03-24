@@ -21,13 +21,14 @@
 
     $cache_key = 'find_type_by_id_' . $id;
     return $cache->remember($cache_key, 3600, function() use ($db, $id) {
-      $sql = "SELECT * FROM types ";
-      $sql .= "WHERE id='" . db_escape($db, $id) . "' ";
-      $result = mysqli_query($db, $sql);
+      $stmt = mysqli_prepare($db, "SELECT * FROM types WHERE id = ?");
+      mysqli_stmt_bind_param($stmt, "i", $id);
+      mysqli_stmt_execute($stmt);
+      $result = mysqli_stmt_get_result($stmt);
       confirm_result_set($result);
       $type = mysqli_fetch_assoc($result);
       mysqli_free_result($result);
-      return $type; // returns an assoc. array
+      return $type;
     });
   }
 
