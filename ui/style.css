@@ -488,12 +488,53 @@ a.prominent-link {
   border-radius: 0.8rem;
   font-size: 1.3rem;
   font-family: "Raleway", Arial, Helvetica, sans-serif;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1.2rem;
 }
 
 a.prominent-link:hover {
   background: #80d0c7;
   color: white;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.menu-card {
+  background: white;
+  border-radius: 0.6rem;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.menu-card-title {
+  font-family: "Raleway", Arial, Helvetica, sans-serif;
+  font-size: 1.1rem;
+  margin: 0 0 0.6rem 0;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid #0093e9;
+  color: #30395c;
+}
+
+a.menu-link {
+  display: block;
+  text-decoration: none;
+  color: #0093e9;
+  padding: 0.35rem 0;
+  font-size: 1.05rem;
+}
+
+a.menu-link:hover {
+  color: #80d0c7;
+}
+
+p.menu-about {
+  color: #666;
+  font-size: 0.95rem;
+  max-width: 50rem;
 }
 
 ul ul {
