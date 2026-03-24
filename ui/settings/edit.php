@@ -8,35 +8,37 @@ require_login();
 $page_title = 'Edit User Settings';
 
 if(is_post_request()) {
-  $query = "UPDATE users
-    SET first_name = '" . db_escape($db, $_POST['first_name']) . "',
-      last_name = '" . db_escape($db, $_POST['last_name']) . "',
-      email = '" . db_escape($db, $_POST['email']) . "',
-      username = '" . db_escape($db, $_POST['username']) . "',
-      default_setting = '" . db_escape($db, $_POST['default_setting']) . "',
-      default_use_interval  = '" . db_escape($db, $_POST['default_use_interval']) . "',
-      daily_email = " . (isset($_POST['daily_email']) ? 1 : 0) . "
-      WHERE id = " . $_SESSION['user_id'] . "
-      LIMIT 1
-  ";
-  $update_result = query($query);
+  $daily_email = isset($_POST['daily_email']) ? 1 : 0;
+  $user_id = (int) $_SESSION['user_id'];
+
+  $stmt = mysqli_prepare($db, "UPDATE users
+    SET first_name = ?, last_name = ?, email = ?, username = ?,
+        default_setting = ?, default_use_interval = ?, daily_email = ?
+    WHERE id = ? LIMIT 1");
+  mysqli_stmt_bind_param($stmt, "sssssiii",
+    $_POST['first_name'],
+    $_POST['last_name'],
+    $_POST['email'],
+    $_POST['username'],
+    $_POST['default_setting'],
+    $_POST['default_use_interval'],
+    $daily_email,
+    $user_id
+  );
+  $update_result = mysqli_stmt_execute($stmt);
+  mysqli_stmt_close($stmt);
 }
 
-$findUserSQL = "SELECT 
-  first_name,
-  last_name,
-  email,
-  username,
-  default_use_interval,
-  default_setting,
-  daily_email
-  FROM users
-  WHERE id = " . $_SESSION['user_id'] . "
-;";
-
-$userResult = mysqli_query($db, $findUserSQL);
-
+$user_id = (int) $_SESSION['user_id'];
+$stmt = mysqli_prepare($db, "SELECT
+  first_name, last_name, email, username,
+  default_use_interval, default_setting, daily_email
+  FROM users WHERE id = ?");
+mysqli_stmt_bind_param($stmt, "i", $user_id);
+mysqli_stmt_execute($stmt);
+$userResult = mysqli_stmt_get_result($stmt);
 $userArray = mysqli_fetch_assoc($userResult);
+mysqli_stmt_close($stmt);
 
 ?>
 

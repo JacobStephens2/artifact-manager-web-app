@@ -23,7 +23,7 @@ if (is_post_request()) {
     try {
       log_in_user($user);
       redirect_to(url_for('/index.php'));
-    } catch (error) {
+    } catch (Exception $e) {
       redirect_to(url_for('/index.php'));
     }
   } else {
