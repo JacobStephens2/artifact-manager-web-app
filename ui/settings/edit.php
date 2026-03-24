@@ -9,13 +9,17 @@ $page_title = 'Edit User Settings';
 
 if(is_post_request()) {
   $daily_email = isset($_POST['daily_email']) ? 1 : 0;
+  $daily_email_hour = (int) ($_POST['daily_email_hour'] ?? 8);
+  if ($daily_email_hour < 0 || $daily_email_hour > 23) {
+    $daily_email_hour = 8;
+  }
   $user_id = (int) $_SESSION['user_id'];
 
   $stmt = mysqli_prepare($db, "UPDATE users
     SET first_name = ?, last_name = ?, email = ?, username = ?,
-        default_setting = ?, default_use_interval = ?, daily_email = ?
+        default_setting = ?, default_use_interval = ?, daily_email = ?, daily_email_hour = ?
     WHERE id = ? LIMIT 1");
-  mysqli_stmt_bind_param($stmt, "sssssiii",
+  mysqli_stmt_bind_param($stmt, "sssssiiii",
     $_POST['first_name'],
     $_POST['last_name'],
     $_POST['email'],
@@ -23,6 +27,7 @@ if(is_post_request()) {
     $_POST['default_setting'],
     $_POST['default_use_interval'],
     $daily_email,
+    $daily_email_hour,
     $user_id
   );
   $update_result = mysqli_stmt_execute($stmt);
@@ -32,7 +37,7 @@ if(is_post_request()) {
 $user_id = (int) $_SESSION['user_id'];
 $stmt = mysqli_prepare($db, "SELECT
   first_name, last_name, email, username,
-  default_use_interval, default_setting, daily_email
+  default_use_interval, default_setting, daily_email, daily_email_hour
   FROM users WHERE id = ?");
 mysqli_stmt_bind_param($stmt, "i", $user_id);
 mysqli_stmt_execute($stmt);
@@ -122,6 +127,20 @@ mysqli_stmt_close($stmt);
       >
       Receive daily use-by email
     </label>
+
+    <label for="daily_email_hour">Preferred email time (Eastern Time)</label>
+    <select name="daily_email_hour" id="daily_email_hour">
+      <?php
+        for ($h = 0; $h <= 23; $h++) {
+          $label = ($h === 0) ? '12:00 AM (midnight)' :
+                   (($h < 12) ? $h . ':00 AM' :
+                   (($h === 12) ? '12:00 PM (noon)' :
+                   ($h - 12) . ':00 PM'));
+          $selected = ((int)$userArray['daily_email_hour'] === $h) ? 'selected' : '';
+          echo "<option value=\"$h\" $selected>$label</option>";
+        }
+      ?>
+    </select>
 
     <input type="submit" value="Update Settings">
   </form>
