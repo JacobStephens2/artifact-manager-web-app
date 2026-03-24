@@ -537,6 +537,45 @@ p.menu-about {
   max-width: 50rem;
 }
 
+.overdue-card {
+  margin-bottom: 1rem;
+}
+
+.overdue-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 0.5rem 0;
+}
+
+.overdue-table td {
+  border: none;
+  padding: 0.35rem 0.5rem;
+  font-size: 1.05rem;
+}
+
+.overdue-name {
+  max-width: 20rem;
+}
+
+.overdue-name a {
+  text-decoration: none;
+}
+
+.overdue-date {
+  white-space: nowrap;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.overdue-past {
+  color: #c0392b;
+  font-weight: bold;
+}
+
+.overdue-action a {
+  font-size: 0.9rem;
+}
+
 ul ul {
   padding-left: 2rem;
 }
