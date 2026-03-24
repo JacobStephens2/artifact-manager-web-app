@@ -539,22 +539,28 @@ p.menu-about {
 
 .overdue-card {
   margin-bottom: 1rem;
+  overflow: hidden;
 }
 
 .overdue-table {
   width: 100%;
   border-collapse: collapse;
   margin: 0 0 0.5rem 0;
+  table-layout: fixed;
 }
 
 .overdue-table td {
   border: none;
   padding: 0.35rem 0.5rem;
   font-size: 1.05rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .overdue-name {
-  max-width: 20rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .overdue-name a {
@@ -565,11 +571,16 @@ p.menu-about {
   white-space: nowrap;
   font-size: 0.95rem;
   color: #666;
+  width: 6.5rem;
 }
 
 .overdue-past {
   color: #c0392b;
   font-weight: bold;
+}
+
+.overdue-action {
+  width: 4rem;
 }
 
 .overdue-action a {
