@@ -1,13 +1,23 @@
-const CACHE_NAME = 'artifact-manager-v1';
+const CACHE_NAME = 'artifact-manager-v2';
 const STATIC_ASSETS = [
   '/style.css',
+  '/manifest.json',
   '/assets/icon-192x192.png',
-  '/assets/icon-512x512.png'
+  '/assets/icon-512x512.png',
+  '/assets/copy.png',
+  '/fonts/RobotoSlab-VariableFont_wght.ttf',
+  '/shared/js/api-client.js',
+  '/shared/js/search-component.js',
+  '/shared/js/filter-utils.js'
 ];
+
+const OFFLINE_PAGE = '/offline.html';
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then(cache =>
+      cache.addAll([...STATIC_ASSETS, OFFLINE_PAGE])
+    )
   );
   self.skipWaiting();
 });
@@ -24,25 +34,35 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const request = event.request;
 
-  // Let navigation and API requests go to the network first
-  if (request.mode === 'navigate' || request.url.includes('/api/')) {
+  // Skip non-GET requests
+  if (request.method !== 'GET') return;
+
+  // Navigation requests: network first, offline fallback
+  if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request).catch(() => caches.match(request))
+      fetch(request).catch(() => caches.match(OFFLINE_PAGE))
     );
     return;
   }
 
-  // For static assets, try cache first, then network
+  // API requests: network only (don't cache dynamic data)
+  if (request.url.includes('/api/') || request.url.includes('api.artifact')) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
+  // Static assets: stale-while-revalidate
   event.respondWith(
     caches.match(request).then(cached => {
-      if (cached) return cached;
-      return fetch(request).then(response => {
-        if (response.ok && request.method === 'GET') {
+      const fetchPromise = fetch(request).then(response => {
+        if (response.ok) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
         }
         return response;
-      });
+      }).catch(() => cached);
+
+      return cached || fetchPromise;
     })
   );
 });
