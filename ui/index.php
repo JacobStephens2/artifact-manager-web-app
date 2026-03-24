@@ -28,7 +28,7 @@ $stmt = mysqli_prepare($db, "SELECT
     LEFT JOIN responses ON games.id = responses.Title
     LEFT JOIN uses ON games.id = uses.artifact_id
     LEFT JOIN types ON games.type_id = types.id
-  GROUP BY games.id, games.Title, games.Acq, games.interaction_frequency_days, types.objectType, games.KeptCol
+  GROUP BY games.id, games.Title, games.Acq, games.interaction_frequency_days, types.objectType, games.KeptCol, games.user_id
   HAVING games.user_id = ? AND games.KeptCol = 1
   ORDER BY MostRecentUseOrResponse ASC");
 mysqli_stmt_bind_param($stmt, "i", $user_id);
