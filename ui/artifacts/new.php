@@ -121,7 +121,7 @@ include(SHARED_PATH . '/header.php');
 
       <label for="KeptCol">Tracked? (Checked Means Yes)</label>
       <input type="hidden" name="KeptCol" value="0" />
-      <input type="checkbox" name="KeptCol" value="1" checked/>
+      <input type="checkbox" name="KeptCol" id="KeptCol" value="1" checked/>
       
       <label for="Notes">Notes</label>
       <textarea name="Notes" id="Notes" cols="30" rows="5"></textarea>

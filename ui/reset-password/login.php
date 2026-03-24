@@ -61,10 +61,10 @@ if(is_post_request()) {
 
       <form action="login.php" method="post">
         <?php echo csrf_input(); ?>
-        <h2>Username or Email:</h2>
-        <input class="input-box" type="text" name="username" value=""/>
-        <h2>Password:</h2>
-        <input class="input-box" type="password" name="password" value=""/><br>
+        <label for="username"><h2>Username or Email:</h2></label>
+        <input class="input-box" type="text" name="username" id="username" value="" required/>
+        <label for="password"><h2>Password:</h2></label>
+        <input class="input-box" type="password" name="password" id="password" value="" required/>
         <input class="submit" type="submit" name="submit" value="Submit"  />
       </form>
 

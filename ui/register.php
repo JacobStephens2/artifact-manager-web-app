@@ -65,35 +65,23 @@ if (is_post_request()) {
 
     <form action="<?php echo url_for('/register.php'); ?>" method="post">
       <?php echo csrf_input(); ?>
-      <dl>
-        <dt>First name</dt>
-        <dd><input type="text" name="first_name" value="<?php echo h($user['first_name']); ?>" required minlength="2" maxlength="255" /></dd>
-      </dl>
+      <label for="first_name">First name</label>
+      <input type="text" name="first_name" id="first_name" value="<?php echo h($user['first_name']); ?>" required minlength="2" maxlength="255" />
 
-      <dl>
-        <dt>Last name</dt>
-        <dd><input type="text" name="last_name" value="<?php echo h($user['last_name']); ?>" required minlength="2" maxlength="255" /></dd>
-      </dl>
+      <label for="last_name">Last name</label>
+      <input type="text" name="last_name" id="last_name" value="<?php echo h($user['last_name']); ?>" required minlength="2" maxlength="255" />
 
-      <dl>
-        <dt>Username</dt>
-        <dd><input type="text" name="username" value="<?php echo h($user['username']); ?>" required minlength="8" maxlength="255" /></dd>
-      </dl>
+      <label for="username">Username</label>
+      <input type="text" name="username" id="username" value="<?php echo h($user['username']); ?>" required minlength="8" maxlength="255" />
 
-      <dl>
-        <dt>Email</dt>
-        <dd><input type="email" name="email" value="<?php echo h($user['email']); ?>" required maxlength="255" /></dd>
-      </dl>
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email" value="<?php echo h($user['email']); ?>" required maxlength="255" />
 
-      <dl>
-        <dt>Password</dt>
-        <dd><input type="password" name="password" value="" required minlength="12" /></dd>
-      </dl>
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" value="" required minlength="12" />
 
-      <dl>
-        <dt>Confirm Password</dt>
-        <dd><input type="password" name="confirm_password" value="" required minlength="12" /></dd>
-      </dl>
+      <label for="confirm_password">Confirm Password</label>
+      <input type="password" name="confirm_password" id="confirm_password" value="" required minlength="12" />
       <p>
         Passwords should be at least 12 characters and include at least one uppercase letter, lowercase letter, number, and symbol.
       </p>
