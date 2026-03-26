@@ -68,6 +68,10 @@
           <a href="<?php echo url_for('/artifacts'); ?>">
             Entities
           </a>
+
+          <a href="<?php echo url_for('/artifacts/to-get-rid-of'); ?>">
+            To&nbsp;Get&nbsp;Rid&nbsp;Of
+          </a>
         
           <a href="<?php echo url_for('/artifacts/new'); ?>">
             Create&nbsp;Entity

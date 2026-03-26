@@ -34,6 +34,7 @@
 
     $artifact['interaction_frequency_days'] = $_POST['interaction_frequency_days'] ?? $default_interval;
     $artifact['KeptCol'] = $_POST['KeptCol'] ?? '';
+    $artifact['to_get_rid_of'] = $_POST['to_get_rid_of'] ?? '0';
     $artifact['Candidate'] = $_POST['Candidate'] ?? '';
     $artifact['CandidateGroupDate'] = date('Y-m-d');
     $artifact['UsedRecUserCt'] = '0';
@@ -102,6 +103,10 @@
       <label for="KeptCol" >Tracked? (Checked means yes)</label>
       <input type="hidden" name="KeptCol" value="0" />
       <input type="checkbox" name="KeptCol" id="KeptCol" value="1"<?php if($artifact['KeptCol'] == "1") { echo " checked"; } ?> />
+
+      <label for="to_get_rid_of">To Get Rid Of? (Checked means yes)</label>
+      <input type="hidden" name="to_get_rid_of" value="0" />
+      <input type="checkbox" name="to_get_rid_of" id="to_get_rid_of" value="1"<?php if($artifact['to_get_rid_of'] == "1") { echo " checked"; } ?> />
 
       <label for="interaction_frequency_days">Interaction Frequency (Days)</label>
       <input type="number" step="0.1" name="interaction_frequency_days" id="interaction_frequency_days"

@@ -4,6 +4,43 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
+  function set_artifact_to_get_rid_of($artifact_id, $value) {
+    global $db;
+    $user_id = (int) $_SESSION['user_id'];
+    $artifact_id = (int) $artifact_id;
+    $value = (int) $value;
+    $stmt = mysqli_prepare($db, "UPDATE games SET to_get_rid_of = ? WHERE id = ? AND user_id = ? LIMIT 1");
+    mysqli_stmt_bind_param($stmt, "iii", $value, $artifact_id, $user_id);
+    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $result;
+  }
+
+  function find_artifacts_to_get_rid_of() {
+    global $db;
+    $user_id = (int) $_SESSION['user_id'];
+    $stmt = mysqli_prepare($db, "SELECT games.id, games.Title, games.Acq, games.interaction_frequency_days,
+        types.objectType AS type,
+        games.to_get_rid_of,
+        CASE
+          WHEN MAX(uses.use_date) IS NULL THEN MAX(responses.PlayDate)
+          WHEN MAX(uses.use_date) < MAX(responses.PlayDate) THEN MAX(responses.PlayDate)
+          ELSE MAX(uses.use_date)
+        END AS MostRecentUseOrResponse
+      FROM games
+        LEFT JOIN responses ON games.id = responses.Title
+        LEFT JOIN uses ON games.id = uses.artifact_id
+        LEFT JOIN types ON games.type_id = types.id
+      GROUP BY games.id, games.Title, games.Acq, games.interaction_frequency_days, types.objectType, games.user_id, games.to_get_rid_of
+      HAVING games.user_id = ? AND games.to_get_rid_of = 1
+      ORDER BY games.Title ASC");
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    confirm_result_set($result);
+    return $result;
+  }
+
   function find_artifacts_by_user() {
     global $db;
 
@@ -232,22 +269,25 @@ use PHPMailer\PHPMailer\Exception;
     $type_id = (int) $artifact['type'];
     $type_name = get_type_name($type_id);
 
+    $to_get_rid_of = isset($artifact['to_get_rid_of']) ? (int) $artifact['to_get_rid_of'] : 0;
+
     $stmt = mysqli_prepare($db,
       "UPDATE games SET
         Title=?, KeptCol=?, Acq=?, Candidate=?, UsedRecUserCt=?,
         type_id=?, type=?, SS=?, Notes=?, CandidateGroupDate=?,
         MnT=?, MxT=?, Age=?, InSecondaryCollection=?, MnP=?, MxP=?,
-        interaction_frequency_days=?
+        interaction_frequency_days=?, to_get_rid_of=?
       WHERE id=?
       LIMIT 1"
     );
-    mysqli_stmt_bind_param($stmt, "sssssissssssssssi",
+    mysqli_stmt_bind_param($stmt, "sssssisssssssssssii",
       $artifact['Title'], $artifact['KeptCol'], $artifact['Acq'],
       $artifact['Candidate'], $artifact['UsedRecUserCt'],
       $type_id, $type_name, $artifact['SS'], $artifact['Notes'],
       $artifact['CandidateGroupDate'], $artifact['MnT'], $artifact['MxT'],
       $artifact['age'], $artifact['InSecondaryCollection'],
       $artifact['MnP'], $artifact['MxP'], $artifact['interaction_frequency_days'],
+      $to_get_rid_of,
       $artifact['id']
     );
     $result = mysqli_stmt_execute($stmt);
@@ -487,7 +527,8 @@ use PHPMailer\PHPMailer\Exception;
         END MostRecentUseOrResponse,
         games.Acq,
         games.KeptCol,
-        games.interaction_frequency_days
+        games.interaction_frequency_days,
+        games.to_get_rid_of
       FROM games
         LEFT JOIN responses ON games.id = responses.Title
         LEFT JOIN uses ON games.id = uses.artifact_id
@@ -501,6 +542,8 @@ use PHPMailer\PHPMailer\Exception;
 
       $params[] = $user;
       $param_types .= 's';
+
+      $sql .= " AND (games.to_get_rid_of = 0 OR games.to_get_rid_of IS NULL) ";
 
       if ($shelfSort == 'yes') {
         $sql .= " AND (games.KeptCol = 1 OR games.InSecondaryCollection = 'yes') ";

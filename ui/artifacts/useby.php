@@ -141,6 +141,7 @@
             <?php
           }
         ?>
+        <th class="hideOnPrint">Get Rid Of</th>
         <th>Overdue (<span id="totalOverdue"></span>)</th>
         <th class="hideOnPrint">Recent Interaction</th>
         <th>Tracking Start</th>
@@ -255,6 +256,16 @@
           }
           ?>
 
+          <td class="get-rid-of hideOnPrint">
+            <form method="post" action="<?php echo url_for('/artifacts/mark-get-rid-of.php'); ?>" style="display:inline; margin:0;">
+              <?php echo csrf_input(); ?>
+              <input type="hidden" name="artifact_id" value="<?php echo $id; ?>">
+              <input type="hidden" name="artifact_name" value="<?php echo h($artifact['Title']); ?>">
+              <input type="hidden" name="return_to" value="useby">
+              <button type="submit" class="get-rid-of-btn">Get Rid Of</button>
+            </form>
+          </td>
+
           <td class="overdue"
             <?php
                 if ($useByDate < $DateTimeNow) {
@@ -299,7 +310,7 @@
             [ 7, 'asc'], // SwS's
             [ 8, 'asc'], // MnP
             [ 9, 'asc'], // MxP
-            [ 12, 'desc'], // recent use
+            [ 13, 'desc'], // recent use
             [ 10, 'desc'], // C
           ]
           <?php
@@ -315,8 +326,8 @@
           ?>
           order: [
             [ 1, 'asc'],  // interact by date
-            [ 5, 'asc'],  // recent use
-            [ 6, 'asc'],  // acquisition date
+            [ 6, 'asc'],  // recent use
+            [ 7, 'asc'],  // acquisition date
           ]
           <?php
         }

@@ -28,8 +28,8 @@ $stmt = mysqli_prepare($db, "SELECT
     LEFT JOIN responses ON games.id = responses.Title
     LEFT JOIN uses ON games.id = uses.artifact_id
     LEFT JOIN types ON games.type_id = types.id
-  GROUP BY games.id, games.Title, games.Acq, games.interaction_frequency_days, types.objectType, games.KeptCol, games.user_id
-  HAVING games.user_id = ? AND games.KeptCol = 1
+  GROUP BY games.id, games.Title, games.Acq, games.interaction_frequency_days, types.objectType, games.KeptCol, games.user_id, games.to_get_rid_of
+  HAVING games.user_id = ? AND games.KeptCol = 1 AND (games.to_get_rid_of = 0 OR games.to_get_rid_of IS NULL)
   ORDER BY MostRecentUseOrResponse ASC");
 mysqli_stmt_bind_param($stmt, "i", $user_id);
 mysqli_stmt_execute($stmt);
@@ -123,6 +123,7 @@ include(SHARED_PATH . '/header.php');
         <a class="menu-link" href="<?php echo url_for('/artifacts/index.php'); ?>">All Entities</a>
         <a class="menu-link" href="<?php echo url_for('/artifacts/new.php'); ?>">Create New Entity</a>
         <a class="menu-link" href="<?php echo url_for('/artifacts/useby.php'); ?>">Interact by Date List</a>
+        <a class="menu-link" href="<?php echo url_for('/artifacts/to-get-rid-of.php'); ?>">To Get Rid Of</a>
       </div>
 
       <div class="menu-card">

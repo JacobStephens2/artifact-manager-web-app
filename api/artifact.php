@@ -86,7 +86,7 @@
         'Access', 'Acq', 'Age', 'age_max', 'Av', 'BGG_Rat', 'Candidate',
         'FavCt', 'FullTitle', 'KeptCol', 'KeptDig', 'KeptPhys', 'MnP',
         'MnT', 'MxP', 'MxT', 'OrigPlat', 'SS', 'System', 'Title',
-        'type', 'UsedRecUserCt', 'Wt', 'Yr'
+        'to_get_rid_of', 'type', 'UsedRecUserCt', 'Wt', 'Yr'
       ];
 
       foreach ($allowed_fields as $field) {
@@ -158,7 +158,7 @@
         'Access', 'Acq', 'Age', 'age_max', 'Av', 'BGG_Rat', 'Candidate',
         'FavCt', 'FullTitle', 'KeptCol', 'KeptDig', 'KeptPhys', 'MnP',
         'MnT', 'MxP', 'MxT', 'OrigPlat', 'SS', 'System', 'Title',
-        'type', 'UsedRecUserCt', 'Wt', 'Yr'
+        'to_get_rid_of', 'type', 'UsedRecUserCt', 'Wt', 'Yr'
       ];
 
       $update_data = [];

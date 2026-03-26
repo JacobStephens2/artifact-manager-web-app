@@ -6,7 +6,7 @@ class Artifact extends DatabaseObject {
   static protected $db_columns = [
     'Access', 'Acq', 'Age', 'age_max', 'Av', 'BGG_Rat', 'Candidate', 'FavCt', 'FullTitle', 'id', 'KeptCol', 
     'KeptDig', 'KeptPhys', 'MnP', 'MnT', 'MxP', 'MxT', 'OrigPlat', 'SS', 'System', 'Title', 
-    'type', 'UsedRecUserCt', 'user_id', 'Wt', 'Yr'
+    'to_get_rid_of', 'type', 'UsedRecUserCt', 'user_id', 'Wt', 'Yr'
   ];
 
   public $id;
@@ -31,6 +31,7 @@ class Artifact extends DatabaseObject {
   public $SS;
   public $System;
   public $Title;
+  public $to_get_rid_of;
   public $type;
   public $UsedRecUserCt;
   public $user_id;

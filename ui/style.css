@@ -820,3 +820,34 @@ p.copied_message {
 td.name.artifact.edit {
   width: 23rem;
 }
+
+button.get-rid-of-btn {
+  background: #e67e22;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin: 0;
+  white-space: nowrap;
+}
+
+button.get-rid-of-btn:hover {
+  background: #d35400;
+}
+
+button.restore-btn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin: 0;
+}
+
+button.restore-btn:hover {
+  background: #1e8449;
+}

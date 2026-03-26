@@ -48,6 +48,7 @@ The primary artifacts table. Despite its name, it stores all artifact types (boa
 | `KeptPhys` | TINYINT(1) | YES | Kept in physical collection |
 | `Notes` | TEXT | YES | Free-form notes |
 | `interaction_frequency_days` | DECIMAL/FLOAT | YES | Per-artifact override for the interaction frequency interval (in days) |
+| `to_get_rid_of` | TINYINT(1) | NO | Whether the user has marked this artifact to get rid of (1 = yes, 0 = no, default 0). Excludes from interact-by list |
 
 **Primary key:** `id`
 **Foreign keys:**
