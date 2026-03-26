@@ -37,7 +37,7 @@
 
   define("WWW_ROOT", '');
 
-  require_once('vendor/autoload.php');
+  require_once(__DIR__ . '/vendor/autoload.php');
   require_once('environment_variables.php');
 
   require_once('functions.php');

@@ -730,7 +730,9 @@ function email_artifact_use_notice($user_id) {
 
       date_default_timezone_set('America/New_York');
       $DateTimeNow = new DateTime(date('Y-m-d'));
-      $DateTimeMostRecentUse = new DateTime(substr($artifact['MostRecentUseOrResponse'],0,10));
+      $DateTimeMostRecentUse = ($artifact['MostRecentUseOrResponse'] !== NULL)
+          ? new DateTime(substr($artifact['MostRecentUseOrResponse'],0,10))
+          : new DateTime('1970-01-01');
       if ($artifact['MostRecentUseOrResponse'] === NULL) {
           $date_of_most_recent_use = 'No interactions';
       } else {
@@ -931,7 +933,7 @@ function email_artifact_use_notice($user_id) {
           } catch (Exception $Exception) {
               file_put_contents(__FILE__ . '.log',
                   'Email exception caught in email notification to dev of error at '
-                  . $currentDate->format('Y-m-d H:i:s') . "\n"
+                  . date('Y-m-d H:i:s') . "\n"
                   . print_r($Exception, true) . "\n",
                   FILE_APPEND
               );
