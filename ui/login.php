@@ -77,10 +77,14 @@ if ($action == 'logout') {
 <?php include(SHARED_PATH . '/header.php'); ?>
   
     <main>
+      <div style="text-align: center; margin-bottom: 1rem;">
+        <img src="<?php echo url_for('/assets/icon-512x512.png'); ?>" alt="Artifact Manager logo" style="width: 120px; height: 120px;">
+      </div>
+
       <p>
-        You can use this site to generate a list of use-by dates for objects. 
-        <a href="https://jacobstephens.net" target="_blank">Jacob Stephens</a> uses this tool 
-        to track usage of their books, ensuring they use each book either in the next 
+        You can use this site to generate a list of use-by dates for objects.
+        <a href="https://jacobstephens.net" target="_blank">Jacob Stephens</a> uses this tool
+        to track usage of their books, ensuring they use each book either in the next
         or previous x days. <a href="https://www.theminimalists.com/ninety/" target="_blank">
           The Minimalists' 90/90 Rule</a> inspired Jacob to create this&nbsp;tool.
       </p>

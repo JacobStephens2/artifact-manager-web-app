@@ -1,0 +1,3 @@
+# Artifact Manager Logo - Image Generation Prompt
+
+A modern minimalist app icon for "Artifact Manager", a personal object tracking app inspired by minimalism. Design features a stylized letter "A" centered on a dark navy-blue background (#30395c), rendered in a cyan-to-teal gradient (#0093e9 to #80d0c7). The A has clean geometric lines evoking both a letter and an amphora/artifact silhouette. A thin circular arc wraps three-quarters around the A, suggesting a timer or tracking cycle. Small glowing dot accent at the top of the arc. Rounded square app icon shape. Flat design, no shadows, no text other than the letter. Clean vector style suitable for favicon and PWA icon use.

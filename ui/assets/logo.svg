@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0093e9"/>
+      <stop offset="100%" stop-color="#80d0c7"/>
+    </linearGradient>
+    <linearGradient id="grad2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0093e9"/>
+      <stop offset="100%" stop-color="#80d0c7"/>
+    </linearGradient>
+    <clipPath id="roundedSquare">
+      <rect x="0" y="0" width="512" height="512" rx="96" ry="96"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" ry="96" fill="#30395c"/>
+
+  <!-- Circular arc suggesting cycle/tracking (90-day concept) -->
+  <circle cx="256" cy="240" r="155" fill="none" stroke="url(#grad)" stroke-width="6" stroke-dasharray="730 244" stroke-dashoffset="-60" stroke-linecap="round" opacity="0.3"/>
+
+  <!-- Stylized artifact: amphora/vessel shape built from the letter A -->
+  <!-- Main body of the A / vessel -->
+  <path d="
+    M 256 88
+    L 170 360
+    L 190 360
+    L 214 278
+    L 298 278
+    L 322 360
+    L 342 360
+    Z
+  " fill="url(#grad)" opacity="0.95"/>
+
+  <!-- Crossbar of A -->
+  <rect x="206" y="252" width="100" height="0" fill="#30395c"/>
+
+  <!-- Inner triangle cutout to form the A -->
+  <path d="
+    M 256 148
+    L 222 262
+    L 290 262
+    Z
+  " fill="#30395c"/>
+
+  <!-- Small base/pedestal suggesting artifact display -->
+  <rect x="162" y="364" width="188" height="8" rx="4" fill="url(#grad2)" opacity="0.7"/>
+
+  <!-- Subtle dot/timer at top suggesting tracking -->
+  <circle cx="256" cy="68" r="6" fill="#80d0c7" opacity="0.8"/>
+
+  <!-- Small arc segment at top-right: progress indicator / use-by tracker -->
+  <path d="M 370 130 A 155 155 0 0 0 330 100" fill="none" stroke="#80d0c7" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+</svg>
