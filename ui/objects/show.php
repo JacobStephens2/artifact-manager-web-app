@@ -2,7 +2,7 @@
 
 require_once('../../private/initialize.php');
 
-require_login();
+require_login_or_guest();
 
 $id = $_GET['id'] ?? '1'; // PHP > 7.0
 

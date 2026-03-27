@@ -1,7 +1,7 @@
 <?php 
   require_once('../../private/initialize.php');
   global $db;
-  require_login();
+  require_login_or_guest();
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $kept = $_POST['kept'] ?? 'allkeptandnot';
     if (isset($_POST['type'])) {
@@ -189,9 +189,9 @@
             <td><?php echo h($artifact['type']); ?></td>
 
             <td class="artifact_title">
-              <a class="table-action" 
-                href="<?php echo url_for('/artifacts/edit.php?id=' . h(u($artifact['id']))); ?>"
-                >  
+              <a class="table-action"
+                href="<?php echo url_for('/artifacts/' . (is_guest() ? 'show' : 'edit') . '.php?id=' . h(u($artifact['id']))); ?>"
+                >
                 <?php echo h($artifact['Title']); ?>
               </a>
             </td>

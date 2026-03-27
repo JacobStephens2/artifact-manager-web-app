@@ -30,4 +30,6 @@ define("REQUEST_ORIGIN", ARTIFACTS_DOMAIN);
 
 define("SWEET_SPOT_BUTTONS_ON", false);
 
+define("DEMO_USER_ID", 0); // User ID whose data guests will browse
+
 ?>

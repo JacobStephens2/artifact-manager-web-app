@@ -159,6 +159,27 @@ function require_login() {
     }
 }
 
+function start_guest_session() {
+  $_SESSION = [];
+  session_regenerate_id();
+  $_SESSION['user_id'] = DEMO_USER_ID;
+  $_SESSION['guest_mode'] = true;
+  $_SESSION['FullName'] = 'Guest';
+  $_SESSION['username'] = 'Guest';
+  $_SESSION['logged_in'] = false;
+  $_SESSION['user_group'] = 0;
+}
+
+function is_guest() {
+  return !empty($_SESSION['guest_mode']);
+}
+
+function require_login_or_guest() {
+  if (!is_logged_in() && !is_guest()) {
+    redirect_to(url_for('/login.php?redirectURL=' . urlencode($_SERVER['REQUEST_URI'])));
+  }
+}
+
 function require_admin() {
   if(!is_logged_in() || $_SESSION['user_group'] < 2) {
     redirect_to(url_for('/login.php'));

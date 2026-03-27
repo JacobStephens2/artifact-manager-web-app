@@ -1,6 +1,6 @@
 <?php
 require_once('../../private/initialize.php');
-require_login();
+require_login_or_guest();
 $page_title = 'Use By';
 include(SHARED_PATH . '/header.php');
 if(is_post_request()) {

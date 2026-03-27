@@ -70,6 +70,10 @@ if ($action == 'logout') {
   session_start();
   generate_csrf_token();
 }
+if ($action == 'guest') {
+  start_guest_session();
+  redirect_to(url_for('/index.php'));
+}
 
 ?>
 
@@ -90,6 +94,7 @@ if ($action == 'logout') {
       </p>
 
       <a href="<?php echo url_for('/register.php'); ?>"><button type="button">Create an account</button></a>
+      <a href="<?php echo url_for('/login.php?action=guest'); ?>"><button type="button">Browse as Guest</button></a>
 
       <h1>Log in</h1>
 

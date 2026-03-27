@@ -1,6 +1,6 @@
 <?php 
   require_once('../../private/initialize.php');
-  require_login();
+  require_login_or_guest();
   $id = $_GET['id'] ?? '1';
   $object = find_artifact_by_id($id);
   $page_title = 'Show Artifact';
@@ -11,8 +11,10 @@
 
   <li><a class="back-link" href="<?php echo url_for('/artifacts/index.php'); ?>">&laquo; Artifacts</a></li>
   <li><a class="back-link" href="<?php echo url_for('/artifacts/useby.php'); ?>">&laquo; Interact By List</a></li>
+  <?php if (!is_guest()) { ?>
   <li><a class="back-link" href="<?php echo url_for('/artifacts/new.php'); ?>">&laquo; Create Entity</a></li>
   <li><a class="back-link" href="<?php echo url_for('/uses/1-n-new.php?artifact_id=' . h(u($object['id']))); ?>">&laquo; Record Interaction</a></li>
+  <?php } ?>
   
   <h1>Title: <?php echo h($object['Title']); ?></h1>
   
@@ -31,6 +33,8 @@
     <dd><?php echo h($object['type']); ?></dd>
   </dl>
 
+  <?php if (!is_guest()) { ?>
   <li><a class="back-link" href="<?php echo url_for('/artifacts/edit.php?id=' . h(u($object['id']))); ?>">Edit</a></li>
+  <?php } ?>
   
 </main>

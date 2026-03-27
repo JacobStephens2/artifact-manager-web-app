@@ -1,6 +1,6 @@
 <?php 
   require_once('../../private/initialize.php');
-  require_login();
+  require_login_or_guest();
 
   $page_title = 'Types';
   
@@ -21,9 +21,11 @@
       justify-content: space-between;"
       >
       <h1>Types</h1>
+      <?php if (!is_guest()) { ?>
       <a href="/types/new">
         <button>New</button>
       </a>
+      <?php } ?>
     </div>
 
   	<table class="list" data-page-length='100'>
@@ -66,9 +68,11 @@
             
             <tr>
               <td>
+                <?php if (!is_guest()) { ?>
                 <a href="/types/edit?id=<?php echo $type['id']; ?>">
                   <?php echo h($type_name); ?>
                 </a>
+                <?php } else { echo h($type_name); } ?>
               </td>
               <td>
                 <a href="/artifacts/?type=<?php echo $type['id']; ?>&kept=yes">

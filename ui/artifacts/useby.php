@@ -1,6 +1,6 @@
 <?php  // require login
   require_once('../../private/initialize.php');
-  require_login();
+  require_login_or_guest();
 ?>
 
 <?php // load header
@@ -59,7 +59,7 @@
       </a>
     </h1>
   
-    <button id="send_use_email" data-userid="<?php echo $user_id; ?>">Send Interact Email</button>
+    <?php if (!is_guest()) { ?><button id="send_use_email" data-userid="<?php echo $user_id; ?>">Send Interact Email</button><?php } ?>
     <button id="display_filters" style="display: block">Show filters</button>
   </div>
 
@@ -126,7 +126,7 @@
         <?php
           if ($showAttributes === 'yes') {
             ?>
-            <th>Record</th>
+            <?php if (!is_guest()) { ?><th>Record</th><?php } ?>
             <th>SwS</th>
             <th>AvgT</th>
             <th>Age</th>
@@ -137,11 +137,11 @@
             <?php
           } else {
             ?>
-            <th>Record Interaction</th>
+            <?php if (!is_guest()) { ?><th>Record Interaction</th><?php } ?>
             <?php
           }
         ?>
-        <th class="hideOnPrint">Get Rid Of</th>
+        <?php if (!is_guest()) { ?><th class="hideOnPrint">Get Rid Of</th><?php } ?>
         <th>Overdue (<span id="totalOverdue"></span>)</th>
         <th class="hideOnPrint">Recent Interaction</th>
         <th>Tracking Start</th>
@@ -163,7 +163,7 @@
             <div>
               <a id="artifact_id_<?php echo $id; ?>"
                 class="action edit"
-                href="<?php echo url_for('/artifacts/edit.php?id=' . $id); ?>"
+                href="<?php echo url_for('/artifacts/' . (is_guest() ? 'show' : 'edit') . '.php?id=' . $id); ?>"
                 ><?php echo h($artifact['Title']);
               ?></a>
               </a>
@@ -216,6 +216,7 @@
           <td class="type"><?php echo h($artifact['type']); ?></td>
 
 
+            <?php if (!is_guest()) { ?>
             <td class="record">
               <a href="/uses/1-n-new?artifact_id=<?php echo $id; ?>"
                 target="_blank"
@@ -223,6 +224,7 @@
                 Record
               </a>
             </td>
+            <?php } ?>
 
           <?php
           if ($showAttributes === 'yes') {
@@ -256,6 +258,7 @@
           }
           ?>
 
+          <?php if (!is_guest()) { ?>
           <td class="get-rid-of hideOnPrint">
             <form method="post" action="<?php echo url_for('/artifacts/mark-get-rid-of.php'); ?>" style="display:inline; margin:0;">
               <?php echo csrf_input(); ?>
@@ -265,6 +268,7 @@
               <button type="submit" class="get-rid-of-btn">Get Rid Of</button>
             </form>
           </td>
+          <?php } ?>
 
           <td class="overdue"
             <?php

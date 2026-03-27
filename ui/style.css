@@ -374,6 +374,22 @@ dt {
   margin-bottom: 0.6rem;
 }
 
+/* Guest Banner */
+
+.guest-banner {
+  background-color: #30395c;
+  color: white;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.guest-banner a {
+  color: #80d0c7;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
 /* Auto-suggest styles */
 
 ul#suggestions li a {

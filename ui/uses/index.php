@@ -1,6 +1,6 @@
 <?php 
   require_once('../../private/initialize.php');
-  require_login();
+  require_login_or_guest();
   $use_set = find_responses_by_user_id();
   $page_title = 'Artifact Uses';
   include(SHARED_PATH . '/header.php');
@@ -24,21 +24,25 @@
         <?php while($use = mysqli_fetch_assoc($use_set)) { ?>
           <tr>
             <td class="date">
-              <a 
-                class="action" 
+              <?php if (!is_guest()) { ?>
+              <a
+                class="action"
                 href="<?php echo url_for('/uses/edit.php?id=' . h(u($use['responseID']))); ?>"
                 >
                 <?php echo h($use['PlayDate']); ?>
               </a>
+              <?php } else { echo h($use['PlayDate']); } ?>
             </td>
-            
+
             <td>
-              <a 
-                class="action" 
+              <?php if (!is_guest()) { ?>
+              <a
+                class="action"
                 href="<?php echo url_for('/uses/edit.php?id=' . h(u($use['responseID']))); ?>"
                 >
                 <?php echo h($use['Title']); ?>
               </a>
+              <?php } else { echo h($use['Title']); } ?>
             </td>
             
             <td class="playerName">

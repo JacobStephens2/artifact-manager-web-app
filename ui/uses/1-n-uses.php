@@ -1,6 +1,6 @@
 <?php 
   require_once('../../private/initialize.php');
-  require_login();
+  require_login_or_guest();
   $page_title = 'Entity Interactions';
   include(SHARED_PATH . '/header.php');
   include(SHARED_PATH . '/dataTable.html');
@@ -176,18 +176,20 @@
             ?>
             <tr>
               <td class="date">
-                <a 
-                  class="action" 
+                <?php if (!is_guest()) { ?>
+                <a
+                  class="action"
                   href="<?php echo url_for('/uses/1-n-edit.php?id=' . h(u($use['useID']))); ?>"
                   >
                   <?php echo h(substr($use['use_date'],0,10)); ?>
                 </a>
+                <?php } else { echo h(substr($use['use_date'],0,10)); } ?>
               </td>
-              
+
               <td class="title">
-                <a 
-                  class="action" 
-                  href="<?php echo url_for('/artifacts/edit.php?id=' . h(u($use['gameID']))); ?>"
+                <a
+                  class="action"
+                  href="<?php echo url_for('/artifacts/' . (is_guest() ? 'show' : 'edit') . '.php?id=' . h(u($use['gameID']))); ?>"
                   >
                   <?php echo h($use['Title']); ?>
                 </a>

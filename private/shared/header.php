@@ -42,12 +42,14 @@
 
     <nav class="hideOnPrint">
         <?php
-        if(isset($_SESSION['logged_in']) && isset($_SESSION['FullName'])) {
+        if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true && isset($_SESSION['FullName'])) {
           ?>
           <a href="<?php echo url_for('/settings/edit'); ?>">
             <?php echo '<span>' . $_SESSION['username'] . '</span>'; ?>
           </a>
           <?php
+        } elseif (is_guest()) {
+          echo '<span>Guest</span>';
         }
 
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true) {
@@ -97,9 +99,26 @@
           
           <?php
 
+        } elseif (is_guest()) {
+          ?>
+          <a href="<?php echo url_for('/artifacts/useby'); ?>">Interact&nbsp;By&nbsp;Date</a>
+          <a href="<?php echo url_for('/uses/1-n-uses'); ?>">Interactions</a>
+          <a href="<?php echo url_for('/artifacts'); ?>">Entities</a>
+          <a href="<?php echo url_for('/artifacts/to-get-rid-of'); ?>">To&nbsp;Get&nbsp;Rid&nbsp;Of</a>
+          <a href="<?php echo url_for('/types'); ?>">Types</a>
+          <a href="<?php echo url_for('/login.php?action=logout'); ?>">Exit&nbsp;Guest&nbsp;Mode</a>
+          <?php
         }
       ?>
-        
+
     </nav>
+
+    <?php if (is_guest()) { ?>
+      <div class="guest-banner">
+        You are browsing as a guest.
+        <a href="<?php echo url_for('/register.php'); ?>">Create an account</a> to track your own artifacts,
+        or <a href="<?php echo url_for('/login.php?action=logout'); ?>">exit guest mode</a>.
+      </div>
+    <?php } ?>
 
     <?php echo display_session_message(); ?>

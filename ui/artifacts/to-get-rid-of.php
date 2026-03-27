@@ -1,6 +1,6 @@
 <?php
   require_once('../../private/initialize.php');
-  require_login();
+  require_login_or_guest();
 
   $user_id = $_SESSION['user_id'];
   $stmt = mysqli_prepare($db, "SELECT default_use_interval FROM users WHERE id = ?");
@@ -33,8 +33,8 @@
           <th>Type</th>
           <th>Last Interaction</th>
           <th>Tracking Start</th>
-          <th>Restore</th>
-          <th>Delete</th>
+          <?php if (!is_guest()) { ?><th>Restore</th>
+          <th>Delete</th><?php } ?>
         </tr>
       </thead>
 
@@ -44,7 +44,7 @@
         ?>
           <tr>
             <td class="name">
-              <a href="<?php echo url_for('/artifacts/edit.php?id=' . $id); ?>">
+              <a href="<?php echo url_for('/artifacts/' . (is_guest() ? 'show' : 'edit') . '.php?id=' . $id); ?>">
                 <?php echo h($artifact['Title']); ?>
               </a>
             </td>
@@ -57,6 +57,7 @@
 
             <td class="date"><?php echo h($artifact['Acq']); ?></td>
 
+            <?php if (!is_guest()) { ?>
             <td>
               <form method="post" action="<?php echo url_for('/artifacts/mark-get-rid-of.php'); ?>" style="display:inline; margin:0;">
                 <?php echo csrf_input(); ?>
@@ -73,6 +74,7 @@
                 Delete
               </a>
             </td>
+            <?php } ?>
           </tr>
         <?php } ?>
       </tbody>

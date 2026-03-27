@@ -1,6 +1,6 @@
 <?php
 require_once('../private/initialize.php');
-require_login();
+require_login_or_guest();
 $page_title = 'Menu';
 
 // Fetch user's default interval
@@ -99,16 +99,18 @@ include(SHARED_PATH . '/header.php');
         ?>
           <tr>
             <td class="overdue-name">
-              <a href="<?php echo url_for('/artifacts/edit.php?id=' . h(u($item['id']))); ?>">
+              <a href="<?php echo url_for('/artifacts/' . (is_guest() ? 'show' : 'edit') . '.php?id=' . h(u($item['id']))); ?>">
                 <?php echo h($item['title']); ?>
               </a>
             </td>
             <td class="overdue-date<?php if ($overdue) echo ' overdue-past'; ?>">
               <?php echo h($item['use_by']); ?>
             </td>
+            <?php if (!is_guest()) { ?>
             <td class="overdue-action">
               <a href="/uses/1-n-new?artifact_id=<?php echo h(u($item['id'])); ?>">Record</a>
             </td>
+            <?php } ?>
           </tr>
         <?php } ?>
       </table>
@@ -121,7 +123,7 @@ include(SHARED_PATH . '/header.php');
       <div class="menu-card">
         <h2 class="menu-card-title">Entities</h2>
         <a class="menu-link" href="<?php echo url_for('/artifacts/index.php'); ?>">All Entities</a>
-        <a class="menu-link" href="<?php echo url_for('/artifacts/new.php'); ?>">Create New Entity</a>
+        <?php if (!is_guest()) { ?><a class="menu-link" href="<?php echo url_for('/artifacts/new.php'); ?>">Create New Entity</a><?php } ?>
         <a class="menu-link" href="<?php echo url_for('/artifacts/useby.php'); ?>">Interact by Date List</a>
         <a class="menu-link" href="<?php echo url_for('/artifacts/to-get-rid-of.php'); ?>">To Get Rid Of</a>
       </div>
@@ -129,9 +131,10 @@ include(SHARED_PATH . '/header.php');
       <div class="menu-card">
         <h2 class="menu-card-title">Interactions</h2>
         <a class="menu-link" href="<?php echo url_for('/uses/1-n-uses.php'); ?>">All Interactions</a>
-        <a class="menu-link" href="/uses/1-n-new.php">Record Interaction</a>
+        <?php if (!is_guest()) { ?><a class="menu-link" href="/uses/1-n-new.php">Record Interaction</a><?php } ?>
       </div>
 
+      <?php if (!is_guest()) { ?>
       <div class="menu-card">
         <h2 class="menu-card-title">People</h2>
         <a class="menu-link" href="<?php echo url_for('/users/index.php'); ?>">Users</a>
@@ -145,6 +148,7 @@ include(SHARED_PATH . '/header.php');
         <a class="menu-link" href="<?php echo url_for('/reset-password/index.php'); ?>">Reset Password</a>
         <a class="menu-link" href="<?php echo url_for('/archive.php'); ?>">Archived Pages</a>
       </div>
+      <?php } ?>
 
     </div>
 
