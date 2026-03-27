@@ -63,31 +63,33 @@ include(SHARED_PATH . '/header.php');
 
       } else {
 
+         try {
          $expDate = date("Y-m-d H:i:s", strtotime('+1 day'));
          $key = bin2hex(random_bytes(32));
+         $selector = bin2hex(random_bytes(8));
+         $token = bin2hex(random_bytes(32));
+         $expires = time() + 86400;
 
          // Insert Temp Table
          $stmt = mysqli_prepare($db,
-            "INSERT INTO password_reset_temp (email, `key`, expDate) VALUES (?, ?, ?)"
+            "INSERT INTO password_reset_temp (email, `key`, expDate, selector, token, expires) VALUES (?, ?, ?, ?, ?, ?)"
          );
-         mysqli_stmt_bind_param($stmt, "sss", $email, $key, $expDate);
+         mysqli_stmt_bind_param($stmt, "sssssi", $email, $key, $expDate, $selector, $token, $expires);
          mysqli_stmt_execute($stmt);
          mysqli_stmt_close($stmt);
-         
+
          $output='<p>Dear user,</p>';
          $output.='<p>Please click on the following link to reset your password.</p>';
          $output.='<p>-------------------------------------------------------------</p>';
-         $output.='<p><a href="https://' . DOMAIN . '/reset-password/reset-password.php?key='.$key.'&email='.$email.'&action=reset" 
-            target="_blank">https://' . DOMAIN . '/reset-password/reset-password.php?key='.$key.'&email='.$email.'&action=reset</a></p>'; 
+         $output.='<p><a href="https://' . DOMAIN . '/reset-password/reset-password.php?key='.$key.'&email='.$email.'&action=reset"
+            target="_blank">https://' . DOMAIN . '/reset-password/reset-password.php?key='.$key.'&email='.$email.'&action=reset</a></p>';
          $output.='<p>-------------------------------------------------------------</p>';
          $output.='<p>Copy the link to your browser. The link will expire after 1 day.</p>';
-         $output.='<p>If you did not request this reset password email, no action is needed. Your password will not be reset.</p>';   
+         $output.='<p>If you did not request this reset password email, no action is needed. Your password will not be reset.</p>';
          $output.='<p>Thanks,</p>';
          $output.='<p>' . APP_NAME . '</p>';
-         
-         $mail = new PHPMailer(true);
 
-         try {
+         $mail = new PHPMailer(true);
             // Server settings
             $mail->isSMTP();
             $mail->Host       = SMTP_HOST;
@@ -119,9 +121,9 @@ include(SHARED_PATH . '/header.php');
                   </p>
                </div>
                ";
-         } catch (Exception $e) {
-            echo 'Email exception caught at ' . $currentDate->format('Y-m-d H:i:s') . "<br/>";
-            echo 'Caught exception: '. $e->getMessage() ."</br>";
+         } catch (\Throwable $e) {
+            echo "<div class='error'><p>Something went wrong. Please try again later.</p></div>";
+            error_log('Password reset error: ' . $e->getMessage());
          }
       }
       } // end rate limit else
