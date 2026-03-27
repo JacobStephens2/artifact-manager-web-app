@@ -1078,8 +1078,17 @@ p.copied_message {
     align-items: stretch;
   }
 
+  .dashboard-search-form input[type="search"] {
+    min-height: 3rem;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+  }
+
   .dashboard-search-form button {
     width: 100%;
+    min-height: 3rem;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
   }
 
   .auth-intro,

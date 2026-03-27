@@ -142,28 +142,6 @@ include(SHARED_PATH . '/header.php');
     </section>
 
     <div class="dashboard-grid">
-      <section class="menu-card dashboard-search-card">
-        <p class="section-label">Quick Lookup</p>
-        <h2 class="menu-card-title">Search the collection</h2>
-        <p class="menu-support">Jump directly into an entity record from the home screen.</p>
-
-        <form id="dashboard-search-form" class="dashboard-search-form" action="#">
-          <label class="sr-only" for="dashboard-search">Search entities</label>
-          <input
-            type="search"
-            id="dashboard-search"
-            placeholder="Search entities"
-            autocomplete="off"
-          >
-          <input type="hidden" id="dashboard-search-id">
-          <button type="submit" id="dashboard-search-submit">Open</button>
-        </form>
-
-        <div id="dashboard-search-results" class="searchResults dashboard-search-results" style="display: none;">
-          <ul id="dashboard-search-results-list" class="searchResults dashboard-search-results-list"></ul>
-        </div>
-      </section>
-
       <?php if (!empty($top_overdue)) { ?>
       <section class="menu-card overdue-card">
         <p class="section-label">Priority Queue</p>
@@ -246,49 +224,5 @@ include(SHARED_PATH . '/header.php');
   </div>
 
 </main>
-
-<script type="module">
-  import SearchComponent from '/shared/js/search-component.js';
-  import ApiClient from '/shared/js/api-client.js';
-
-  const input = document.querySelector('#dashboard-search');
-  const hiddenInput = document.querySelector('#dashboard-search-id');
-  const form = document.querySelector('#dashboard-search-form');
-  const destinationBase = <?php echo json_encode(url_for('/artifacts/' . (is_guest() ? 'show.php?id=' : 'edit.php?id='))); ?>;
-  const currentUserId = <?php echo json_encode((string) $_SESSION['user_id']); ?>;
-
-  SearchComponent.create({
-    inputSelector: '#dashboard-search',
-    resultsSelector: '#dashboard-search-results-list',
-    wrapperSelector: '#dashboard-search-results',
-    fetchResults: async (query) => {
-      const data = await ApiClient.searchArtifacts(query, currentUserId);
-      return data.artifacts.map((artifact) => ({
-        id: artifact.id,
-        label: artifact.Title,
-      }));
-    },
-    onSelect: (item) => {
-      hiddenInput.value = item.id;
-      input.value = item.label;
-      window.location.href = `${destinationBase}${encodeURIComponent(item.id)}`;
-    },
-    hideOnFocusSelector: '#dashboard-search-submit',
-  });
-
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    if (hiddenInput.value) {
-      window.location.href = `${destinationBase}${encodeURIComponent(hiddenInput.value)}`;
-    }
-  });
-
-  input.addEventListener('input', () => {
-    if (input.value.trim() === '') {
-      hiddenInput.value = '';
-    }
-  });
-</script>
 
 <?php include(SHARED_PATH . '/footer.php'); ?>
