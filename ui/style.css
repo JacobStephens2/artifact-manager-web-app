@@ -606,9 +606,13 @@ section.actions {
   margin-right: 0;
 }
 
-.auth-submit {
+.auth-submit.auth-submit {
   width: 100%;
   margin-top: 1.25rem;
+  font-size: 1rem;
+  min-height: unset;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-sm, 8px);
 }
 
 .auth-text-link {
