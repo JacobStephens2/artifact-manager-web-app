@@ -110,7 +110,7 @@ strong {
 main {
   width: min(var(--page-width), calc(100vw - 2rem));
   margin: 0 auto;
-  padding: 2rem 0 4rem;
+  padding: 2rem 1.5rem 4rem;
 }
 
 .site-header {
@@ -700,7 +700,8 @@ main > div:not(#dataTableImports):not(.guest-banner):not(#message):not(.errors) 
 .objects.listing,
 .object.edit,
 .object.new,
-main > form {
+main > form,
+main > div:not(#dataTableImports):not(.guest-banner):not(#message):not(.errors) {
   padding: 1.5rem;
 }
 
