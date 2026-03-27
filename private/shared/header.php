@@ -71,7 +71,7 @@
             Interact&nbsp;By&nbsp;Date
           </a>
           
-          <a href="<?php echo url_for('/uses/1-n-uses'); ?>">
+          <a href="<?php echo url_for('/uses/interactions'); ?>">
             Interactions
           </a>
           
@@ -114,7 +114,7 @@
         } elseif (is_guest()) {
           ?>
           <a href="<?php echo url_for('/artifacts/useby'); ?>">Interact&nbsp;By&nbsp;Date</a>
-          <a href="<?php echo url_for('/uses/1-n-uses'); ?>">Interactions</a>
+          <a href="<?php echo url_for('/uses/interactions'); ?>">Interactions</a>
           <a href="<?php echo url_for('/artifacts'); ?>">Entities</a>
           <a href="<?php echo url_for('/artifacts/to-get-rid-of'); ?>">To&nbsp;Get&nbsp;Rid&nbsp;Of</a>
           <a href="<?php echo url_for('/types'); ?>">Types</a>

@@ -190,7 +190,7 @@ include(SHARED_PATH . '/header.php');
         <p class="section-label">Activity</p>
         <h2 class="menu-card-title">Interactions</h2>
         <p class="menu-support">Record new activity and review the full history across the collection.</p>
-        <a class="menu-link" href="<?php echo url_for('/uses/1-n-uses.php'); ?>">All interactions</a>
+        <a class="menu-link" href="<?php echo url_for('/uses/interactions.php'); ?>">All interactions</a>
         <?php if (!is_guest()) { ?><a class="menu-link" href="/uses/1-n-new.php">Record interaction</a><?php } ?>
       </div>
 

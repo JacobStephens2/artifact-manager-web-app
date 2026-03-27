@@ -86,6 +86,8 @@
       >
       <?php echo csrf_input(); ?>
 
+      <input type="submit" value="Save Edits" />
+
       <label for="Title">Title</label>
       <input type="text" name="Title" id="Title" value="<?php echo h($artifact['Title']); ?>" />
 

@@ -4,7 +4,7 @@
   require_login();
 
   if(!isset($_GET['id'])) {
-    redirect_to(url_for('/uses/1-n-uses.php'));
+    redirect_to(url_for('/uses/interactions.php'));
   }
   $id = $_GET['id'];
 
@@ -12,7 +12,7 @@
 
     $result = delete_one_to_many_use($id);
     $_SESSION['message'] = 'The use was deleted successfully.';
-    redirect_to(url_for('/uses/1-n-uses.php'));
+    redirect_to(url_for('/uses/interactions.php'));
 
   } else {
     $use = find_use_details_by_id($id);
