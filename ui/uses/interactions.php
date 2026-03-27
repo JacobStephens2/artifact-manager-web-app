@@ -63,11 +63,11 @@
 <script defer src="/shared/filter_button.js"></script>
 
 <main>
-    <div style="display: flex;
-        justify-content: space-between;"
-        >
+    <div class="page-header-row">
         <h1><?php echo $page_title; ?></h1>
-        <button id="display_filters" style="display: block">Show filters</button>
+        <div class="page-header-actions">
+          <button id="display_filters">Show filters</button>
+        </div>
     </div>
 
     <form method="POST" style="display: none">

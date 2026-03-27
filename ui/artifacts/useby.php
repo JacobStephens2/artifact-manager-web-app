@@ -48,9 +48,7 @@
 
   <meta id="apiOrigin" content="<?php echo API_ORIGIN; ?>">
 
-  <div style="display: flex;
-    justify-content: space-between;"
-    >
+  <div class="page-header-row">
     <h1>
       <a class="hideOnPrint" target="_blank"
         href="<?php echo url_for('/objects/about-useby.php'); ?>"
@@ -58,9 +56,10 @@
         Interact with by date
       </a>
     </h1>
-  
-    <?php if (!is_guest()) { ?><button id="send_use_email" data-userid="<?php echo $user_id; ?>">Send Interact Email</button><?php } ?>
-    <button id="display_filters" style="display: block">Show filters</button>
+    <div class="page-header-actions">
+      <?php if (!is_guest()) { ?><button id="send_use_email" data-userid="<?php echo $user_id; ?>">Send Interact Email</button><?php } ?>
+      <button id="display_filters">Show filters</button>
+    </div>
   </div>
 
   <form action="<?php echo url_for('/artifacts/useby.php'); ?>"
