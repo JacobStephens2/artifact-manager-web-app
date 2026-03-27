@@ -1,5 +1,11 @@
-    <footer>
-      <h2>&copy; <?php echo date('Y'); ?> <a style="color: white" href="https://resume.jacobstephens.net" target='_blank'>Jacob Stephens</a></h2>
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <div>
+          <p class="footer-label">Artifact</p>
+          <h2>Curated tracking for active collections and recurring use.</h2>
+        </div>
+        <p class="footer-meta">&copy; <?php echo date('Y'); ?> <a href="https://resume.jacobstephens.net" target="_blank">Jacob Stephens</a></p>
+      </div>
     </footer>
 
     <script>

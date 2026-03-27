@@ -49,27 +49,39 @@ if(is_post_request()) {
 <?php $page_title = 'Log in'; ?>
 <?php include(SHARED_PATH . '/header.php'); ?>
   
-    <main>
+    <main class="auth-main">
+      <section class="auth-layout auth-layout-compact">
+        <div class="auth-intro">
+          <div class="auth-copy">
+            <p class="section-label">Account Access</p>
+            <h1>Log in</h1>
+            <p>
+              Sign in to continue with password reset and account recovery tools.
+            </p>
+          </div>
 
-      <p>You can use this site to generate a list of use-by dates for objects. <a href="https://jacobcstephens.com" target="_blank">Jacob Stephens</a> uses this tool to track usage of their books, ensuring they use each book either in the next or previous 180 days. <a href="https://www.theminimalists.com/ninety/" target="_blank">The Minimalists' 90/90 Rule</a> inspired Jacob to create this&nbsp;tool.</p>
+          <div class="auth-actions">
+            <a class="secondary-link" href="<?php echo url_for('/register.php'); ?>">Create an account</a>
+          </div>
+        </div>
 
-      <a href="<?php echo url_for('/register.php'); ?>"><button type="button">Create an account</button></a>
+        <div class="auth-panel">
+          <?php echo display_errors($errors); ?>
 
-      <h1>Log in</h1>
+          <form action="login.php" method="post" class="auth-form">
+            <?php echo csrf_input(); ?>
+            <label for="username">Username or email</label>
+            <input class="input-box" type="text" name="username" id="username" value="" required/>
 
-      <?php echo display_errors($errors); ?>
+            <label for="password">Password</label>
+            <input class="input-box" type="password" name="password" id="password" value="" required/>
 
-      <form action="login.php" method="post">
-        <?php echo csrf_input(); ?>
-        <label for="username"><h2>Username or Email:</h2></label>
-        <input class="input-box" type="text" name="username" id="username" value="" required/>
-        <label for="password"><h2>Password:</h2></label>
-        <input class="input-box" type="password" name="password" id="password" value="" required/>
-        <input class="submit" type="submit" name="submit" value="Submit"  />
-      </form>
+            <input class="submit auth-submit" type="submit" name="submit" value="Log in" />
+          </form>
 
-      <a href="<?php echo url_for('/reset-password/index.php'); ?>"><button class="reset-password-button">Reset Password</button></a>
+          <a class="auth-text-link" href="<?php echo url_for('/reset-password/index.php'); ?>">Reset password</a>
+        </div>
+      </section>
     </main>
 
 <?php include(SHARED_PATH . '/footer.php'); ?>
-<div class="white-space"></div>

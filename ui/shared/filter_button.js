@@ -1,11 +1,14 @@
-var filterButton = document.querySelector('button#display_filters');
-filterButton.addEventListener('click', () => {
-    let filterDiv = document.querySelector('form');
-    if (filterDiv.style.display === 'none') {
-        filterDiv.style.display = 'block';
-        filterButton.innerText = 'Hide Filters';
+const filterButton = document.querySelector('button#display_filters');
+const filterForm = document.querySelector('form');
+
+if (filterButton && filterForm) {
+  filterButton.addEventListener('click', () => {
+    if (filterForm.style.display === 'none') {
+      filterForm.style.display = 'block';
+      filterButton.innerText = 'Hide Filters';
     } else {
-        filterDiv.style.display = 'none';
-        filterButton.innerText = 'Show Filters';
+      filterForm.style.display = 'none';
+      filterButton.innerText = 'Show Filters';
     }
-});
+  });
+}

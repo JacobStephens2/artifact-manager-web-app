@@ -77,92 +77,218 @@ mysqli_stmt_close($stmt);
 // Sort by use-by date ascending (most overdue first)
 usort($overdue_items, fn($a, $b) => $a['days_diff'] <=> $b['days_diff']);
 $top_overdue = array_slice($overdue_items, 0, 5);
+$tracked_count = count($overdue_items);
+$overdue_count = 0;
+$due_soon_count = 0;
+$type_names = [];
+
+foreach ($overdue_items as $item) {
+  if ($item['days_diff'] < 0) {
+    $overdue_count++;
+  }
+
+  if ($item['days_diff'] >= 0 && $item['days_diff'] <= 14) {
+    $due_soon_count++;
+  }
+
+  if (!empty($item['type'])) {
+    $type_names[$item['type']] = true;
+  }
+}
+
+$type_count = count($type_names);
 
 include(SHARED_PATH . '/header.php');
 ?>
 
 <main>
-  <div id="main-menu">
+  <div id="main-menu" class="dashboard">
+    <section class="dashboard-hero">
+      <div class="dashboard-hero-copy">
+        <p class="section-label">Collection Command</p>
+        <h1>Main Menu</h1>
+        <p class="dashboard-intro">
+          Track the rhythm of your collection, surface the pieces that need attention, and move from review to recording without leaving the dashboard.
+        </p>
 
-    <h1>Main Menu</h1>
+        <div class="dashboard-actions">
+          <a class="prominent-link" href="<?php echo url_for('/artifacts/useby.php'); ?>">
+            Review interaction queue
+          </a>
+          <a class="secondary-link" href="<?php echo url_for('/artifacts/index.php'); ?>">
+            Browse all entities
+          </a>
+        </div>
+      </div>
 
-    <a class="prominent-link" href="<?php echo url_for('/artifacts/useby.php'); ?>">
-      Interact by Date
-    </a>
+      <div class="dashboard-hero-aside">
+        <div class="metric-card">
+          <span class="metric-label">Tracked</span>
+          <strong><?php echo h((string) $tracked_count); ?></strong>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Overdue</span>
+          <strong><?php echo h((string) $overdue_count); ?></strong>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Due In 14 Days</span>
+          <strong><?php echo h((string) $due_soon_count); ?></strong>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Types In Rotation</span>
+          <strong><?php echo h((string) $type_count); ?></strong>
+        </div>
+      </div>
+    </section>
 
-    <?php if (!empty($top_overdue)) { ?>
-    <div class="menu-card overdue-card">
-      <h2 class="menu-card-title">Most Past Due</h2>
-      <table class="overdue-table">
-        <?php foreach ($top_overdue as $item) {
-          $overdue = $item['days_diff'] < 0;
-        ?>
-          <tr>
-            <td class="overdue-name">
-              <a href="<?php echo url_for('/artifacts/' . (is_guest() ? 'show' : 'edit') . '.php?id=' . h(u($item['id']))); ?>">
-                <?php echo h($item['title']); ?>
-              </a>
-            </td>
-            <td class="overdue-date<?php if ($overdue) echo ' overdue-past'; ?>">
-              <?php echo h($item['use_by']); ?>
-            </td>
-            <?php if (!is_guest()) { ?>
-            <td class="overdue-action">
-              <a href="/uses/1-n-new?artifact_id=<?php echo h(u($item['id'])); ?>">Record</a>
-            </td>
-            <?php } ?>
-          </tr>
-        <?php } ?>
-      </table>
-      <a class="menu-link" href="<?php echo url_for('/artifacts/useby.php'); ?>">View all &rarr;</a>
+    <div class="dashboard-grid">
+      <section class="menu-card dashboard-search-card">
+        <p class="section-label">Quick Lookup</p>
+        <h2 class="menu-card-title">Search the collection</h2>
+        <p class="menu-support">Jump directly into an entity record from the home screen.</p>
+
+        <form id="dashboard-search-form" class="dashboard-search-form" action="#">
+          <label class="sr-only" for="dashboard-search">Search entities</label>
+          <input
+            type="search"
+            id="dashboard-search"
+            placeholder="Search entities"
+            autocomplete="off"
+          >
+          <input type="hidden" id="dashboard-search-id">
+          <button type="submit" id="dashboard-search-submit">Open</button>
+        </form>
+
+        <div id="dashboard-search-results" class="searchResults dashboard-search-results" style="display: none;">
+          <ul id="dashboard-search-results-list" class="searchResults dashboard-search-results-list"></ul>
+        </div>
+      </section>
+
+      <?php if (!empty($top_overdue)) { ?>
+      <section class="menu-card overdue-card">
+        <p class="section-label">Priority Queue</p>
+        <h2 class="menu-card-title">Most past due</h2>
+        <table class="overdue-table">
+          <?php foreach ($top_overdue as $item) {
+            $overdue = $item['days_diff'] < 0;
+          ?>
+            <tr>
+              <td class="overdue-name">
+                <a href="<?php echo url_for('/artifacts/' . (is_guest() ? 'show' : 'edit') . '.php?id=' . h(u($item['id']))); ?>">
+                  <?php echo h($item['title']); ?>
+                </a>
+                <?php if (!empty($item['type'])) { ?>
+                  <span class="status-chip"><?php echo h($item['type']); ?></span>
+                <?php } ?>
+              </td>
+              <td class="overdue-date<?php if ($overdue) echo ' overdue-past'; ?>">
+                <?php echo h($item['use_by']); ?>
+              </td>
+              <?php if (!is_guest()) { ?>
+              <td class="overdue-action">
+                <a href="/uses/1-n-new?artifact_id=<?php echo h(u($item['id'])); ?>">Record</a>
+              </td>
+              <?php } ?>
+            </tr>
+          <?php } ?>
+        </table>
+        <a class="menu-link" href="<?php echo url_for('/artifacts/useby.php'); ?>">View full queue</a>
+      </section>
+      <?php } ?>
     </div>
-    <?php } ?>
 
     <div class="menu-grid">
-
       <div class="menu-card">
+        <p class="section-label">Library</p>
         <h2 class="menu-card-title">Entities</h2>
-        <a class="menu-link" href="<?php echo url_for('/artifacts/index.php'); ?>">All Entities</a>
-        <?php if (!is_guest()) { ?><a class="menu-link" href="<?php echo url_for('/artifacts/new.php'); ?>">Create New Entity</a><?php } ?>
-        <a class="menu-link" href="<?php echo url_for('/artifacts/useby.php'); ?>">Interact by Date List</a>
-        <a class="menu-link" href="<?php echo url_for('/artifacts/to-get-rid-of.php'); ?>">To Get Rid Of</a>
+        <p class="menu-support">Audit what is active, what is archived, and what needs to leave the shelf.</p>
+        <a class="menu-link" href="<?php echo url_for('/artifacts/index.php'); ?>">All entities</a>
+        <?php if (!is_guest()) { ?><a class="menu-link" href="<?php echo url_for('/artifacts/new.php'); ?>">Create new entity</a><?php } ?>
+        <a class="menu-link" href="<?php echo url_for('/artifacts/useby.php'); ?>">Interact by date list</a>
+        <a class="menu-link" href="<?php echo url_for('/artifacts/to-get-rid-of.php'); ?>">To get rid of</a>
       </div>
 
       <div class="menu-card">
+        <p class="section-label">Activity</p>
         <h2 class="menu-card-title">Interactions</h2>
-        <a class="menu-link" href="<?php echo url_for('/uses/1-n-uses.php'); ?>">All Interactions</a>
-        <?php if (!is_guest()) { ?><a class="menu-link" href="/uses/1-n-new.php">Record Interaction</a><?php } ?>
+        <p class="menu-support">Record new activity and review the full history across the collection.</p>
+        <a class="menu-link" href="<?php echo url_for('/uses/1-n-uses.php'); ?>">All interactions</a>
+        <?php if (!is_guest()) { ?><a class="menu-link" href="/uses/1-n-new.php">Record interaction</a><?php } ?>
       </div>
 
       <?php if (!is_guest()) { ?>
       <div class="menu-card">
-        <h2 class="menu-card-title">People</h2>
+        <p class="section-label">People</p>
+        <h2 class="menu-card-title">Users</h2>
+        <p class="menu-support">Manage participant records and identify new candidates worth tracking.</p>
         <a class="menu-link" href="<?php echo url_for('/users/index.php'); ?>">Users</a>
-        <a class="menu-link" href="<?php echo url_for('/users/new.php'); ?>">Add New User</a>
+        <a class="menu-link" href="<?php echo url_for('/users/new.php'); ?>">Add new user</a>
         <a class="menu-link" href="<?php echo url_for('/explore/candidates.php'); ?>">Candidates</a>
       </div>
 
       <div class="menu-card">
-        <h2 class="menu-card-title">Account</h2>
+        <p class="section-label">Account</p>
+        <h2 class="menu-card-title">Settings</h2>
+        <p class="menu-support">Tune defaults, notifications, and account-level maintenance tools.</p>
         <a class="menu-link" href="<?php echo url_for('/settings/edit.php'); ?>">Settings</a>
-        <a class="menu-link" href="<?php echo url_for('/reset-password/index.php'); ?>">Reset Password</a>
-        <a class="menu-link" href="<?php echo url_for('/archive.php'); ?>">Archived Pages</a>
+        <a class="menu-link" href="<?php echo url_for('/reset-password/index.php'); ?>">Reset password</a>
+        <a class="menu-link" href="<?php echo url_for('/archive.php'); ?>">Archived pages</a>
       </div>
       <?php } ?>
-
     </div>
 
     <p class="menu-about">
-      You can use this site to generate a list of use-by dates for objects.
-      <a href="https://jacobstephens.net" target="_blank">Jacob Stephens</a>
-      uses this tool to track usage of books, games, movies, equipment, and more, ensuring use for each
-      either in the next or previous x days.
+      Artifact generates use-by dates for the objects you want to keep in circulation. The workflow was shaped by
       <a href="https://www.theminimalists.com/ninety/" target="_blank">The Minimalists' 90/90 Rule</a>
-      inspired Jacob to create this&nbsp;tool.
+      and extended into a more deliberate collection practice by
+      <a href="https://jacobstephens.net" target="_blank">Jacob Stephens</a>.
     </p>
-
   </div>
 
 </main>
+
+<script type="module">
+  import SearchComponent from '/shared/js/search-component.js';
+  import ApiClient from '/shared/js/api-client.js';
+
+  const input = document.querySelector('#dashboard-search');
+  const hiddenInput = document.querySelector('#dashboard-search-id');
+  const form = document.querySelector('#dashboard-search-form');
+  const destinationBase = <?php echo json_encode(url_for('/artifacts/' . (is_guest() ? 'show.php?id=' : 'edit.php?id='))); ?>;
+  const currentUserId = <?php echo json_encode((string) $_SESSION['user_id']); ?>;
+
+  SearchComponent.create({
+    inputSelector: '#dashboard-search',
+    resultsSelector: '#dashboard-search-results-list',
+    wrapperSelector: '#dashboard-search-results',
+    fetchResults: async (query) => {
+      const data = await ApiClient.searchArtifacts(query, currentUserId);
+      return data.artifacts.map((artifact) => ({
+        id: artifact.id,
+        label: artifact.Title,
+      }));
+    },
+    onSelect: (item) => {
+      hiddenInput.value = item.id;
+      input.value = item.label;
+      window.location.href = `${destinationBase}${encodeURIComponent(item.id)}`;
+    },
+    hideOnFocusSelector: '#dashboard-search-submit',
+  });
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    if (hiddenInput.value) {
+      window.location.href = `${destinationBase}${encodeURIComponent(hiddenInput.value)}`;
+    }
+  });
+
+  input.addEventListener('input', () => {
+    if (input.value.trim() === '') {
+      hiddenInput.value = '';
+    }
+  });
+</script>
 
 <?php include(SHARED_PATH . '/footer.php'); ?>

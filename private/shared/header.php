@@ -1,4 +1,4 @@
-<?php if ( ! isset($page_title) ) { $page_title = 'Artifact Manager'; } ?>
+<?php if ( ! isset($page_title) ) { $page_title = 'Artifact'; } ?>
 
 <!DOCTYPE html>
 
@@ -6,12 +6,12 @@
   <head>
     
     <title>
-      <?php echo h($page_title); ?> - Artifact Manager
+      <?php echo h($page_title); ?> - Artifact
     </title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#30395c">
+    <meta name="theme-color" content="#1a2345">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -19,9 +19,10 @@
     <link rel="manifest" href="<?php echo url_for('manifest.json') ?>">
     <link rel="apple-touch-icon" href="<?php echo url_for('assets/icon-192x192.png') ?>">
 
-    <link rel="stylesheet" media="all" href="../../style.css?v=4" />
-
-    <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+    <link rel="stylesheet" media="all" href="../../style.css?v=5" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-P3N6C9C37N"></script>
@@ -35,26 +36,37 @@
 
   </head>
 
-  <body>
-    <header>
-      <a class="header-link" href="/">Artifact Manager</a>
+  <body class="<?php echo is_guest() ? 'guest-mode' : 'signed-in-mode'; ?>">
+    <header class="site-header">
+      <div class="site-header-inner">
+        <div class="site-brand">
+          <a class="header-link" href="/">Artifact</a>
+          <p class="site-tagline">Digital curation for the things you keep in motion.</p>
+        </div>
+
+        <div class="site-status">
+          <?php
+          if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true && isset($_SESSION['username'])) {
+            ?>
+            <a class="site-status-link" href="<?php echo url_for('/settings/edit'); ?>">
+              <?php echo h($_SESSION['username']); ?>
+            </a>
+            <?php
+          } elseif (is_guest()) {
+            ?>
+            <span class="site-status-pill">Guest</span>
+            <?php
+          }
+          ?>
+        </div>
+      </div>
     </header>
 
-    <nav class="hideOnPrint">
+    <nav class="site-nav hideOnPrint">
+      <div class="site-nav-inner">
         <?php
-        if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true && isset($_SESSION['FullName'])) {
-          ?>
-          <a href="<?php echo url_for('/settings/edit'); ?>">
-            <?php echo '<span>' . $_SESSION['username'] . '</span>'; ?>
-          </a>
-          <?php
-        } elseif (is_guest()) {
-          echo '<span>Guest</span>';
-        }
-
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true) {
           ?>
-          
           <a href="<?php echo url_for('/artifacts/useby'); ?>">
             Interact&nbsp;By&nbsp;Date
           </a>
@@ -95,7 +107,7 @@
             Support
           </a>
 
-          <span><a href="<?php echo url_for('logout'); ?>">Logout</a></span>
+          <a href="<?php echo url_for('logout'); ?>">Logout</a>
           
           <?php
 
@@ -110,7 +122,7 @@
           <?php
         }
       ?>
-
+      </div>
     </nav>
 
     <?php if (is_guest()) { ?>

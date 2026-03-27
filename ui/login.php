@@ -80,47 +80,60 @@ if ($action == 'guest') {
 <?php $page_title = 'Log in'; ?>
 <?php include(SHARED_PATH . '/header.php'); ?>
   
-    <main>
-      <div style="text-align: center; margin-bottom: 1rem;">
-        <img src="<?php echo url_for('/assets/icon-512x512.png'); ?>" alt="Artifact Manager logo" style="width: 120px; height: 120px;">
-      </div>
+    <main class="auth-main">
+      <section class="auth-layout">
+        <div class="auth-intro">
+          <div class="auth-mark">
+            <img src="<?php echo url_for('/assets/icon-512x512.png'); ?>" alt="Artifact logo">
+          </div>
 
-      <p>
-        You can use this site to generate a list of use-by dates for objects.
-        <a href="https://jacobstephens.net" target="_blank">Jacob Stephens</a> uses this tool
-        to track usage of their books, ensuring they use each book either in the next
-        or previous x days. <a href="https://www.theminimalists.com/ninety/" target="_blank">
-          The Minimalists' 90/90 Rule</a> inspired Jacob to create this&nbsp;tool.
-      </p>
+          <div class="auth-copy">
+            <p class="section-label">Welcome Back</p>
+            <h1>Log in</h1>
+            <p>
+              Artifact generates use-by dates for the objects you want to keep in circulation.
+              The workflow was shaped by
+              <a href="https://www.theminimalists.com/ninety/" target="_blank">The Minimalists' 90/90 Rule</a>
+              and extended into a more deliberate collection practice by
+              <a href="https://jacobstephens.net" target="_blank">Jacob Stephens</a>.
+            </p>
+          </div>
 
-      <a href="<?php echo url_for('/register.php'); ?>"><button type="button">Create an account</button></a>
-      <a href="<?php echo url_for('/login.php?action=guest'); ?>"><button type="button">Browse as Guest</button></a>
+          <div class="auth-actions">
+            <a class="prominent-link" href="<?php echo url_for('/register.php'); ?>">Create an account</a>
+            <a class="secondary-link" href="<?php echo url_for('/login.php?action=guest'); ?>">Browse as guest</a>
+          </div>
+        </div>
 
-      <h1>Log in</h1>
+        <div class="auth-panel">
+          <?php echo display_errors($errors); ?>
 
-      <?php echo display_errors($errors); ?>
+          <form action="login.php" method="post" class="auth-form">
+            <?php echo csrf_input(); ?>
+            <label for="username">Username or email</label>
+            <input class="input-box" type="text" name="username" id="username" value="" required/>
 
-      <form action="login.php" method="post">
-        <?php echo csrf_input(); ?>
-        <label for="username"><h2>Username or Email:</h2></label>
-        <input class="input-box" type="text" name="username" id="username" value="" required/>
-        <label for="password"><h2>Password:</h2></label>
-        <input class="input-box" type="password" name="password" id="password" value="" required/>
-        <label>
-          <input type="checkbox" name="remember_me" /> Remember me
-        </label>
-        <?php
-          if (isset($_GET['redirectURL'])) {
-            ?>
-            <input type="hidden" name="redirectURL" value="<?php echo h(urldecode($_GET['redirectURL'])); ?>">
+            <label for="password">Password</label>
+            <input class="input-box" type="password" name="password" id="password" value="" required/>
+
+            <label class="checkbox-row">
+              <input type="checkbox" name="remember_me" /> Remember me
+            </label>
+
             <?php
-          }
-        ?>
-        <input class="submit" type="submit" name="submit" value="Submit"  />
-      </form>
+              if (isset($_GET['redirectURL'])) {
+                ?>
+                <input type="hidden" name="redirectURL" value="<?php echo h(urldecode($_GET['redirectURL'])); ?>">
+                <?php
+              }
+            ?>
 
-      <a href="<?php echo url_for('/reset-password/index.php'); ?>"><button class="reset-password-button">Reset Password</button></a>
-      </main>
+            <input class="submit auth-submit" type="submit" name="submit" value="Log in" />
+          </form>
+
+          <a class="auth-text-link" href="<?php echo url_for('/reset-password/index.php'); ?>">Reset password</a>
+        </div>
+      </section>
+    </main>
 
 <?php include(SHARED_PATH . '/footer.php'); ?>
-<div class="white-space"></div>
