@@ -89,3 +89,9 @@ api/private/vendor
 api/vendor
 ui/uses/publicEnvironmentVaribles.js
 .phpunit.result.cache
+
+# TWA build artifacts and keystores
+twa/*.apk
+twa/*.aab
+twa/keystore.jks
+twa/keystore.jks.old
