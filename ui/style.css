@@ -699,6 +699,7 @@ main > div:not(#dataTableImports):not(.guest-banner):not(#message):not(.errors) 
 #recordedUseList,
 .objects.listing,
 .object.edit,
+.object.new,
 main > form {
   padding: 1.5rem;
 }

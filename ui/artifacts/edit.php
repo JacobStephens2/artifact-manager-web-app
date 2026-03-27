@@ -89,13 +89,39 @@
       <label for="Title">Title</label>
       <input type="text" name="Title" id="Title" value="<?php echo h($artifact['Title']); ?>" />
 
-      <label for="type">Type</label>
-      <select name="type" id="type">
-        <?php 
-          $type_id = $artifact['type_id'];
-          require_once(SHARED_PATH . '/artifact_type_options.php'); 
-        ?>
-      </select>
+      <label for="type_search">Type</label>
+      <?php
+        $type_id = $artifact['type_id'];
+        require_once(SHARED_PATH . '/artifact_type_array.php');
+        $current_type_name = '';
+        foreach ($typesArray as $type => $tid) {
+          if ($tid == $type_id) {
+            $current_type_name = $type;
+            break;
+          }
+        }
+      ?>
+      <input type="text" id="type_search" list="type_list" value="<?php echo h($current_type_name); ?>" autocomplete="off" />
+      <input type="hidden" name="type" id="type" value="<?php echo h($type_id); ?>" />
+      <datalist id="type_list">
+        <?php foreach ($typesArray as $type => $tid) { ?>
+          <option value="<?php echo h($type); ?>" data-id="<?php echo h($tid); ?>"></option>
+        <?php } ?>
+      </datalist>
+      <script>
+        document.getElementById('type_search').addEventListener('input', function() {
+          var options = document.querySelectorAll('#type_list option');
+          var hidden = document.getElementById('type');
+          var val = this.value;
+          hidden.value = '';
+          for (var i = 0; i < options.length; i++) {
+            if (options[i].value === val) {
+              hidden.value = options[i].dataset.id;
+              break;
+            }
+          }
+        });
+      </script>
 
       <label for="Acq">Tracking Start Date</label>
       <input type="date" name="Acq" id="Acq" value="<?php echo h($artifact['Acq']); ?>" />
