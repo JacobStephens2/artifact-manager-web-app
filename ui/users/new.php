@@ -12,10 +12,7 @@ if(is_post_request()) {
   if (isset($_POST['G']) && $_POST['G'] == '') {
     $player['G'] = 'other';
   }
-  $player['Age'] = $_POST['Age'] ?? '';
-  if (isset($_POST['Age']) && $_POST['Age'] == '') {
-    $player['Age'] = '30';
-  }
+  $player['birth_year'] = $_POST['birth_year'] ?? '';
 
 
   $result = insert_player($player);
@@ -33,7 +30,7 @@ if(is_post_request()) {
   $player["FirstName"] = '';
   $player["LastName"] = '';
   $player["G"] = '';
-  $player["Age"] = '';
+  $player["birth_year"] = '';
 }
 
 ?>
@@ -64,8 +61,8 @@ if(is_post_request()) {
         <dd><input type="text" name="G" value="<?php echo h($player['G']); ?>" /></dd>
       </dl>
       <dl>
-        <dt>Age</dt>
-        <dd><input type="text" name="Age" value="<?php echo h($player['Age']); ?>" /></dd>
+        <dt>Birth Year</dt>
+        <dd><input type="number" name="birth_year" value="<?php echo h($player['birth_year']); ?>" /></dd>
       </dl>
       <div id="operations">
         <input type="submit" value="Add player" />

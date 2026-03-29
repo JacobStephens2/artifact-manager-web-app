@@ -18,7 +18,7 @@
     $player['FirstName'] = $_POST['FirstName'] ?? '';
     $player['LastName'] = $_POST['LastName'] ?? '';
     $player['G'] = $_POST['G'] ?? '';
-    $player['Age'] = $_POST['Age'] ?? '';
+    $player['birth_year'] = $_POST['birth_year'] ?? '';
     $player['thisPlayerIsMe'] = $_POST['thisPlayerIsMe'] ?? '';
     $player['user_id'] = $user_id ?? '';
 
@@ -70,8 +70,8 @@
       <label for="Gender">Gender (M, F, or Other)</label>
       <input type="text" id="Gender" name="G" value="<?php echo h($player['G']); ?>" />
 
-      <label for="Age">Age</dt>
-      <input type="text" id="Age" name="Age" value="<?php echo h($player['Age']); ?>" />
+      <label for="birth_year">Birth Year</label>
+      <input type="number" id="birth_year" name="birth_year" value="<?php echo h($player['birth_year']); ?>" />
 
       <label for="thisPlayerIsMe">This User Is Me</label>
       <input type="hidden" name="thisPlayerIsMe" value="no">

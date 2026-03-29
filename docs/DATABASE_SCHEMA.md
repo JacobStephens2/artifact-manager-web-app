@@ -93,7 +93,7 @@ People who interact with artifacts (play games, use items, etc.). Each player be
 | `LastName` | VARCHAR(255) | YES | Player's last name |
 | `FullName` | VARCHAR(255) | YES | Computed full name (`FirstName + ' ' + LastName`) |
 | `G` | VARCHAR(10) | YES | Gender or group indicator |
-| `Age` | VARCHAR(50) | YES | Age or age range |
+| `birth_year` | INT | YES | Year of birth (age is calculated dynamically) |
 | `Priority` | INT | YES | Ordering priority for playgroup selection |
 | `MenuPriority` | INT | YES | UI menu ordering priority |
 | `represents_user_id` | INT | YES | FK to `users.id` -- set when this player record represents a user account |
@@ -328,7 +328,7 @@ Tracks API and login request attempts for rate limiting. Rows are automatically 
 │ FirstName        │             │   │   │
 │ LastName         │             │   │   │
 │ FullName         │             │   │   │ 1:N
-│ G, Age           │             │   │   │
+│ G, birth_year    │             │   │   │
 │ Priority         │             │   │   ▼
 │ MenuPriority     │             │   │  ┌──────────────────┐
 │ represents_      │             │   │  │   sweetspots      │

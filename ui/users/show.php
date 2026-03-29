@@ -21,7 +21,11 @@ include(SHARED_PATH . '/header.php');
     </dl>
     <dl>
       <dt>Age</dt>
-      <dd><?php echo h($player['Age']); ?></dd>
+      <dd><?php echo $player['birth_year'] ? (date('Y') - (int) $player['birth_year']) : ''; ?></dd>
+    </dl>
+    <dl>
+      <dt>Birth Year</dt>
+      <dd><?php echo h($player['birth_year']); ?></dd>
     </dl>
 
     <a href="/users/edit.php?id=<?php echo $_REQUEST['id']; ?>">

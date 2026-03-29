@@ -40,10 +40,11 @@
   function insert_player($player) {
     global $db;
 
-    $sql = "INSERT INTO players (FirstName, LastName, FullName, G, Age, user_id) VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO players (FirstName, LastName, FullName, G, birth_year, user_id) VALUES (?, ?, ?, ?, ?, ?)";
     $fullName = $player['FirstName'] . ' ' . $player['LastName'];
     $stmt = mysqli_prepare($db, $sql);
-    mysqli_stmt_bind_param($stmt, "sssssi", $player['FirstName'], $player['LastName'], $fullName, $player['G'], $player['Age'], $_SESSION['user_id']);
+    $birthYear = $player['birth_year'] !== '' ? (int) $player['birth_year'] : null;
+    mysqli_stmt_bind_param($stmt, "ssssii", $player['FirstName'], $player['LastName'], $fullName, $player['G'], $birthYear, $_SESSION['user_id']);
     $result = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
     // For INSERT statements, $result is true/false
@@ -59,14 +60,15 @@
   function update_player($player) {
     global $db;
 
+    $birthYear = $player['birth_year'] !== '' ? (int) $player['birth_year'] : null;
     if ($player['thisPlayerIsMe'] === 'yes') {
-      $sql = "UPDATE players SET FirstName=?, LastName=?, G=?, represents_user_id=?, Age=? WHERE id=? LIMIT 1";
+      $sql = "UPDATE players SET FirstName=?, LastName=?, G=?, represents_user_id=?, birth_year=? WHERE id=? LIMIT 1";
       $stmt = mysqli_prepare($db, $sql);
-      mysqli_stmt_bind_param($stmt, "ssssss", $player['FirstName'], $player['LastName'], $player['G'], $player['user_id'], $player['Age'], $player['id']);
+      mysqli_stmt_bind_param($stmt, "ssssii", $player['FirstName'], $player['LastName'], $player['G'], $player['user_id'], $birthYear, $player['id']);
     } else {
-      $sql = "UPDATE players SET FirstName=?, LastName=?, G=?, represents_user_id = NULL, Age=? WHERE id=? LIMIT 1";
+      $sql = "UPDATE players SET FirstName=?, LastName=?, G=?, represents_user_id = NULL, birth_year=? WHERE id=? LIMIT 1";
       $stmt = mysqli_prepare($db, $sql);
-      mysqli_stmt_bind_param($stmt, "sssss", $player['FirstName'], $player['LastName'], $player['G'], $player['Age'], $player['id']);
+      mysqli_stmt_bind_param($stmt, "sssii", $player['FirstName'], $player['LastName'], $player['G'], $birthYear, $player['id']);
     }
     $result = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);

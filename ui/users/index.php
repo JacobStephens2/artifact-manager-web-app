@@ -10,6 +10,7 @@ include(SHARED_PATH . '/dataTable.html');
 <main>
   <div class="objects listing">
     <h1>Users</h1>
+    <a href="<?php echo url_for('/users/new'); ?>">Create User</a>
 
   	<table class="list" id="users" data-page-length='100'>
 
@@ -32,7 +33,7 @@ include(SHARED_PATH . '/dataTable.html');
               </a>
             </td>
             <td><?php echo h($player['G']); ?></td>
-            <td><?php echo h($player['Age']); ?></td>
+            <td><?php echo $player['birth_year'] ? (date('Y') - (int) $player['birth_year']) : ''; ?></td>
             <td><a class="table-action" href="<?php echo url_for('/users/delete.php?id=' . h(u($player['id']))); ?>">Delete</a></td>
             <td><?php echo h($player['id']); ?></td>
           </tr>
