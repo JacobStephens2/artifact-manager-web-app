@@ -58,6 +58,9 @@
             <?php
           }
           ?>
+          <button class="burger-btn" aria-label="Toggle menu" aria-expanded="false">
+            <span class="burger-icon"></span>
+          </button>
         </div>
       </div>
     </header>
@@ -87,9 +90,6 @@
             To&nbsp;Get&nbsp;Rid&nbsp;Of
           </a>
         
-          <a href="<?php echo url_for('/artifacts/new'); ?>">
-            Create&nbsp;Entity
-          </a>
 
           <a href="<?php echo url_for('/users'); ?>">
             Users
@@ -128,5 +128,18 @@
         or <a href="<?php echo url_for('/login.php?action=logout'); ?>">exit guest mode</a>.
       </div>
     <?php } ?>
+
+    <script>
+      (function() {
+        var btn = document.querySelector('.burger-btn');
+        var nav = document.querySelector('.site-nav');
+        if (btn && nav) {
+          btn.addEventListener('click', function() {
+            var open = nav.classList.toggle('nav-open');
+            btn.setAttribute('aria-expanded', open);
+          });
+        }
+      })();
+    </script>
 
     <?php echo display_session_message(); ?>

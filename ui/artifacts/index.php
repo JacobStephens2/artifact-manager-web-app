@@ -57,6 +57,7 @@
       justify-content: space-between;"
       >
       <h1>Entities <?php if ($kept === 'secondary_only') { echo ' (Secondary Only)'; } ?></h1>
+      <a href="<?php echo url_for('/artifacts/new'); ?>">Create Entity</a>
       <button id="display_filters" style="display: block">Show filters</button>
     </div>
 
