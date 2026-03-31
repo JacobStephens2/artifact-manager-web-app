@@ -1164,8 +1164,25 @@ p.copied_message {
     padding: 1.1rem;
   }
 
+  .dashboard {
+    gap: 0.75rem;
+  }
+
+  .dashboard-intro,
+  .dashboard-actions {
+    display: none;
+  }
+
   .dashboard-hero-aside {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .metric-card {
+    padding: 0.75rem;
+  }
+
+  .metric-card strong {
+    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
   }
 
   input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
