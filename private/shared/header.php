@@ -48,13 +48,19 @@
           <?php
           if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true && isset($_SESSION['username'])) {
             ?>
-            <a class="site-status-link" href="<?php echo url_for('/settings/edit'); ?>">
+            <a class="site-status-link desktop-only" href="<?php echo url_for('/settings/edit'); ?>">
               <?php echo h($_SESSION['username']); ?>
+            </a>
+            <a class="site-status-link mobile-only" href="<?php echo url_for('/artifacts/useby'); ?>">
+              Interact&nbsp;By&nbsp;Date
             </a>
             <?php
           } elseif (is_guest()) {
             ?>
-            <span class="site-status-pill">Guest</span>
+            <span class="site-status-pill desktop-only">Guest</span>
+            <a class="site-status-link mobile-only" href="<?php echo url_for('/artifacts/useby'); ?>">
+              Interact&nbsp;By&nbsp;Date
+            </a>
             <?php
           }
           ?>
@@ -101,6 +107,10 @@
 
           <a href="<?php echo url_for('/support'); ?>">
             Support
+          </a>
+
+          <a class="mobile-only" href="<?php echo url_for('/settings/edit'); ?>">
+            <?php echo h($_SESSION['username']); ?>
           </a>
 
           <a href="<?php echo url_for('logout'); ?>">Logout</a>

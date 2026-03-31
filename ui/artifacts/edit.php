@@ -91,6 +91,10 @@
       <label for="Title">Title</label>
       <input type="text" name="Title" id="Title" value="<?php echo h($artifact['Title']); ?>" />
 
+      <label for="KeptCol" >Tracked? (Checked means yes)</label>
+      <input type="hidden" name="KeptCol" value="0" />
+      <input type="checkbox" name="KeptCol" id="KeptCol" value="1"<?php if($artifact['KeptCol'] == "1") { echo " checked"; } ?> />
+
       <label for="type_search">Type</label>
       <?php
         $type_id = $artifact['type_id'];
@@ -127,10 +131,6 @@
 
       <label for="Acq">Tracking Start Date</label>
       <input type="date" name="Acq" id="Acq" value="<?php echo h($artifact['Acq']); ?>" />
-
-      <label for="KeptCol" >Tracked? (Checked means yes)</label>
-      <input type="hidden" name="KeptCol" value="0" />
-      <input type="checkbox" name="KeptCol" id="KeptCol" value="1"<?php if($artifact['KeptCol'] == "1") { echo " checked"; } ?> />
 
       <label for="to_get_rid_of">To Get Rid Of? (Checked means yes)</label>
       <input type="hidden" name="to_get_rid_of" value="0" />

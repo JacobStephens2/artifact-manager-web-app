@@ -121,11 +121,11 @@
       <tr id="headerRow">
         <th>Name (<?php echo $artifact_set->num_rows; ?>)</th>
         <th>Interact By</th>
+        <?php if (!is_guest()) { ?><th>Record</th><?php } ?>
         <th>Type</th>
         <?php
           if ($showAttributes === 'yes') {
             ?>
-            <?php if (!is_guest()) { ?><th>Record</th><?php } ?>
             <th>SwS</th>
             <th>AvgT</th>
             <th>Age</th>
@@ -136,7 +136,6 @@
             <?php
           } else {
             ?>
-            <?php if (!is_guest()) { ?><th>Record Interaction</th><?php } ?>
             <?php
           }
         ?>
@@ -212,9 +211,6 @@
 
           <td class="useByDate date"><?php print_r($useByDate->format('Y-m-d')); ?></td>
 
-          <td class="type"><?php echo h($artifact['type']); ?></td>
-
-
             <?php if (!is_guest()) { ?>
             <td class="record">
               <a href="/uses/1-n-new?artifact_id=<?php echo $id; ?>"
@@ -224,6 +220,8 @@
               </a>
             </td>
             <?php } ?>
+
+          <td class="type"><?php echo h($artifact['type']); ?></td>
 
           <?php
           if ($showAttributes === 'yes') {
@@ -306,7 +304,7 @@
         if ($shelfSort === 'yes') {
           ?>
           order: [
-            [ 2, 'asc'], // Type
+            [ 3, 'asc'], // Type
             [ 4, 'asc'], // SwS
             [ 5, 'asc'], // AvgT
             [ 6, 'asc'], // Age

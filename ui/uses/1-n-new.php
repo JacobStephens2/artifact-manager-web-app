@@ -95,6 +95,8 @@
   <form action="<?php echo $formProcessingFile; ?>" method="post">
     <?php echo csrf_input(); ?>
 
+    <input type="submit" value="Submit">
+
     <label for="SearchTitles">Search Entities</label>
     <input type="search" 
       id="SearchTitles" 

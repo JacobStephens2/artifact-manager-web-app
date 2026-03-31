@@ -156,6 +156,10 @@ main {
   color: var(--text-soft);
 }
 
+.mobile-only {
+  display: none;
+}
+
 .site-status {
   display: flex;
   align-items: center;
@@ -1119,6 +1123,14 @@ p.copied_message {
 
   .site-header {
     padding-top: 0.75rem;
+  }
+
+  .mobile-only {
+    display: revert;
+  }
+
+  .desktop-only {
+    display: none;
   }
 
   .burger-btn {
