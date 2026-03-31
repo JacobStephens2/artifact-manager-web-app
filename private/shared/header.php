@@ -41,7 +41,7 @@
       <div class="site-header-inner">
         <div class="site-brand">
           <a class="header-link" href="/">Artifact</a>
-          <p class="site-tagline">Digital curation for the things you keep in motion.</p>
+          <p class="site-tagline">Track what you own. Use what you keep.</p>
         </div>
 
         <div class="site-status">

@@ -105,10 +105,10 @@ include(SHARED_PATH . '/header.php');
   <div id="main-menu" class="dashboard">
     <section class="dashboard-hero">
       <div class="dashboard-hero-copy">
-        <p class="section-label">Collection Command</p>
+        <p class="section-label">Dashboard</p>
         <h1>Main Menu</h1>
         <p class="dashboard-intro">
-          Track the rhythm of your collection, surface the pieces that need attention, and move from review to recording without leaving the dashboard.
+          See what needs attention, check the queue, and record interactions without leaving this page.
         </p>
 
         <div class="dashboard-actions">
@@ -198,7 +198,7 @@ include(SHARED_PATH . '/header.php');
       <div class="menu-card">
         <p class="section-label">People</p>
         <h2 class="menu-card-title">Users</h2>
-        <p class="menu-support">Manage participant records and identify new candidates worth tracking.</p>
+        <p class="menu-support">Manage the people connected to your collection.</p>
         <a class="menu-link" href="<?php echo url_for('/users/index.php'); ?>">Users</a>
         <a class="menu-link" href="<?php echo url_for('/users/new.php'); ?>">Add new user</a>
         <a class="menu-link" href="<?php echo url_for('/explore/candidates.php'); ?>">Candidates</a>
@@ -207,7 +207,7 @@ include(SHARED_PATH . '/header.php');
       <div class="menu-card">
         <p class="section-label">Account</p>
         <h2 class="menu-card-title">Settings</h2>
-        <p class="menu-support">Tune defaults, notifications, and account-level maintenance tools.</p>
+        <p class="menu-support">Adjust your defaults, email preferences, and account details.</p>
         <a class="menu-link" href="<?php echo url_for('/settings/edit.php'); ?>">Settings</a>
         <a class="menu-link" href="<?php echo url_for('/reset-password/index.php'); ?>">Reset password</a>
         <a class="menu-link" href="<?php echo url_for('/archive.php'); ?>">Archived pages</a>
@@ -216,9 +216,9 @@ include(SHARED_PATH . '/header.php');
     </div>
 
     <p class="menu-about">
-      Artifact generates use-by dates for the objects you want to keep in circulation. The workflow was shaped by
+      Artifact generates interact-by dates so the things you keep stay in use. Inspired by
       <a href="https://www.theminimalists.com/ninety/" target="_blank">The Minimalists' 90/90 Rule</a>
-      and extended into a more deliberate collection practice by
+      and built by
       <a href="https://jacobstephens.net" target="_blank">Jacob Stephens</a>.
     </p>
   </div>

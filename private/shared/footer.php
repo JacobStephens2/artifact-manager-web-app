@@ -2,7 +2,7 @@
       <div class="site-footer-inner">
         <div>
           <p class="footer-label">Artifact</p>
-          <h2>Curated tracking for active collections and recurring use.</h2>
+          <h2>Know what you own. Use what you keep.</h2>
         </div>
         <p class="footer-meta">&copy; <?php echo date('Y'); ?> <a href="https://resume.jacobstephens.net" target="_blank">Jacob Stephens</a></p>
       </div>

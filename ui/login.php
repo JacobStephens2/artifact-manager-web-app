@@ -91,10 +91,9 @@ if ($action == 'guest') {
             <p class="section-label">Welcome Back</p>
             <h1>Log in</h1>
             <p>
-              Artifact generates use-by dates for the objects you want to keep in circulation.
-              The workflow was shaped by
+              Artifact generates interact-by dates so the things you keep stay in use. Inspired by
               <a href="https://www.theminimalists.com/ninety/" target="_blank">The Minimalists' 90/90 Rule</a>
-              and extended into a more deliberate collection practice by
+              and built by
               <a href="https://jacobstephens.net" target="_blank">Jacob Stephens</a>.
             </p>
           </div>
