@@ -90,7 +90,12 @@ api/vendor
 ui/uses/publicEnvironmentVaribles.js
 .phpunit.result.cache
 
-# TWA build artifacts and keystores
-twa/*.apk
-twa/*.aab
-twa/keystore.jks
+# Capacitor / Android build artifacts and keystores
+capacitor/node_modules/
+capacitor/android/.gradle/
+capacitor/android/app/build/
+capacitor/android/build/
+capacitor/android/local.properties
+capacitor/*.apk
+capacitor/*.aab
+capacitor/keystore.jks

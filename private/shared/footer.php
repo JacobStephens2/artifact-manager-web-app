@@ -13,6 +13,7 @@
         navigator.serviceWorker.register('/sw.js');
       }
     </script>
+    <script src="/native-notifications.js?v=1" defer></script>
   </body>
 </html>
 

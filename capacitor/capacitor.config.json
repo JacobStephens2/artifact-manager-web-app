@@ -1,0 +1,12 @@
+{
+  "appId": "com.stewardgoods.artifact",
+  "appName": "Artifacts",
+  "webDir": "www",
+  "server": {
+    "url": "https://artifact.stephens.page",
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}
