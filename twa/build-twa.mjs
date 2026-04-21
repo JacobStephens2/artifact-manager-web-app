@@ -20,22 +20,28 @@ async function main() {
   const configPath = path.join(process.env.HOME, '.bubblewrap', 'config.json');
   const config = Config.deserialize(fs.readFileSync(configPath, 'utf-8'));
 
-  // Create TwaManifest from web manifest
-  console.log('Fetching web manifest...');
-  let twaManifest = await TwaManifest.fromWebManifest('https://artifact.stewardgoods.com/manifest.json');
-
-  // Override settings
-  twaManifest.packageId = 'com.stewardgoods.artifact';
-  twaManifest.appVersionCode = 1;
-  twaManifest.appVersionName = '1.0.0';
-  twaManifest.signingKey = {
-    path: path.resolve('keystore.jks'),
-    alias: 'artifact-manager',
-  };
-  twaManifest.fallbackType = 'customtabs';
-  twaManifest.enableSiteSettingsShortcut = true;
-  twaManifest.splashScreenFadeOutDuration = 300;
-  twaManifest.minSdkVersion = 21;
+  // Load existing twa-manifest.json if present so version bumps and overrides
+  // are preserved across builds. Only bootstrap from the web manifest on first run.
+  const manifestPath = path.join(PROJECT_DIR, 'twa-manifest.json');
+  let twaManifest;
+  if (fs.existsSync(manifestPath)) {
+    console.log('Loading existing twa-manifest.json...');
+    twaManifest = await TwaManifest.fromFile(manifestPath);
+  } else {
+    console.log('Fetching web manifest (first-run bootstrap)...');
+    twaManifest = await TwaManifest.fromWebManifest('https://artifact.stewardgoods.com/manifest.json');
+    twaManifest.packageId = 'com.stewardgoods.artifact';
+    twaManifest.appVersionCode = 1;
+    twaManifest.appVersionName = '1.0.0';
+    twaManifest.signingKey = {
+      path: path.resolve('keystore.jks'),
+      alias: 'artifact-manager',
+    };
+    twaManifest.fallbackType = 'customtabs';
+    twaManifest.enableSiteSettingsShortcut = true;
+    twaManifest.splashScreenFadeOutDuration = 300;
+    twaManifest.minSdkVersion = 21;
+  }
 
   // Save the twa-manifest.json
   const manifestJson = JSON.stringify(twaManifest.toJson(), null, 2);

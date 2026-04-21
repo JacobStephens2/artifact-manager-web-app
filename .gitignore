@@ -94,4 +94,3 @@ ui/uses/publicEnvironmentVaribles.js
 twa/*.apk
 twa/*.aab
 twa/keystore.jks
-twa/keystore.jks.old
