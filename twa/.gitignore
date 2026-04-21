@@ -3,4 +3,5 @@ app/build/
 build/
 .gradle/
 keystore.jks
+local.properties
 *.idsig

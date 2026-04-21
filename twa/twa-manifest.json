@@ -19,10 +19,10 @@
     "path": "/var/www/artifact.stephens.page/twa/keystore.jks",
     "alias": "artifact-manager"
   },
-  "appVersionName": "1.0.0",
-  "appVersionCode": 1,
+  "appVersionName": "1.2.0",
+  "appVersionCode": 5,
   "shortcuts": [],
-  "generatorApp": "unknown",
+  "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://artifact.stewardgoods.com/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
@@ -42,5 +42,5 @@
   "fileHandlers": [],
   "launchHandlerClientMode": "",
   "displayOverride": [],
-  "appVersion": "1.0.0"
+  "appVersion": "1.2.0"
 }
