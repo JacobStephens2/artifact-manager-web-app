@@ -13,13 +13,24 @@ if(is_post_request()) {
   if ($daily_email_hour < 0 || $daily_email_hour > 23) {
     $daily_email_hour = 8;
   }
+  $native_notify_enabled = isset($_POST['native_notify_enabled']) ? 1 : 0;
+  $native_notify_hour = (int) ($_POST['native_notify_hour'] ?? 9);
+  if ($native_notify_hour < 0 || $native_notify_hour > 23) {
+    $native_notify_hour = 9;
+  }
+  $native_notify_lead_days = (int) ($_POST['native_notify_lead_days'] ?? 3);
+  if ($native_notify_lead_days < 0 || $native_notify_lead_days > 14) {
+    $native_notify_lead_days = 3;
+  }
+  $native_notify_past_due = isset($_POST['native_notify_past_due']) ? 1 : 0;
   $user_id = (int) $_SESSION['user_id'];
 
   $stmt = mysqli_prepare($db, "UPDATE users
     SET first_name = ?, last_name = ?, email = ?, username = ?,
-        default_setting = ?, default_use_interval = ?, daily_email = ?, daily_email_hour = ?
+        default_setting = ?, default_use_interval = ?, daily_email = ?, daily_email_hour = ?,
+        native_notify_enabled = ?, native_notify_hour = ?, native_notify_lead_days = ?, native_notify_past_due = ?
     WHERE id = ? LIMIT 1");
-  mysqli_stmt_bind_param($stmt, "sssssiiii",
+  mysqli_stmt_bind_param($stmt, "sssssiiiiiiii",
     $_POST['first_name'],
     $_POST['last_name'],
     $_POST['email'],
@@ -28,6 +39,10 @@ if(is_post_request()) {
     $_POST['default_use_interval'],
     $daily_email,
     $daily_email_hour,
+    $native_notify_enabled,
+    $native_notify_hour,
+    $native_notify_lead_days,
+    $native_notify_past_due,
     $user_id
   );
   $update_result = mysqli_stmt_execute($stmt);
@@ -37,7 +52,8 @@ if(is_post_request()) {
 $user_id = (int) $_SESSION['user_id'];
 $stmt = mysqli_prepare($db, "SELECT
   first_name, last_name, email, username,
-  default_use_interval, default_setting, daily_email, daily_email_hour
+  default_use_interval, default_setting, daily_email, daily_email_hour,
+  native_notify_enabled, native_notify_hour, native_notify_lead_days, native_notify_past_due
   FROM users WHERE id = ?");
 mysqli_stmt_bind_param($stmt, "i", $user_id);
 mysqli_stmt_execute($stmt);
@@ -141,6 +157,54 @@ mysqli_stmt_close($stmt);
         }
       ?>
     </select>
+
+    <h2>App notifications</h2>
+    <p>These settings control notifications from the Artifact Android app.</p>
+
+    <label for="native_notify_enabled">
+      <input
+        type="checkbox"
+        name="native_notify_enabled"
+        id="native_notify_enabled"
+        value="1"
+        <?php if ($userArray['native_notify_enabled']) echo 'checked'; ?>
+      >
+      Enable app notifications
+    </label>
+
+    <label for="native_notify_hour">Notification time (your device's local time)</label>
+    <select name="native_notify_hour" id="native_notify_hour">
+      <?php
+        for ($h = 0; $h <= 23; $h++) {
+          $label = ($h === 0) ? '12:00 AM (midnight)' :
+                   (($h < 12) ? $h . ':00 AM' :
+                   (($h === 12) ? '12:00 PM (noon)' :
+                   ($h - 12) . ':00 PM'));
+          $selected = ((int)$userArray['native_notify_hour'] === $h) ? 'selected' : '';
+          echo "<option value=\"$h\" $selected>$label</option>";
+        }
+      ?>
+    </select>
+
+    <label for="native_notify_lead_days">Days before due to notify me (0 to skip the early heads-up)</label>
+    <input
+      type="number"
+      name="native_notify_lead_days"
+      id="native_notify_lead_days"
+      value="<?php echo h($userArray['native_notify_lead_days']); ?>"
+      min="0" max="14" step="1"
+    >
+
+    <label for="native_notify_past_due">
+      <input
+        type="checkbox"
+        name="native_notify_past_due"
+        id="native_notify_past_due"
+        value="1"
+        <?php if ($userArray['native_notify_past_due']) echo 'checked'; ?>
+      >
+      Remind me about overdue items
+    </label>
 
     <input type="submit" value="Update Settings">
   </form>
