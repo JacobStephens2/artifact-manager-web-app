@@ -1144,6 +1144,13 @@ p.copied_message {
 
   .site-nav.nav-open {
     display: block;
+    position: fixed;
+    top: var(--header-height, 4.5rem);
+    left: 0;
+    right: 0;
+    z-index: 45;
+    max-height: calc(100vh - var(--header-height, 4.5rem));
+    overflow-y: auto;
   }
 
   .site-nav-inner {

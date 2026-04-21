@@ -19,7 +19,7 @@
     <link rel="manifest" href="<?php echo url_for('manifest.json') ?>">
     <link rel="apple-touch-icon" href="<?php echo url_for('assets/icon-192x192.png') ?>">
 
-    <link rel="stylesheet" media="all" href="../../style.css?v=6" />
+    <link rel="stylesheet" media="all" href="../../style.css?v=7" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -143,8 +143,20 @@
       (function() {
         var btn = document.querySelector('.burger-btn');
         var nav = document.querySelector('.site-nav');
+        var header = document.querySelector('.site-header');
+
+        function updateHeaderHeight() {
+          if (header) {
+            document.documentElement.style.setProperty('--header-height', header.offsetHeight + 'px');
+          }
+        }
+
+        updateHeaderHeight();
+        window.addEventListener('resize', updateHeaderHeight);
+
         if (btn && nav) {
           btn.addEventListener('click', function() {
+            updateHeaderHeight();
             var open = nav.classList.toggle('nav-open');
             btn.setAttribute('aria-expanded', open);
           });
