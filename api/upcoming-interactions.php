@@ -42,13 +42,21 @@
 
   date_default_timezone_set('America/New_York');
 
-  $interval_stmt = mysqli_prepare($database, "SELECT default_use_interval FROM users WHERE id = ?");
-  mysqli_stmt_bind_param($interval_stmt, "i", $user_id);
-  mysqli_stmt_execute($interval_stmt);
-  $interval_result = mysqli_stmt_get_result($interval_stmt);
-  $interval_row = mysqli_fetch_array($interval_result);
-  mysqli_stmt_close($interval_stmt);
-  $default_interval = ($interval_row !== null) ? (float) $interval_row[0] : DEFAULT_USE_INTERVAL;
+  $user_stmt = mysqli_prepare($database, "SELECT default_use_interval, native_notify_enabled, native_notify_hour, native_notify_lead_days, native_notify_past_due FROM users WHERE id = ?");
+  mysqli_stmt_bind_param($user_stmt, "i", $user_id);
+  mysqli_stmt_execute($user_stmt);
+  $user_result = mysqli_stmt_get_result($user_stmt);
+  $user_row = mysqli_fetch_assoc($user_result);
+  mysqli_stmt_close($user_stmt);
+  $default_interval = ($user_row !== null && $user_row['default_use_interval'] !== null)
+    ? (float) $user_row['default_use_interval']
+    : DEFAULT_USE_INTERVAL;
+  $prefs = [
+    'enabled' => (int) ($user_row['native_notify_enabled'] ?? 1) === 1,
+    'hour' => (int) ($user_row['native_notify_hour'] ?? 9),
+    'lead_days' => (int) ($user_row['native_notify_lead_days'] ?? 3),
+    'past_due' => (int) ($user_row['native_notify_past_due'] ?? 1) === 1,
+  ];
 
   $artifact_set = use_by('', $default_interval, '', 0, 'no', $user_id);
 
@@ -109,6 +117,7 @@
   $response->timezone = 'America/New_York';
   $response->horizon_days = 60;
   $response->default_interval_days = $default_interval;
+  $response->notification_prefs = $prefs;
   $response->items = $items;
 
   echo json_encode($response);
